@@ -322,7 +322,10 @@ function [display_plot] = get_default_parameters_display_plot_NCZLd()
     display_plot.store_img_img_out=1;   % 0 don't save/ 1 save img and img_out
     
     display_plot.store=1;    % 0 don't store/ 1 store curv, iFactor and more... (default 1)
-    display_plot.savefigs=1;  % save stored values for iFactor, omega ...
+    display_plot.store_irrelevant=0;    % 0 don't store irrelevant/ 1 store irrelevant params (J, W...)... (default 1)
+    display_plot.savefigs=0;  % save stored values for iFactor, omega ...
+    
+    
     
     % White effect
     % display_plot.y_video=128/256;

@@ -189,10 +189,11 @@ end
 %gy_final_OFF =  {t}(fil,col,s,o)
 %gy_final_ALL =  {t traspuesto - se accede igual}(fil,col,s,o)
 
-
+if struct.display_plot.store_irrelevant==1
 store_matrix_givenparams_channel(gy_final_ON,'gy_final_ON',channel,struct);
 store_matrix_givenparams_channel(gy_final_OFF,'gy_final_OFF',channel,struct);
 store_matrix_givenparams_channel(gy_final_ALL,'gy_final_ALL',channel,struct);
+end
 
 r_gy_final_ON = redim_t_s_o(gy_final_ON);
 r_gy_final_ON_meanized = tmatrix_to_matrix(r_gy_final_ON,struct,1);

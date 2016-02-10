@@ -750,12 +750,13 @@ end
 %gx_final_per_iter =  {t}{iter}(fil,col,s,o)
 %gy_final =  {t}(fil,col,s,o)
 
-
+if struct.display_plot.store_irrelevant==1
 store_matrix_givenparams_channel(all_J,'all_J',channel,struct);
 store_matrix_givenparams_channel(all_J,'all_J_fft',channel,struct);
 store_matrix_givenparams_channel(all_J,'all_W',channel,struct);
 store_matrix_givenparams_channel(all_J,'all_J',channel,struct);
 store_matrix_givenparams_channel(all_J,'all_W_fft',channel,struct);
+end
 
 end
 

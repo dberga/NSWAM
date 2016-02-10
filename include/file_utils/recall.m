@@ -2,7 +2,7 @@
 %reads eCSF and iFactor from outputted .mats and computes the IDWT, mean in time, normalization ... 
 function [] = recall(image_name)
     
-    
+    delete_files = 1; %delete mats after creating imgs
     
     
     output_folder = 'output';
@@ -67,9 +67,9 @@ function [] = recall(image_name)
     iFactor_rec(:,:,2,:) = c2_iFactor_rec;
     iFactor_rec(:,:,3,:) = c3_iFactor_rec;
     iFactor_recmean = static_computeframesmean(iFactor_rec,struct.zli.n_membr,struct.zli.n_frames_promig);
-    iFactor_rec_rgb = get_the_ostimulus(iFactor_recmean,struct.image.gamma,struct.image.srgb_flag);
+    %iFactor_recmean = get_the_ostimulus(iFactor_recmean,struct.image.gamma,struct.image.srgb_flag);
     
-    smap_iFactor = rec_to_smap(iFactor_rec_rgb);
+    smap_iFactor = rec_to_smap(iFactor_recmean);
     imwrite(smap_iFactor,[output_folder_imgs '/' 'iFactor_' output_image]);
     
     
@@ -80,11 +80,25 @@ function [] = recall(image_name)
     eCSF_rec(:,:,2,:) = c2_eCSF_rec;
     eCSF_rec(:,:,3,:) = c3_eCSF_rec;
     eCSF_recmean = static_computeframesmean(eCSF_rec,struct.zli.n_membr,struct.zli.n_frames_promig);
-     eCSF_rec_rgb = get_the_ostimulus(eCSF_recmean,struct.image.gamma,struct.image.srgb_flag);
+    % eCSF_recmean = get_the_ostimulus(eCSF_recmean,struct.image.gamma,struct.image.srgb_flag);
      
-    smap_eCSF = rec_to_smap(eCSF_rec_rgb);
+    smap_eCSF = rec_to_smap(eCSF_recmean);
     imwrite(smap_eCSF,[output_folder_imgs '/' 'eCSF_' output_image]);
    
+	if delete_files == 1
+	    delete(c1_eCSFpath);
+	    delete(c1_residualpath);
+	    delete(c1_Lspath);
+	    delete(c1_iFactorpath);
+	    delete(c2_eCSFpath);
+	    delete(c2_residualpath);
+	    delete(c2_Lspath);
+	    delete(c2_iFactorpath);
+	    delete(c3_eCSFpath);
+	    delete(c3_residualpath);
+	    delete(c3_Lspath);
+	    delete(c3_iFactorpath);
+	end
     
 end
 

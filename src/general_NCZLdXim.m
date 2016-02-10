@@ -56,7 +56,7 @@ devlog(strcat('Nstripes in Model Neurodynamic: ',num2str(strct.image.nstripes)))
 % %%%%%%%  output (opponents) to color, also get name %%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[img_out mult_tmp mult_name] = general_NCZLd_setstimulus_back(img_out,strct.compute.dynamic,strct.image.single_or_multiple,strct.image.gamma,strct.image.srgb_flag); %set to rgb
+%[img_out mult_tmp mult_name] = general_NCZLd_setstimulus_back(img_out,strct.compute.dynamic,strct.image.single_or_multiple,strct.image.gamma,strct.image.srgb_flag); %set to rgb
 
 
 end

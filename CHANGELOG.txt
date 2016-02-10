@@ -56,3 +56,9 @@
 4. implemented recall and file utils (RF to img_out, img_out to smap), which allows to read mats and do reconstruction of images, then converting to smaps
 
 
+------v6 version 6
+
+1. cluster scripts done
+2. added "display_plot.store_irrelevant" (it allows to store only relevant parameters, as iFactor, eCSF, residual, struct...)
+
+

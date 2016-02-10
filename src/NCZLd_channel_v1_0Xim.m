@@ -1,3 +1,4 @@
+
 function [img_out] = NCZLd_channel_v1_0Xim(img_in,struct,channel)
 
 img_in = double(img_in);
@@ -43,14 +44,14 @@ end
 %%%%% display dwt (curv) %%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %display_tmatrix_channel(curv,'omega',channel,struct);
-%store_matrix_givenparams_channel(curv,'omega',channel,struct);
-
 curv_meanized = tmatrix_to_matrix(curv,struct,1);
 display_matrix_channel(curv_meanized,'omega',channel,struct);
-store_matrix_givenparams_channel(curv,'omega_meanized',channel,struct);
 
+if struct.display_plot.store_irrelevant==1
+%store_matrix_givenparams_channel(curv,'omega',channel,struct);
+store_matrix_givenparams_channel(curv,'omega_meanized',channel,struct);
+end
 
 store_matrix_givenparams_channel(c,'residual',channel,struct);
 store_matrix_givenparams_channel(Ls,'Ls',channel,struct);
@@ -78,8 +79,10 @@ store_matrix_givenparams_channel(iFactor,'iFactor',channel,struct);
 
 iFactor_meanized = tmatrix_to_matrix(iFactor,struct,1);
 display_matrix_channel(iFactor_meanized,'iFactor',channel,struct);
-store_matrix_givenparams_channel(iFactor_meanized,'iFactor_meanized',channel,struct);
 
+if struct.display_plot.store_irrelevant==1
+store_matrix_givenparams_channel(iFactor_meanized,'iFactor_meanized',channel,struct);
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%   calc and apply eCSF   %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -108,8 +111,10 @@ store_matrix_givenparams_channel(eCSF,'eCSF',channel,struct);
 
 eCSF_meanized = tmatrix_to_matrix(eCSF,struct,1);
 display_matrix_channel(eCSF_meanized,'eCSF',channel,struct);
-store_matrix_givenparams_channel(eCSF_meanized,'eCSF_meanized',channel,struct);
 
+if struct.display_plot.store_irrelevant==1
+store_matrix_givenparams_channel(eCSF_meanized,'eCSF_meanized',channel,struct);
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Change curv_final for IDWT (choose iFactor, eCSF or eCSF*iFactor) %%%
@@ -129,12 +134,14 @@ store_matrix_givenparams_channel(eCSF_meanized,'eCSF_meanized',channel,struct);
 
 
 display_tmatrix_channel(curv_final,'curv_final',channel,struct);
+if struct.display_plot.store_irrelevant==1
 store_matrix_givenparams_channel(curv_final,'curv_final',channel,struct);
-
+end
 curv_final_meanized = tmatrix_to_matrix(curv_final,struct,1);
 display_matrix_channel(curv_final_meanized,'curv_final',channel,struct);
+if struct.display_plot.store_irrelevant==1
 store_matrix_givenparams_channel(curv_final_meanized,'curv_final_meanized', channel,struct);
-
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% INVERSE wavelet decomposition %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -148,8 +155,9 @@ store_matrix_givenparams_channel(curv_final_meanized,'curv_final_meanized', chan
 
 
 display_imatrix_channel(uint8(normalize_map(img_out)),'img_out',channel,struct);
+if struct.display_plot.store_irrelevant==1
 store_matrix_givenparams_channel(img_out,'img_out',channel,struct);
-
+end
 
 
 
