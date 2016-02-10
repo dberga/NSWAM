@@ -1,4 +1,4 @@
-function [tmp2,name]=get_the_stimulus(M);
+function [tmp2,name]=get_the_stimulus(M,gamma,srgb_flag)
 
 
 if strcmp(M,'mach')
@@ -337,7 +337,7 @@ elseif strcmp(M, 'Cercles_Assim_256')
 %     name='';    
 end
 
-tmp2 = get_the_cstimulus(tmp);
+tmp2 = get_the_cstimulus(tmp,gamma,srgb_flag);
 
 
 end

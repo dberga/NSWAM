@@ -20,7 +20,7 @@ strct=get_default_parameters_NCZLd();
 %%%%%%%% Review nargin%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[tmp strct.image.single] =  general_NCZLdXim_args(nargin, estimul, nomexperiment);
+[tmp, strct.image.single] =  general_NCZLdXim_args(nargin, estimul, nomexperiment);
 
 devlog(strcat('Nstripes in Model Neurodynamic: ',num2str(strct.image.nstripes))); 
 
@@ -29,14 +29,14 @@ devlog(strcat('Nstripes in Model Neurodynamic: ',num2str(strct.image.nstripes)))
 % %%%%%%%% computational setting %%%%%%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[strct.compute.dynamic strct.zli.n_membr] = general_NCZLd_compsetting(tmp, strct.zli.n_membr);
+[strct.compute.dynamic , strct.zli.n_membr] = general_NCZLd_compsetting(tmp, strct.zli.n_membr);
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %%%%%%%  stimulus (image, name...) %%%%%%%
+% %%%%%%%  stimulus (image) to opponent, also get name %%%%%%%
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-[tmp mult_tmp mult_name] = general_NCZLd_setstimulus(tmp,strct.compute.dynamic,strct.image.single_or_multiple);
+[tmp mult_tmp mult_name] = general_NCZLd_setstimulus(tmp,strct.compute.dynamic,strct.image.single_or_multiple,strct.image.gamma,strct.image.srgb_flag); %set to opponents
 
 [strct.image.name] = general_NCZLd_setstimulusname(strct);
           
@@ -49,21 +49,28 @@ devlog(strcat('Nstripes in Model Neurodynamic: ',num2str(strct.image.nstripes)))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-[img img_out] = general_NCZLd_dispatcher(strct, tmp, mult_tmp);
+[img, img_out] = general_NCZLd_dispatcher(strct, tmp, mult_tmp);
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%  output (opponents) to color, also get name %%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+[img_out mult_tmp mult_name] = general_NCZLd_setstimulus_back(img_out,strct.compute.dynamic,strct.image.single_or_multiple,strct.image.gamma,strct.image.srgb_flag); %set to rgb
 
 
 end
 
 
-function [stimulus image_name] =  general_NCZLdXim_args(nargs, stimulus, image_name)
+function [stimulus image_name] =  general_NCZLdXim_args(nargs, stimulus, im_name)
     
     switch nargs
         case 0
             image_name='Contrast_Yellow_Green_256';
         case 1
             image_name = 'ImatgePerParametre';
-        case 2
-            %image_name =  image_name;
+        otherwise
+            image_name =  im_name;
     end
     
 end
@@ -80,19 +87,19 @@ function [stimulus_type n_membr] = general_NCZLd_compsetting(tmp, n_membr)
 end
 
 
-function [newtmp mult_tmp mult_name] = general_NCZLd_setstimulus(tmp,stimulus_type,single_or_multiple)
+function [newtmp mult_tmp mult_name] = general_NCZLd_setstimulus(tmp,stimulus_type,single_or_multiple,gamma,srgb_flag)
 
     % static case
     if stimulus_type==0 
         if single_or_multiple==1 % only one stimulus
 
-            newtmp = get_the_cstimulus(tmp);%!include de color
+            newtmp = get_the_cstimulus(tmp,gamma,srgb_flag);%! color  to opponent
             
             mult_tmp = 0;
             mult_name = 0;
             
         elseif single_or_multiple==2 % three stimuli
-            [tmp1,name1,tmp2,name2,tmp3,name3]=get_the_stimuli(tmp);
+            [tmp1,name1,tmp2,name2,tmp3,name3]=get_the_stimuli(tmp,gamma,srgb_flag);
             mult_tmp = [tmp1 tmp2 tmp3];
             mult_name = [name1 name2 name3];
             devlog('Estimul multiple');
@@ -104,7 +111,37 @@ function [newtmp mult_tmp mult_name] = general_NCZLd_setstimulus(tmp,stimulus_ty
         ttmp = tmp;
         newtmp = zeros(size(ttmp,4));
         for t=1:size(ttmp,4)
-            newtmp(:,:,:,t) = general_NCZLd_setstimulus(ttmp(:,:,:,t),0,single_or_multiple); %x,y,channel,time
+            newtmp(:,:,:,t) = general_NCZLd_setstimulus(ttmp(:,:,:,t),0,single_or_multiple,gamma,srgb_flag); %x,y,channel,time
+        end
+    end
+
+end
+
+function [newtmp mult_tmp mult_name] = general_NCZLd_setstimulus_back(tmp,stimulus_type,single_or_multiple,gamma,srgb_flag)
+
+    % static case
+    if stimulus_type==0 
+        if single_or_multiple==1 % only one stimulus
+
+            newtmp = get_the_ostimulus(tmp,gamma,srgb_flag);%!opponent to color
+            
+            mult_tmp = 0;
+            mult_name = 0;
+            
+        elseif single_or_multiple==2 % three stimuli
+            [tmp1,name1,tmp2,name2,tmp3,name3]=get_the_ostimuli(tmp,gamma,srgb_flag);
+            mult_tmp = [tmp1 tmp2 tmp3];
+            mult_name = [name1 name2 name3];
+            devlog('Estimul multiple');
+        else
+            devlog('Error: variable image.single_or_multiple out of range [1,2]',4);
+        end
+    %dynamic case
+    else 
+        ttmp = tmp;
+        newtmp = zeros(size(ttmp,4));
+        for t=1:size(ttmp,4)
+            newtmp(:,:,:,t) = general_NCZLd_setstimulus_back(ttmp(:,:,:,t),0,single_or_multiple,gamma,srgb_flag); %x,y,channel,time
         end
     end
 

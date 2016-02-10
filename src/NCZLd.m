@@ -50,7 +50,7 @@ end
 %%% copy n_membr times %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
-img_out = dyncopy(opp_out,struct.zli.n_membr);
+img_out = dyncopy(opp_out,struct.zli.n_membr); %img_out = opp_out
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -68,7 +68,7 @@ NCZLd_store_results(img, img_out, struct);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if struct.compute.dynamic==0
-    img_out = NCZLd_static_computeframesmean(img_out , struct.zli.n_membr,struct.image.n_frames_promig);
+    img_out = static_computeframesmean(img_out , struct.zli.n_membr,struct.zli.n_frames_promig);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -166,21 +166,28 @@ function [opp_out] = NCZLd_CORE_NOHDR(img,opp,channel_type,struct)
     
     
     for i=1:3
-        im=double(opp(:,:,i,:)); %! duplicitat aqui
+        im=double(opp(:,:,i)); %! duplicitat aqui
+
+        if(struct.compute.parallel_channel==1)
+             job = NCZLd_createjob(struct.compute.jobmanager, struct.compute.dir); %create job
+             
+             task = NCZLd_CORE_PARALLEL(job,im, i,channel_type, struct); %task created (not use itm,recall results afterwards)
+
+             
+        else
+             out = NCZLd_CORE_ITERATIVE(im, i,channel_type, struct);
+             opp_out(:,:,i,:) = out;
+
+        end
     end
     
-    if(struct.compute.parallel_channel==1)
-         job = NCZLd_createjob(struct.compute.jobmanager, struct.compute.dir); %create job
-         for i=1:3
-            task = NCZLd_CORE_PARALLEL(job,im, i,channel_type, struct); %task created (not use itm,recall results afterwards)
-         end
-         [opp_out] = NCZLd_copyresults_parallel(job,struct); %recall job results
-    else
-        for i=1:3
-            [opp_out] = NCZLd_CORE_ITERATIVE(im, i,channel_type, struct);
-        end
-        
-    end
+     for i=1:3
+             if(struct.compute.parallel_channel==1) 
+                 out = NCZLd_copyresults_parallel(job,i,struct); %recall job results
+                 opp_out(:,:,i,:) = out;
+             end
+     end
+     
     
 end
 
@@ -191,44 +198,25 @@ end
 
 function [opp_out] = NCZLd_CORE_ITERATIVE(im,channel, channel_type, struct)
     %opp_out(:,:,channel,:)=NCZLd_channel_v1_0(im,struct,channel_type{channel});
-        opp_out(:,:,channel,:)=NCZLd_channel_v1_0Xim(im,struct,channel_type{channel});
+        opp_out=NCZLd_channel_v1_0Xim(im,struct,channel_type{channel}); %x,y,time
 end
 
-function [opp_out] = NCZLd_copyresults_parallel(job,struct)
+function [opp_out] = NCZLd_copyresults_parallel(job,ch_it,struct)
     
     if(struct.compute.parallel_channel==1)
         submit(job);
         get(job,'Tasks')
         waitForState(job, 'finished');
-        for i=1:3
-            job.Tasks(i).ErrorMessage;
-        end
+        job.Tasks(ch_it).ErrorMessage;
         out = getAllOutputArguments(job);
-        opp_out=zeros(size(img,1),size(img,2),3,struct.zli.n_membr); % process channels separetely, preallocate mem
-        for i=1:3
-           opp_out(:,:,i,:)=out{i};
-        end
+        %opp_out=zeros(size(img,1),size(img,2),3,struct.zli.n_membr); % process channels separetely, preallocate mem
+        opp_out=out{ch_it};
         destroy(job);
     end
 end
 
 %---
 
-
-
-
-function [img_out] = NCZLd_static_computeframesmean(img_in, n_membr, n_frames_promig)
-    % take the mean (see Li, 1999)
-
-	ff_ini=n_membr-n_frames_promig+1;
-	ff_fin=n_membr;
-	
-	kk=mean(img_in(:,:,:,ff_ini:ff_fin),4);
-	%img_out=zeros(size(kk));
-	img_out=kk;
-end
-
-%---
 
 function [] = NCZLd_plot_results(img, img_out, struct)
 

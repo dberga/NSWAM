@@ -27,6 +27,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
  
+[struct.wave.n_orient] = calc_norient(img_in,struct.wave.multires,struct.wave.n_scales,struct.zli.n_membr);
     
 [curv, w, c, Ls] = NCZLd_channel_DWTdispatcher(img_in,  struct.compute.dynamic, struct.wave.multires,struct.wave.n_scales, struct.zli.n_membr);
 
@@ -35,29 +36,17 @@ end
 %[mean_orig] = NCZLd_channel_DWTdispatcher_residualmean(curv,struct.wave.fin_scale,struct.wave.n_scales,struct.zli.n_membr); %not used
 
 
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% display dwt (curv) %%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+devlog(['saving omega...']);
 
+%display_tmatrix_channel(curv,'omega',channel,struct);
+%store_matrix_givenparams(curv,'omega',struct);
 
-NCZLd_channel_display_afterdwt(img_in,curv,struct);
-
-%%%%%%%%%%%%DISPLAY EACH FRAME
-%figs_out = NCZLd_channel_display_example_per_time(curv,1,struct.zli.n_membr,struct.wave.ini_scale,struct.wave.fin_scale,1,3,channel);
-%for ff=1:struct.zli.n_membr
-%    NCZLd_channel_figure_display(figs_out(ff),'jpg',struct.compute.outputstr,'curv','',channel,int2str(ff));
-%end
-
-%%%%%%%%%%%%DISPLAY ONLY MEAN OF FRAMES (option1=all frames, option2=1 to half, option3=half to end)
-%tcurv = NCZLd_channel_tmean_image(curv,1,struct.zli.n_membr,struct.wave.ini_scale,struct.wave.fin_scale,1,3);
-%tcurv = NCZLd_channel_tmean_image(curv,1,floor(struct.zli.n_membr/2),struct.wave.ini_scale,struct.wave.fin_scale,1,3);
-%tcurv = NCZLd_channel_tmean_image(curv,ceil(struct.zli.n_membr/2),struct.zli.n_membr,struct.wave.ini_scale,struct.wave.fin_scale,1,3);
-%fig_out = NCZLd_channel_display_texample(tcurv,struct.wave.ini_scale,struct.wave.fin_scale,1,3,channel);
-%NCZLd_channel_figure_display(fig_out,'jpg',struct.compute.outputstr,'curv','',channel);
-
+curv_meanized = tmatrix_to_matrix(curv,struct,1);
+display_matrix_channel(curv_meanized,'omega',channel,struct);
+store_matrix_givenparams(curv,'omega_meanized',struct);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% here is the CORE of the process -> NCZLd_channel_ON_OFF_v1_1 %%%%
@@ -71,24 +60,18 @@ tic
 toc
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%   display iFactor (output of model)   %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+devlog(['saving iFactor...']);
 
-%%%%%%%%%%%%DISPLAY EACH FRAME
-%figs_out = NCZLd_channel_display_example_per_time(iFactor,1,struct.zli.n_membr,struct.wave.ini_scale,struct.wave.fin_scale,1,3,channel);
-%for ff=1:struct.zli.n_membr
-%    NCZLd_channel_figure_display(figs_out(ff),'jpg',struct.compute.outputstr,struct.image.single,'',channel,int2str(ff));
-%end
+display_tmatrix_channel(iFactor,'iFactor',channel,struct);
+store_matrix_givenparams(iFactor,'iFactor',struct);
 
-%%%%%%%%%%%%DISPLAY ONLY MEAN OF FRAMES (option1=all frames, option2=1 to half, option3=half to end)
-%tiFactor = NCZLd_channel_tmean_image(iFactor,1,struct.zli.n_membr,struct.wave.ini_scale,struct.wave.fin_scale,1,3);
-%tiFactor = NCZLd_channel_tmean_image(iFactor,1,floor(struct.zli.n_membr/2),struct.wave.ini_scale,struct.wave.fin_scale,1,3);
-%tiFactor = NCZLd_channel_tmean_image(iFactor,ceil(struct.zli.n_membr/2),n_membr,struct.wave.ini_scale,struct.wave.fin_scale,1,3);
-%fig_out = NCZLd_channel_display_texample(tiFactor,struct.wave.ini_scale,struct.wave.fin_scale,1,3,channel);
-%NCZLd_channel_figure_display(fig_out,'jpg',struct.compute.outputstr,struct.image.single,'',channel);
+iFactor_meanized = tmatrix_to_matrix(iFactor,struct,1);
+display_matrix_channel(iFactor_meanized,'iFactor',channel,struct);
+store_matrix_givenparams(iFactor_meanized,'iFactor_meanized',struct);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%   calc and apply eCSF   %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -106,36 +89,21 @@ toc
 
  NCZLd_channel_store_aftereCSF(eCSF,curv,channel,struct);
 
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%   display eCSF (output of eCSF) and curv_final (output of eCSF*iFactor)   %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%   display eCSF (output of eCSF)   %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-%%%%%%%%%%%%DISPLAY EACH FRAME (eCSF)
-%figs_out = NCZLd_channel_display_example_per_time(eCSF,1,struct.zli.n_membr,struct.wave.ini_scale,struct.wave.fin_scale,1,3,channel);
-%for ff=1:struct.zli.n_membr
-%    NCZLd_channel_figure_display(figs_out(ff),'jpg',struct.compute.outputstr,struct.image.single,'',channel,int2str(ff));
-%end
 
-%%%%%%%%%%%%DISPLAY ONLY MEAN OF FRAMES (option1=all frames, option2=1 to half, option3=half to end)
-%teCSF = NCZLd_channel_tmean_image(eCSF,1,struct.zli.n_membr,struct.wave.ini_scale,struct.wave.fin_scale,1,3);
-%teCSF = NCZLd_channel_tmean_image(eCSF,1,floor(struct.zli.n_membr/2),struct.wave.ini_scale,struct.wave.fin_scale,1,3);
-%teCSF = NCZLd_channel_tmean_image(eCSF,ceil(struct.zli.n_membr/2),struct.zli.n_membr,struct.wave.ini_scale,struct.wave.fin_scale,1,3);
-%fig_out = NCZLd_channel_display_texample(teCSF,struct.wave.ini_scale,struct.wave.fin_scale,1,3,channel);
-%NCZLd_channel_figure_display(fig_out,'jpg',struct.compute.outputstr,'eCSF','',channel);
+devlog(['saving eCSF...']);
 
-%%%%%%%%%%%%DISPLAY EACH FRAME (curv_final)
-%figs_out = NCZLd_channel_display_example_per_time(curv_final,1,struct.zli.n_membr,struct.wave.ini_scale,struct.wave.fin_scale,1,3,channel);
-%for ff=1:struct.zli.n_membr
-%    NCZLd_channel_figure_display(figs_out(ff),'jpg',struct.compute.outputstr,'curv_final','',channel,int2str(ff));
-%end
+display_tmatrix_channel(eCSF,'eCSF',channel,struct);
+store_matrix_givenparams(eCSF,'eCSF',struct);
 
-%%%%%%%%%%%%DISPLAY ONLY MEAN OF FRAMES (option1=all frames, option2=1 to half, option3=half to end)
-%tcurv_final = NCZLd_channel_tmean_image(curv_final,1,struct.zli.n_membr,struct.wave.ini_scale,struct.wave.fin_scale,1,3);
-%tcurv_final = NCZLd_channel_tmean_image(curv_final,1,floor(struct.zli.n_membr/2),struct.wave.ini_scale,struct.wave.fin_scale,1,3);
-%tcurv_final = NCZLd_channel_tmean_image(curv_final,ceil(struct.zli.n_membr/2),struct.zli.n_membr,struct.wave.ini_scale,struct.wave.fin_scale,1,3);
-%fig_out = NCZLd_channel_display_texample(tcurv_final,struct.wave.ini_scale,struct.wave.fin_scale,1,3,channel);
-%NCZLd_channel_figure_display(fig_out,'jpg',struct.compute.outputstr,'curv_final','',channel);
+eCSF_meanized = tmatrix_to_matrix(eCSF,struct,1);
+display_matrix_channel(eCSF_meanized,'eCSF',channel,struct);
+store_matrix_givenparams(eCSF_meanized,'eCSF_meanized',struct);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -143,37 +111,40 @@ toc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-[curv_final] = NCZLd_channel_outputfromcsf(curv_final, iFactor, eCSF ,struct.zli.n_membr,struct.wave.fin_scale,struct.compute.output_from_csf);
-[curv_final] = NCZLd_channel_outputfromresidu(curv_final, struct.zli.n_membr, struct.wave.fin_scale, struct.compute.output_from_residu);
 
+[curv_final] = NCZLd_channel_outputfromcsf(curv_final, curv, iFactor, eCSF ,struct.zli.n_membr,struct.wave.fin_scale,struct.compute.output_from_csf);
+[curv_final] = NCZLd_channel_outputfromresidu(curv_final, struct.zli.n_membr, struct.wave.n_scales, struct.compute.output_from_residu);
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%   display curv_final (output of [iFactor],[eCSF] or [eCSF*iFactor])   %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+devlog(['saving curv_final...']);
+
+display_tmatrix_channel(curv_final,'curv_final',channel,struct);
+store_matrix_givenparams(curv_final,'curv_final',struct);
+
+curv_final_meanized = tmatrix_to_matrix(curv_final,struct,1);
+display_matrix_channel(curv_final_meanized,'curv_final',channel,struct);
+store_matrix_givenparams(curv_final_meanized,'curv_final_meanized',struct);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% INVERSE wavelet decomposition %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[img_out] = NCZLd_channel_IDWTdispatcher(curv_final,img_in,struct.wave.ini_scale,struct.wave.fin_scale,struct.wave.fin_scale,struct.zli.n_membr,struct.wave.multires,w,c,Ls);
-
+[img_out] = NCZLd_channel_IDWTdispatcher(curv_final,img_in,struct.wave.ini_scale,struct.wave.fin_scale,struct.wave.n_scales,struct.zli.n_membr,struct.wave.multires,w,c,Ls);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%   display image_out (IDWT of curv_final   %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-NCZLd_channel_display_out(curv_final,iFactor,img_in,img_out,struct);
+devlog(['saving img_out...']);
 
+display_imatrix_channel(img_out,'img_out',channel,struct);
+store_matrix_givenparams(img_out,'img_out',struct);
 
-% for ff=1:struct.zli.n_membr
-%     %disp(uint8(img_out(:,:,ff)));
-%     fig_out = imshow(uint8(img_out(:,:,ff)));
-%     %figs_out(ff) = fig_out;
-%     NCZLd_channel_figure_display(fig_out,'jpg',struct.compute.outputstr,['imgout_t(' int2str(ff) ')'],'',channel,int2str(ff));
-%     
-% end
-
-%timgout = NCZLd_channel_gettemporalMean2(img_out,1,struct.zli.n_membr);
-%timgout = NCZLd_channel_gettemporalMean2(img_out,1,floor(struct.zli.n_membr/2));
-%timgout = NCZLd_channel_gettemporalMean2(img_out,ceil(struct.zli.n_membr/2),struct.zli.n_membr);
-%fig_out = imshow(uint8(timgout(:,:)));
-%NCZLd_channel_figure_display(fig_out,'jpg',struct.compute.outputstr,'img_out_','',channel);
 
 
 
@@ -200,7 +171,37 @@ function [cond img_out] = NCZLd_channel_discriminateuniform(img_in)
 
 end
 
-function [curv w c Ls] = NCZLd_channel_DWTdispatcher(img, stimulus_type, method,n_scales, n_membr)
+function [n_orient] = calc_norient(img,method,n_scales,n_membr)
+    switch (method)
+       case 'curv'
+           for ff=1:n_membr
+                c = fdct_wrapping(img(:,:,ff),1,1,n_scales);
+                n_orient = zeros(n_scales);
+                for s=1:n_scales
+                    n_orient(s)=size(c{s},2);
+                end
+           end
+           
+       case 'a_trous'
+           n_orient = 3;
+       case 'a_trous_contrast'
+           n_orient = 3;
+       case 'wav'
+           n_orient = 3;
+       case 'wav_contrast'
+           n_orient = 3;
+       case 'gabor'
+           n_orient = 4;
+       case 'gabor_HMAX'
+           n_orient = 4;
+        otherwise 
+            n_orient = 3;
+       
+    end
+       
+end
+
+function [curv w c Ls] = NCZLd_channel_DWTdispatcher(img, stimulus_type, method,n_scales ,n_membr)
 
     w = 0; %output of wavelets
     c = 0; %output of every method
@@ -432,48 +433,6 @@ end
 function [eCSF] = NCZLd_channel_calceCSF(iFactor,curv,n_scales,ini_scale,fin_scale,n_membr,channel, nu_0, csf_params)
 
 
-% e-CSF Xim calculated using iFactorMig
-% eCSF=cell([n_scales,1]);
-% iFactorMig = calcular_iFactorMig(iFactor, zli.n_membr, fin_scale-ini_scale+1, size(curv{1}{1},2));
-% for scale=ini_scale:fin_scale
-% 	n_orient=size(curv{1}{scale},2);
-% 	for o=1:n_orient
-% 		%Calculem la eCSF
-% 		eCSF{scale}{o}=generate_csf(iFactorMig{scale}{o}, scale,zli.nu_0, channel, 'Xavier');
-% 		for ff=1:n_membr
-% 			%Apliquem la eCSF
-% 			curv_final{ff}{scale}{o}=curv{ff}{scale}{o}.*eCSF{scale}{o}*1.0;
-% 
-% 			%NO apliquem la eCSF
-% 			%curv_final{ff}{scale}{o}=curv{ff}{scale}{o}.*iFactorMig{scale}{o}*1.5;
-% 		end
-% 	end
-% end
-
-%% eCSF Xim calculated using iFactor i aplicant la eCSFMitja
-%eCSF=cell([zli.n_membr,n_scales,1]);
-%for scale=ini_scale:fin_scale
-%       n_orient=size(curv{1}{scale},2);
-%       for o=1:n_orient
-%               for ff=1:n_membr
-%			%Calculem la eCSF
-%			eCSF{ff}{scale}{o}=generate_csf(iFactor{ff}{scale}{o}, scale,zli.nu_0, channel, 'Xavier');
-%               end
-%	end
-%end
-%% Calculem la eCSFMitja
-%eCSFMitja = calcular_eCSFMitja(eCSF, zli.n_membr, fin_scale-ini_scale+1, size(curv{1}{1},2));
-%for ff=1:n_membr
-%	for scale=ini_scale:fin_scale
-%		n_orient=size(curv{1}{scale},2);
-%		for o=1:n_orient
-%			%Apliquem la eCSFMitja
-%			curv_final{ff}{scale}{o}=curv{ff}{scale}{o}.*eCSFMitja{scale}{o}*1.0;
-%		end
-%	end
-%end
-
-
     % e-CSF (experimental part, no modification by default)
     eCSF=cell([n_membr,n_scales,1]);
     for ff=1:n_membr
@@ -521,14 +480,14 @@ save([struct.compute.outputstr '' struct.image.name '_eCSF' channel 'nstripes' n
 
 end
 
-function [curv_final] = NCZLd_channel_outputfromcsf(curv_final, iFactor, eCSF ,n_membr,n_scales,option)
-
+function [curv_final] = NCZLd_channel_outputfromcsf(curv_final,curv, iFactor, eCSF ,n_membr,n_scales,option)
+    
     switch option
          case 'model'
             curv_final = iFactor; %nothing
          case 'eCSF'
              for ff=1:n_membr 
-                eCSF{ff}{n_scales}{1} = curv_final{ff}{n_scales}{1}; %copy residu to eCSF
+                eCSF{ff}{n_scales}{1} = curv{ff}{n_scales}{1}; %copy residu to eCSF
              end
              curv_final = eCSF; %alpha
 
@@ -539,12 +498,13 @@ function [curv_final] = NCZLd_channel_outputfromcsf(curv_final, iFactor, eCSF ,n
 end
 
 
-function [curv_final] = NCZLd_channel_outputfromresidu(curv_final, n_membr, n_scales, option)
-
+function [curv_final] = NCZLd_channel_outputfromresidu(curv_final_in, n_membr, n_scales, option)
+    curv_final = curv_final_in;
+    
     switch option
     case 0 %residu a zero
          for ff=1:n_membr
-            curv_final{ff}{n_scales}{1} = 0; %zeros(size(curv_final{ff}{n_scales}{1})); 
+            curv_final{ff}{n_scales}{1} = 0;  %; zeros(size(curv_final{ff}{n_scales}{1}))
          end
     case 1 %conserva residu
         %do nothing
@@ -637,122 +597,6 @@ end
 end
 
 
-function [figure_disp] = NCZLd_channel_display_example(image,frame,sinit,sfinal,oinit,ofinal,channel)
-    
-
-        figure_disp = figure;
-        
-        count = 0;
-        for s=sinit:sfinal
-            for o=oinit:ofinal
-                count = count +1;
-                
-                
-                subplot(length(sinit:sfinal),length(oinit:ofinal),count), subimage(image{frame}{s}{o}(:,:));
-                title([channel '_t(' int2str(frame)  ')']);
-                xlabel(['scale=' int2str(s)]);
-                ylabel(['orientation' int2str(o)]);
-                
-                
-            end
-        end
-        
-        
-        
-end
-
-
-
-    
-function [figure_disp] = NCZLd_channel_display_example_per_time(image,tinit,tfinal,sinit,sfinal,oinit,ofinal,channel)
-    if(nargin < 8 )
-        channel = 'channel';
-    end
-    
-    
-    for ff=tinit:tfinal
-        figure_disp(ff) = NCZLd_channel_display_example(image,ff,sinit,sfinal,oinit,ofinal,channel);
-    end
-
-end
-
-    
-function [tempMean] = NCZLd_channel_gettemporalMean(image,tinit,tfinal,s,o) 
-    
-
-    framesum = zeros(size(image{tinit}{s}{o}(:,:)));
-    nframes = length(tinit:tfinal);
-    
-    for ff=tinit:tfinal
-        framesum(:,:) = framesum(:,:) + image{ff}{s}{o}(:,:);    
-    end
-    tempMean(:,:) = framesum(:,:) ./ nframes;
-    
-end
-
-    
-function [tempMean] = NCZLd_channel_gettemporalMean2(image,tinit,tfinal) 
-    
-
-    framesum = zeros(size(image(:,:,tinit)));
-    nframes = length(tinit:tfinal);
-    
-    for ff=tinit:tfinal
-        framesum(:,:) = framesum(:,:) + image(:,:,ff);    
-    end
-    tempMean(:,:) = framesum(:,:) ./ nframes;
-    
-end
-
-
-function [meanized_image] = NCZLd_channel_tmean_image(image,tinit,tfinal,sinit,sfinal,oinit,ofinal) 
-
-        meanized_image = image;
-        
-       for s=sinit:sfinal
-            for o=oinit:ofinal
-                meanized_image{s}{o} = NCZLd_channel_gettemporalMean(image,tinit,tfinal,s,o);
-            end
-       end
-       
-       
-
-end
-
-
-
-function [figure_disp] = NCZLd_channel_display_texample(image,sinit,sfinal,oinit,ofinal,channel)
-    
-
-        figure_disp = figure;
-        
-        count = 0;
-        for s=sinit:sfinal
-            for o=oinit:ofinal
-                count = count +1;
-                
-                
-                subplot(length(sinit:sfinal),length(oinit:ofinal),count), subimage(image{s}{o}(:,:));
-                title([channel '_t(mean)']);
-                xlabel(['scale=' int2str(s)]);
-                ylabel(['orientation' int2str(o)]);
-                
-                
-            end
-        end
-        
-end
-
-
-
-function [] = NCZLd_channel_figure_display(figin,format,output_folder,output_prefix,output_suffix,channel,frame)
-    if(nargin < 7)
-        frame = 'mean';
-    end
-    
-    saveas(figin,[output_folder output_prefix '_' channel '_t(' frame ')' '_' output_suffix '.' format]);
-    
-end
 
 
 

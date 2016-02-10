@@ -50,9 +50,9 @@ channel = double(channel);
 [w wc]  = DWT(channel,wlev);
 
 %figure;
-%allZctr = cell([wlev 3]);
-%allws = cell([wlev 3]);
-%allalpha = cell([wlev 3]);
+allZctr = cell([wlev 3]);
+allws = cell([wlev 3]);
+allalpha = cell([wlev 3]);
 
 % for each scale:
 for s = 1:wlev
@@ -61,20 +61,18 @@ for s = 1:wlev
            
     	% retrieve wavelet plane:
         ws = w{s,1}(:,:,orientation);
-        %allws{s}{orientation} = ws;
+        allws{s}{orientation} = ws;
         
-        %subplot(wlev,3,orientation*s), subimage(ws);
-        %imshow(ws);
+        
         
     	% calculate center-surround responses:
         Zctr = relative_contrast(ws,orientation, window_sizes);
-        %allZctr{s}{orientation} = Zctr;
-        
+        allZctr{s}{orientation} = Zctr;
         
         
         % return alpha values:
         alpha = generate_csf(Zctr, s, nu_0, mode);
-        %allalpha{s}{orientation} = alpha;
+        allalpha{s}{orientation} = alpha;
         
         % save alpha value:
         wp{s,1}(:,:,orientation) = alpha;
@@ -89,12 +87,14 @@ end
 % reconstruct the image using inverse wavelet transform:
 rec = IDWT(wp,wc,size(channel,2),size(channel,1));
 
-%[figure_disp] = SWAM_channel_display_texample(allZctr,1,wlev,1,3,mode);
-%SWAM_channel_figure_display(figure_disp,'jpg','output/','Zctr','',mode);
-%[figure_disp] = SWAM_channel_display_texample(allws,1,wlev,1,3,mode);
-%SWAM_channel_figure_display(figure_disp,'jpg','output/','ws','',mode);
-%[figure_disp] = SWAM_channel_display_texample(allalpha,1,wlev,1,3,mode);
-%SWAM_channel_figure_display(figure_disp,'jpg','output/','alpha','',mode);
+%%%display
+[figure_ws] = displayfig_s_o(allws,1,wlev,1,3);
+writefig_matrix(figure_ws,'ws_swam','libs/SWAM_for_distro/output_figs','',['_channel(' mode ')' ],'jpg');
+[figure_zctr] = displayfig_s_o(allZctr,1,wlev,1,3);
+writefig_matrix(figure_zctr,'zctr_swam','libs/SWAM_for_distro/output_figs','',['_channel(' mode ')' ],'jpg');
+[figure_alpha] = displayfig_s_o(allalpha,1,wlev,1,3);
+writefig_matrix(figure_alpha,'alpha_swam','libs/SWAM_for_distro/output_figs','',['_channel(' mode  ')' ],'jpg');
+
 
  
 % normalization:

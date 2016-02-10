@@ -31,6 +31,11 @@
 14. NCZLd_channel: erased duplicated redefinition of struct.wave.fin_scale, now in NCZLd
 15. executa: added saliency procedure on saliency_naila. executa executes saliency for SWAM and NCZLd
 
+------v3 version 3
 
-
+1. model_utils/tmatrix_to_matrix: functions for meanizing portions of matrix on time
+2. load_store/display_functions: functions for displaying matrixes on scale, orientation...
+3. load_store/store_functions: functions for storing and matrixes on scale, orientation...
+4. erased whitening function (tmp-128)*0.75+128 ...
+5. added functionality for using color opponents
 
