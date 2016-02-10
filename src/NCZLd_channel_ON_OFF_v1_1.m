@@ -20,7 +20,7 @@ normal_output=zli.normal_output;
 % n_iter=zli.niter;
 n_membr=zli.n_membr;
 ON_OFF=zli.ON_OFF;
-nu_0=zli.nu_0;
+nu_0=struct.csfparams.nu_0;
 % struct.
 plot_wavelet_planes=display_plot.plot_wavelet_planes;
 % struct.compute
@@ -175,39 +175,40 @@ for ff=1:n_membr
 			end
 end
 
-% save raw values for all
-if struct.display_plot.store==1
-   % save([struct.compute.outputstr '' image.name '_curv' channel '.mat'],'curv');
-   % save([struct.compute.outputstr '' image.name '_curv_final' channel '.mat'],'curv_final');
-   save([struct.compute.outputstr '' image.name '_curv_final_out' channel 'nstripes' num2str(struct.image.nstripes) '.mat'],'curv_final_out');
-    switch(ON_OFF)
-        case 0
-          %  save([struct.compute.outputstr '' image.name '_curv_ON' channel '.mat'],'curv_ON');
-          %  save([struct.compute.outputstr '' image.name '_curv_OFF' channel '.mat'],'curv_OFF');
-          %  save([struct.compute.outputstr '' image.name '_curv_ON_final' channel '.mat'],'curv_ON_final');
-          %  save([struct.compute.outputstr '' image.name '_curv_OFF_final' channel '.mat'],'curv_OFF_final');
-            save([struct.compute.outputstr '' image.name '_iFactor_ON' channel 'nstripes' num2str(struct.image.nstripes) '.mat'],'iFactor_ON');
-            save([struct.compute.outputstr '' image.name '_iFactor_OFF' channel 'nstripes' num2str(struct.image.nstripes) '.mat'],'iFactor_OFF');
-            save([struct.compute.outputstr '' image.name '_iFactor' channel 'nstripes' num2str(struct.image.nstripes) '.mat'],'iFactor');
-          %  save([struct.compute.outputstr '' image.name '_INH_ON' channel '.mat'],'gy_final_ON');
-          %  save([struct.compute.outputstr '' image.name '_INH_OFF' channel '.mat'],'gy_final_OFF');
-          %  save([struct.compute.outputstr '' image.name '_INH_ALL' channel '.mat'],'gy_final_ALL');
-        case 1
-          %  save([struct.compute.outputstr '' image.name '_iFactor' channel '.mat'],'iFactor');
-        case 2
-          %  save([struct.compute.outputstr '' image.name '_iFactor' channel '.mat'],'iFactor');
-    end
-end
+%curv = {t}(fil,col,s,o)
+%curv_final = {t}(fil,col,s,o)
+%curv_final_out = {t}{s}{o}(fil,col)
+%curv_ON = {t}(fil,col,s,o)
+%curv_OFF = {t}(fil,col,s,o)
+%curv_ON_final = {t}(fil,col,s,o)
+%curv_OFF_final = {t}(fil,col,s,o)
+%iFactor_ON = {t}(fil,col,s,o)
+%iFactor_OFF = {t}(fil,col,s,o)
+%iFactor =  {t}(fil,col,s,o)
+%gy_final_ON =  {t}(fil,col,s,o)
+%gy_final_OFF =  {t}(fil,col,s,o)
+%gy_final_ALL =  {t traspuesto - se accede igual}(fil,col,s,o)
 
-% display for debuging
-if plot_wavelet_planes==1
-    figure;
-    subplot(1,3,1),imagesc(curv{n_iter}{scale}{orient});colormap('gray');
-    subplot(1,3,2),imagesc(iFactor(:,:,n_iter),[0 1]); colormap('gray');
-    subplot(1,3,3),imagesc(curv_final{n_iter}{orient});colormap('gray');
-    %      subplot(1,3,2),imagesc(generate_csf(curv_final{ff}{orient},scale,zli.nu_0,'intensity'));colormap('gray');
-    %     subplot(1,3,3),imagesc(curv{n_iter}{scale}{orient}.*generate_csf(curv_final{ff}{orient},scale,zli.nu_0,'intensity'));colormap('gray')*0.5;
-end
+
+store_matrix_givenparams_channel(gy_final_ON,'gy_final_ON',channel,struct);
+store_matrix_givenparams_channel(gy_final_OFF,'gy_final_OFF',channel,struct);
+store_matrix_givenparams_channel(gy_final_ALL,'gy_final_ALL',channel,struct);
+
+r_gy_final_ON = redim_t_s_o(gy_final_ON);
+r_gy_final_ON_meanized = tmatrix_to_matrix(r_gy_final_ON,struct,1);
+r_gy_final_OFF = redim_t_s_o(gy_final_OFF);
+r_gy_final_OFF_meanized = tmatrix_to_matrix(r_gy_final_OFF,struct,1);
+%r_gy_final_ALL = redim_t_s_o(gy_final_ALL);
+%r_gy_final_ALL_meanized = tmatrix_to_matrix(r_gy_final_ALL,struct,1);
+
+display_tmatrix_channel(r_gy_final_ON,'gy_final_ON',channel,struct);
+display_tmatrix_channel(r_gy_final_OFF,'gy_final_OFF',channel,struct);
+%display_tmatrix_channel(gy_final_ALL,'gy_final_ALL',channel,struct);
+display_matrix_channel(r_gy_final_ON_meanized,'gy_final_ON_meanized',channel,struct);
+display_matrix_channel(r_gy_final_OFF_meanized,'gy_final_OFF_meanized',channel,struct);
+%display_matrix_channel(r_gy_final_ALL_meanized,'gy_final_ALL_meanized',channel,struct);
+
+
 
 
 end

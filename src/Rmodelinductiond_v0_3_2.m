@@ -699,7 +699,7 @@ toc
 % 		gy_final{t_membr}=newgy(y);
 
 end  % end t_membr=1:t_membr
-	
+
 
 for i=1:n_membr   % change format
  	gx_final_2=gx_final{i}(:,:,:,2);
@@ -716,16 +716,47 @@ for i=1:n_membr   % change format
     end
 end
 
-save([struct.compute.outputstr '' image.name 'gx_final_per_iter_' type '_' channel '.mat'], 'gx_final_per_iter', '-v7.3');
 
-gx_final_per_membr = cell(n_iter);
-for i=1:n_iter
-    gx_final_per_membr{i}=zeros(M,N,n_scales,K);
+
+
+
+
+
+
+if struct.display_plot.store == 1
+    %save([struct.compute.outputstr_mats '' image.name 'gx_final_per_iter_' type '_' channel '.mat'], 'gx_final_per_iter', '-v7.3');
+
+    gx_final_per_membr = cell(n_iter);
+    for i=1:n_iter
+        gx_final_per_membr{i}=zeros(M,N,n_scales,K);
+    end
+    for i=1:n_membr
+        gx_final_per_membr = gx_final_per_iter{i};
+        %save([struct.compute.outputstr_mats '' image.name 'gx_final_per_membr_' type '_' channel '_Tmem' num2str(i) '.mat'], 'gx_final_per_membr');
+    end
 end
-for i=1:n_membr
-    gx_final_per_membr = gx_final_per_iter{i};
-    save([struct.compute.outputstr '' image.name 'gx_final_per_membr_' type '_' channel '_Tmem' num2str(i) '.mat'], 'gx_final_per_membr');
-end
+
+
+%Delta=zli.Delta*ones(1,n_scales);
+%diam=2*Delta+1;
+%M=size(Iitheta{1},1);
+%N=size(Iitheta{1},2);
+
+%all_J =  {t}(diam(s),diam(s),1,K,K)
+%all_J_fft =  {t}(M+2*Delta(s),N+2*Delta(s),1,K,K)
+%all_W =  {t}(diam(s),diam(s),1,K,K)
+%all_W_fft =  {s}(M+2*Delta(s),N+2*Delta(s),1,K,K)
+%gx_final =  {t}(fil,col,s,o)
+%gx_final_per_iter =  {t}{iter}(fil,col,s,o)
+%gy_final =  {t}(fil,col,s,o)
+
+
+store_matrix_givenparams_channel(all_J,'all_J',channel,struct);
+store_matrix_givenparams_channel(all_J,'all_J_fft',channel,struct);
+store_matrix_givenparams_channel(all_J,'all_W',channel,struct);
+store_matrix_givenparams_channel(all_J,'all_J',channel,struct);
+store_matrix_givenparams_channel(all_J,'all_W_fft',channel,struct);
+
 end
 
 

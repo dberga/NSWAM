@@ -16,7 +16,7 @@ devlog('Ha entrat a la funcio NCZLd_channel_v1_0Xim');
 %%%%% discriminate if image is uniform %%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[cond, img_out] = NCZLd_channel_discriminateuniform(img_in); %! duplicitat, s'hauria de fer a NCZLd
+[cond, img_out] = NCZLd_channel_discriminateuniform(img_in,struct.zli.n_membr); %! duplicitat, s'hauria de fer a NCZLd
 if cond==true
     return;
 end
@@ -27,7 +27,6 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
  
-[struct.wave.n_orient] = calc_norient(img_in,struct.wave.multires,struct.wave.n_scales,struct.zli.n_membr);
     
 [curv, w, c, Ls] = NCZLd_channel_DWTdispatcher(img_in,  struct.compute.dynamic, struct.wave.multires,struct.wave.n_scales, struct.zli.n_membr);
 
@@ -37,16 +36,24 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% store struct %%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% display dwt (curv) %%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-devlog(['saving omega...']);
+
 
 %display_tmatrix_channel(curv,'omega',channel,struct);
-%store_matrix_givenparams(curv,'omega',struct);
+%store_matrix_givenparams_channel(curv,'omega',channel,struct);
 
 curv_meanized = tmatrix_to_matrix(curv,struct,1);
 display_matrix_channel(curv_meanized,'omega',channel,struct);
-store_matrix_givenparams(curv,'omega_meanized',struct);
+store_matrix_givenparams_channel(curv,'omega_meanized',channel,struct);
+
+
+store_matrix_givenparams_channel(c,'residual',channel,struct);
+store_matrix_givenparams_channel(Ls,'Ls',channel,struct);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% here is the CORE of the process -> NCZLd_channel_ON_OFF_v1_1 %%%%
@@ -64,14 +71,14 @@ toc
 %%%%%%%%%%%%%%%%%%%%%   display iFactor (output of model)   %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-devlog(['saving iFactor...']);
+
 
 display_tmatrix_channel(iFactor,'iFactor',channel,struct);
-store_matrix_givenparams(iFactor,'iFactor',struct);
+store_matrix_givenparams_channel(iFactor,'iFactor',channel,struct);
 
 iFactor_meanized = tmatrix_to_matrix(iFactor,struct,1);
 display_matrix_channel(iFactor_meanized,'iFactor',channel,struct);
-store_matrix_givenparams(iFactor_meanized,'iFactor_meanized',struct);
+store_matrix_givenparams_channel(iFactor_meanized,'iFactor_meanized',channel,struct);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%   calc and apply eCSF   %%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -82,12 +89,10 @@ store_matrix_givenparams(iFactor_meanized,'iFactor_meanized',struct);
 
 
 
-[eCSF] = NCZLd_channel_calceCSF(iFactor,curv,struct.wave.n_scales,struct.wave.ini_scale,struct.wave.fin_scale,struct.zli.n_membr,channel, struct.zli.nu_0, struct.wave.csf_params);
+[eCSF] = NCZLd_channel_calceCSF(iFactor,curv,struct.wave.n_scales,struct.wave.ini_scale,struct.wave.fin_scale,struct.zli.n_membr,channel, struct.csfparams.nu_0, struct.csfparams.params_intensity,struct.csfparams.params_chromatic);
 [curv_final] = NCZLd_channel_applyeCSF(eCSF,curv_final,struct.wave.ini_scale,struct.wave.fin_scale,struct.zli.n_membr);
 
 
-
- NCZLd_channel_store_aftereCSF(eCSF,curv,channel,struct);
 
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -96,14 +101,14 @@ store_matrix_givenparams(iFactor_meanized,'iFactor_meanized',struct);
 
 
 
-devlog(['saving eCSF...']);
+
 
 display_tmatrix_channel(eCSF,'eCSF',channel,struct);
-store_matrix_givenparams(eCSF,'eCSF',struct);
+store_matrix_givenparams_channel(eCSF,'eCSF',channel,struct);
 
 eCSF_meanized = tmatrix_to_matrix(eCSF,struct,1);
 display_matrix_channel(eCSF_meanized,'eCSF',channel,struct);
-store_matrix_givenparams(eCSF_meanized,'eCSF_meanized',struct);
+store_matrix_givenparams_channel(eCSF_meanized,'eCSF_meanized',channel,struct);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -121,14 +126,14 @@ store_matrix_givenparams(eCSF_meanized,'eCSF_meanized',struct);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-devlog(['saving curv_final...']);
+
 
 display_tmatrix_channel(curv_final,'curv_final',channel,struct);
-store_matrix_givenparams(curv_final,'curv_final',struct);
+store_matrix_givenparams_channel(curv_final,'curv_final',channel,struct);
 
 curv_final_meanized = tmatrix_to_matrix(curv_final,struct,1);
 display_matrix_channel(curv_final_meanized,'curv_final',channel,struct);
-store_matrix_givenparams(curv_final_meanized,'curv_final_meanized',struct);
+store_matrix_givenparams_channel(curv_final_meanized,'curv_final_meanized', channel,struct);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% INVERSE wavelet decomposition %%%
@@ -140,10 +145,10 @@ store_matrix_givenparams(curv_final_meanized,'curv_final_meanized',struct);
 %%%%%%%%%%%%%%%%%%%%%   display image_out (IDWT of curv_final   %%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-devlog(['saving img_out...']);
+
 
 display_imatrix_channel(uint8(normalize_map(img_out)),'img_out',channel,struct);
-store_matrix_givenparams(img_out,'img_out',struct);
+store_matrix_givenparams_channel(img_out,'img_out',channel,struct);
 
 
 
@@ -153,9 +158,15 @@ end
 
 
 
-function [cond img_out] = NCZLd_channel_discriminateuniform(img_in)
+function [cond img_out] = NCZLd_channel_discriminateuniform(img_in, n_membr)
     
-    img_out=img_in;
+    
+    img_out = zeros([size(img_in) n_membr]);
+    for i=1:n_membr
+            img_out(:,:,i) = img_in;
+    end
+    
+    
     
     % trivial case (if the image is uniform we do not process it!)
     if max(img_in(:))==min(img_in(:))    
@@ -171,35 +182,6 @@ function [cond img_out] = NCZLd_channel_discriminateuniform(img_in)
 
 end
 
-function [n_orient] = calc_norient(img,method,n_scales,n_membr)
-    switch (method)
-       case 'curv'
-           for ff=1:n_membr
-                c = fdct_wrapping(img(:,:,ff),1,1,n_scales);
-                n_orient = zeros(n_scales);
-                for s=1:n_scales
-                    n_orient(s)=size(c{s},2);
-                end
-           end
-           
-       case 'a_trous'
-           n_orient = 3;
-       case 'a_trous_contrast'
-           n_orient = 3;
-       case 'wav'
-           n_orient = 3;
-       case 'wav_contrast'
-           n_orient = 3;
-       case 'gabor'
-           n_orient = 4;
-       case 'gabor_HMAX'
-           n_orient = 4;
-        otherwise 
-            n_orient = 3;
-       
-    end
-       
-end
 
 function [curv w c Ls] = NCZLd_channel_DWTdispatcher(img, stimulus_type, method,n_scales ,n_membr)
 
@@ -376,7 +358,7 @@ function [iFactor curv_final] = NCZLd_channel_dispatcher(curv,struct,channel)
         else % no parallel
             % [curvtmp_final,iFactortmp]=Rmodelinductiond_v0_3_2(curv_tmp,struct);
 
-            curv_final=NCZLd_channel_ON_OFF_v1_1(curv,struct,channel);
+            [curv_final, curv_ON_final, curv_OFF_final, iFactor_ON, iFactor_OFF] =NCZLd_channel_ON_OFF_v1_1(curv,struct,channel);
             iFactor=curv_final;
         %     load([image.name '_iFactor' channel 'nstripes' num2str(struct.image.nstripes) '.mat']);
         % 	curv_final = iFactor;
@@ -430,7 +412,7 @@ function [iFactor curv_final] = NCZLd_copyresults_parallel(job,struct)
 end
 
 
-function [eCSF] = NCZLd_channel_calceCSF(iFactor,curv,n_scales,ini_scale,fin_scale,n_membr,channel, nu_0, csf_params)
+function [eCSF] = NCZLd_channel_calceCSF(iFactor,curv,n_scales,ini_scale,fin_scale,n_membr,channel, nu_0, csf_params_intensity, csf_params_chromatic)
 
 
     % e-CSF (experimental part, no modification by default)
@@ -441,7 +423,7 @@ function [eCSF] = NCZLd_channel_calceCSF(iFactor,curv,n_scales,ini_scale,fin_sca
             for o=1:n_orient
     %             		curv_final{ff}{scale}{i}=curv_final{ff}{scale}{i};
     % 	      		eCSF{ff}{scale}{o}=generate_csf(iFactor{ff}{scale}{o}(:,:), scale,zli.nu_0,'intensity');
-                eCSF{ff}{scale}{o}=generate_csf(iFactor{ff}{scale}{o}(:,:), scale,nu_0,channel,csf_params);
+                eCSF{ff}{scale}{o}=generate_csf_givenparams(iFactor{ff}{scale}{o}(:,:), scale,nu_0,channel,csf_params_intensity,csf_params_chromatic);
                 
                 
                 
@@ -455,7 +437,6 @@ function [eCSF] = NCZLd_channel_calceCSF(iFactor,curv,n_scales,ini_scale,fin_sca
 
 
 end
-
 
 function [curv_final] = NCZLd_channel_applyeCSF(eCSF,curv,ini_scale,fin_scale,n_membr)
     
@@ -474,11 +455,6 @@ function [curv_final] = NCZLd_channel_applyeCSF(eCSF,curv,ini_scale,fin_scale,n_
     
 end
 
-function [] = NCZLd_channel_store_aftereCSF(eCSF,curv,channel,struct)
-    
-save([struct.compute.outputstr '' struct.image.name '_eCSF' channel 'nstripes' num2str(struct.image.nstripes) '.mat'],'eCSF');
-
-end
 
 function [curv_final] = NCZLd_channel_outputfromcsf(curv_final,curv, iFactor, eCSF ,n_membr,n_scales,option)
     
@@ -522,7 +498,8 @@ function [img_out] = NCZLd_channel_IDWTdispatcher(curv_final,img_in,ini_scale,fi
     % inverse transform
 
     % prepare output image
-    img_out=zeros(size(img_in,1),size(img_in,2),fin_scale-ini_scale+1);
+    %img_out=zeros(size(img_in,1),size(img_in,2),fin_scale-ini_scale+1);
+    img_out=zeros(size(img_in,1),size(img_in,2),n_membr);
     %img_out=zeros([size(img_in) n_membr]);
     %img_out=zeros(size(img_in));
 

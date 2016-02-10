@@ -38,7 +38,7 @@ devlog(strcat('Nstripes in Model Neurodynamic: ',num2str(strct.image.nstripes)))
 
 [tmp mult_tmp mult_name] = general_NCZLd_setstimulus(tmp,strct.compute.dynamic,strct.image.single_or_multiple,strct.image.gamma,strct.image.srgb_flag); %set to opponents
 
-[strct.image.name] = general_NCZLd_setstimulusname(strct);
+[strct.image.name] = strct.image.single;
           
 
 
@@ -147,12 +147,7 @@ function [newtmp mult_tmp mult_name] = general_NCZLd_setstimulus_back(tmp,stimul
 
 end
 
-function [image_name] = general_NCZLd_setstimulusname(strct)
-    % new (9.14.12): name of the output (and main parameters made explicit in the name)
-    image_name=strcat(strct.image.single,'_min_freq_',strct.wave.nmida_min,'_epsilon_',strct.zli.nepsilon,...
-                                 '_kappay_',strct.zli.nkappay,'_normal_output_',strct.zli.nnormal_output);
-    % image.name = strrep(image.name, '.', '_');               
-end
+
 
 function [img img_out] = general_NCZLd_dispatcher(strct, tmp, mult_tmp )
     
@@ -265,9 +260,9 @@ function [] = general_NCZLd_storeSINGLE(img, img_out, strct,n)
         str_di2=num2str(strct.zli.dedi(2,2,n)); 
         str_de3=num2str(strct.zli.dedi(1,3,n)); 
         str_di3=num2str(strct.zli.dedi(2,3,n)); 
-        imageoutname=strcat(strct.image.name,'_',str_delta,'_',str_n,'sc1','_',str_de1,'_',str_di1,...
-                                '_','sc2','_',str_de2,'_',str_di2,'_','sc3','_',str_de3,'_',str_di3);
-        save([strct.compute.outputstr '' imageoutname],'img_out');
+        %imageoutname=strcat(strct.image.name,'_',str_delta,'_',str_n,'sc1','_',str_de1,'_',str_di1,...
+        %                        '_','sc2','_',str_de2,'_',str_di2,'_','sc3','_',str_de3,'_',str_di3);
+        %save([strct.compute.outputstr '' imageoutname],'img_out');
     end
 end
 
@@ -332,7 +327,7 @@ end
 
 function [] = general_NCZLd_storeSINGLE_dyn(img, img_out, strct,n)
             % store/ don't store
-            strct.display_plot.store=1;      % always store in the dynamical case
+            %strct.display_plot.store=1;      % always store in the dynamical case
      		if display_plot.store==1
      			save([struct.compute.outputstr '' 'img'],'img')
      			save([struct.compute.outputstr '' 'img_out'],'img_out')

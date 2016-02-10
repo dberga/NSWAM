@@ -44,5 +44,15 @@
 
 
 1. added metrics file in libs
+2. fixed error on using uniform image (ex. image that has no red or green, has zeros, so that do no process but not crash)
+3. metrics with reading file lists, outputting scores, means of scores and stds for each method
+4. removed libs "CiWAM", "SWAM_for_distro", these are now outside this framework
+
+------v5 version 5
+
+1. implemented for output as specified extension (mat, jpg, png...)
+2. storing mats for each channel
+3. general storing procedure for Rmodelinduction and channel_ON_OFF files
+4. implemented recall and file utils (RF to img_out, img_out to smap), which allows to read mats and do reconstruction of images, then converting to smaps
 
 

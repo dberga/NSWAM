@@ -20,6 +20,8 @@ if(struct.wave.n_scales==0)
     [struct.wave.n_scales struct.wave.ini_scale struct.wave.fin_scale]= NCZLd_calcscales(img, struct.wave.ini_scale, struct.wave.fin_scale_offset, struct.wave.mida_min, struct.wave.multires); % calculate number of scales (n_scales) automatically
 end
 
+[struct.wave.n_orient] = calc_norient(img,struct.wave.multires,struct.wave.n_scales,struct.zli.n_membr);
+
 
 %-------------------------------------------------------
 
@@ -46,6 +48,7 @@ end
 
 [opp_out] =NCZLd_dispatcher(img, opp,struct);
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%
 %%% copy n_membr times %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -61,7 +64,7 @@ NCZLd_plot_results(img, img_out, struct);
 
 NCZLd_store_results(img, img_out, struct);
 
-
+store_matrix_givenparams(struct,'struct',struct);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Static case - compute mean of frames (that was copied n_membr times) %%%%%%
@@ -70,6 +73,8 @@ NCZLd_store_results(img, img_out, struct);
 if struct.compute.dynamic==0
     img_out = static_computeframesmean(img_out , struct.zli.n_membr,struct.zli.n_frames_promig);
 end
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% END - TOC! %%%%%%
@@ -237,6 +242,35 @@ end
 
 
 
+function [n_orient] = calc_norient(img,method,n_scales,n_membr)
+    switch (method)
+       case 'curv'
+           for ff=1:n_membr
+                c = fdct_wrapping(img(:,:,ff),1,1,n_scales);
+                n_orient = zeros(n_scales);
+                for s=1:n_scales
+                    n_orient(s)=size(c{s},2);
+                end
+           end
+           
+       case 'a_trous'
+           n_orient = 3;
+       case 'a_trous_contrast'
+           n_orient = 3;
+       case 'wav'
+           n_orient = 3;
+       case 'wav_contrast'
+           n_orient = 3;
+       case 'gabor'
+           n_orient = 4;
+       case 'gabor_HMAX'
+           n_orient = 4;
+        otherwise 
+            n_orient = 3;
+       
+    end
+       
+end
 
 
 

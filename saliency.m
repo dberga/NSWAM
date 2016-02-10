@@ -1,41 +1,26 @@
 
 function [] = saliency(input_image,image_name)
 
+
 %set output parameters
-output_folder = 'output_imgs';
-output_image = ['s' image_name];
-experiment_name =  image_name;
+output_prefix = 's';
+output_folder = ['output/' 'output_imgs'];
+output_folder_mats = ['output/' 'output_mats'];
+output_extension = '.png';
+image_name_noext = remove_extension(image_name);
+output_image = [output_prefix image_name_noext];
+experiment_name =  image_name_noext;
 
 
 %apply neurodynamical model, obtain inverse tranform of iFactors
 [imgin,imgout] = general_NCZLdXim(input_image,experiment_name);
 
-%normalize each color channel
-normalized_color_smap = zeros(size(imgout));
-for op=1:3 %for each opponent channel, normalize
-  normalized_color_smap(:,:,op) = normalize_channel(imgout(:,:,op));
-end
+%no need to compute smap, done in recall
+%fmap = rec_to_smap(imgout);       
+%writeout(fmap,output_image,output_folder,output_extension);
 
-
-
-%combine channels and normalize final map
-smap = channelcombine(normalized_color_smap);
-normalized_smap = normalize_map(smap);
-fmap = normalized_smap;
-fmap = uint8(fmap);
-
-%plot output
-    %figure; 
-    %subplot(1,2,1); imshow(uint8(imgin)); 
-    %subplot(1,2,2); imshow(fmap); 
-    %imagesc(fmap);
-        %colormap('gray');
-
-        
-
-%write output image on output folder
-imwrite(fmap,[output_folder '/' output_image]);
-
+%reads eCSF and iFactor from outputted .mats and computes the IDWT, mean in time, normalization ... 
+recall(image_name_noext); 
 
 end
 

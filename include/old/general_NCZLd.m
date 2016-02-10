@@ -340,8 +340,9 @@ if compute.dynamic==0 % static
                         str_di2=num2str(zli.dedi(2,2,n)); 
                         str_de3=num2str(zli.dedi(1,3,n)); 
                         str_di3=num2str(zli.dedi(2,3,n)); 
-                        imageoutname=strcat(name,'_',str_delta,'_',str_n,'sc1','_',str_de1,'_',str_di1,...
-                                                '_','sc2','_',str_de2,'_',str_di2,'_','sc3','_',str_de3,'_',str_di3);
+                        %imageoutname=strcat(name,'_',str_delta,'_',str_n,'sc1','_',str_de1,'_',str_di1,...
+                        %                        '_','sc2','_',str_de2,'_',str_di2,'_','sc3','_',str_de3,'_',str_di3);
+                        
                         % plot
 %                        figure('Name',imageoutname)
                             subplot(3,1,1),imshow(uint8(img));h=title('Visual stimulus');set(h,'FontSize',16);

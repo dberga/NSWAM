@@ -11,9 +11,10 @@ function [strct]=get_default_parameters_NCZLd()
     
 [compute] = get_default_parameters_compute_NCZLd();
 [image] = get_default_parameters_image_NCZLd();
+[csfparams] = get_default_parameters_csf_NCZLd();
 [display_plot] = get_default_parameters_display_plot_NCZLd();
 
-strct=struct('zli',zli,'wave',wave,'image',image,'display_plot',display_plot,'compute',compute);
+strct=struct('zli',zli,'wave',wave,'csfparams',csfparams,'image',image,'display_plot',display_plot,'compute',compute);
 % strct=struct('zli',zli,'wave',wave,'image',image,'compute',comp);
     
 
@@ -50,12 +51,76 @@ function [wave] = get_default_parameters_wave_NCZLd()
     % (see below zli.fin_scale_offset parameter in order to include or not residual plane)
     wave.mida_min=32; wave.nmida_min = num2str(wave.mida_min);
 
-    %wave.csf_params = 'exemple';
-    wave.csf_params = 'Xavier';
+   
+
 
 
 end
 
+function [csfparams] = get_default_parameters_csf_NCZLd()
+    csfparams.nu_0 =4;		% central visual frequency (maximum of the CSF) (default = 3 or 4) %last used= 2.357
+    
+    csfparams.profile = 'exemple';
+    %csfparams.profile = 'Xavier';
+    
+    
+    if strcmp(csfparams.profile,'Xavier')
+            params_intensity.fOffsetMax=0.;
+            params_intensity.fContrastMaxMax=1;
+            params_intensity.fContrastMaxMin=0.;
+            params_intensity.fSigmaMax1=1.25;
+            params_intensity.fSigmaMax2=1.25;
+            params_intensity.fContrastMinMax=1.;
+            params_intensity.fContrastMinMin=1.;
+            params_intensity.fSigmaMin1=2;
+            params_intensity.fSigmaMin2=1.;
+            params_intensity.fOffsetMin=2;
+
+            params_chromatic.fOffsetMax=1;
+            params_chromatic.fContrastMaxMax=2;
+            params_chromatic.fContrastMaxMin=0.;
+            params_chromatic.fSigmaMax1= 2;
+            params_chromatic.fSigmaMax2=1.25;
+            params_chromatic.fContrastMinMax=1.;
+            params_chromatic.fContrastMinMin=1.;
+            params_chromatic.fSigmaMin1=2;
+            params_chromatic.fSigmaMin2=2;
+            params_chromatic.fOffsetMin=2;
+
+    else
+            params_intensity.fOffsetMax=0.;
+            params_intensity.fContrastMaxMax=4.981624;
+            params_intensity.fContrastMaxMin=0.;
+            params_intensity.fSigmaMax1=1.021035;
+            params_intensity.fSigmaMax2=1.048155;
+            params_intensity.fContrastMinMax=1.;
+            params_intensity.fContrastMinMin=1.;
+            params_intensity.fSigmaMin1=0.212226;
+            params_intensity.fSigmaMin2=2.;
+            params_intensity.fOffsetMin=0.530974;
+            
+            params_chromatic.fOffsetMax=0.724440;
+            params_chromatic.fContrastMaxMax=3.611746;
+            params_chromatic.fContrastMaxMin=0.;
+            params_chromatic.fSigmaMax1= 1.360638;
+            params_chromatic.fSigmaMax2=0.796124;
+            params_chromatic.fContrastMinMax=1.;
+            params_chromatic.fContrastMinMin=1.;
+            params_chromatic.fSigmaMin1=0.348766;
+            params_chromatic.fSigmaMin2=0.348766;
+            params_chromatic.fOffsetMin=1.059210;
+
+    end
+    
+    csfparams.params_intensity = params_intensity;
+    csfparams.params_chromatic = params_chromatic;
+    
+    
+    % wave.csf_params = 'exemple';
+    %wave.csf_params = 'Xavier';
+    % zli.nu_0 =4;		% central visual frequency (maximum of the CSF) (default = 3 or 4) %last used= 2.357
+
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%% Z.Li's model parameters %%%%%%%%%
@@ -114,7 +179,6 @@ function [zli] = get_default_parameters_zli_NCZLd()
     zli.Delta=15;								% maximum radius of the area of influence
 
     zli.ON_OFF=0;	% 0: separate, 1: abs, 2:square
-    zli.nu_0=2.357;		% central visual frequency (maximum of the CSF) (default = 3)
 
     zli.boundary='mirror';  % or 'wrap'
 
@@ -142,6 +206,9 @@ function [zli] = get_default_parameters_zli_NCZLd()
     zli.scale_interaction=1; %yes,no
     zli.orient_interaction=1; %yes,no
 		
+    
+    
+   
 
 end
 
@@ -153,9 +220,9 @@ function [compute] = get_default_parameters_compute_NCZLd()
 
     % Directory to work
     compute.outputstr = 'output/'; %fullfile(pwd,'.','output');
-    compute.outputstr_imgs = 'output_imgs'; %fullfile(pwd,'.','output');
-    compute.outputstr_figs = 'output_figs'; %fullfile(pwd,'.','output');
-    compute.outputstr_mats = 'output_mats'; %fullfile(pwd,'.','output');
+    compute.outputstr_imgs = [compute.outputstr 'output_imgs']; %fullfile(pwd,'.','output');
+    compute.outputstr_figs = [compute.outputstr 'output_figs']; %fullfile(pwd,'.','output');
+    compute.outputstr_mats = [compute.outputstr 'output_mats']; %fullfile(pwd,'.','output');
     compute.inputstr = 'input/'; %fullfile(pwd,'.','input');
     compute.dir={'/home/cic/xcerda/Neurodinamic','/home/cic/xcerda/Neurodinamic/stimuli'};
     % Jobmanager
@@ -252,9 +319,11 @@ function [display_plot] = get_default_parameters_display_plot_NCZLd()
     display_plot.plot_io=0;  % plot input/output (default 1)
     display_plot.reduce=0;   % 0 all (9)/ 1 reduced (useless if single_or_multiple=1) (default 0)
     display_plot.plot_wavelet_planes=0;  % display wavelet coefficients (default 0)
-    display_plot.store=1;    % 0 don't store/ 1 store curv, iFactor and more... (default 1)
     display_plot.store_img_img_out=1;   % 0 don't save/ 1 save img and img_out
-
+    
+    display_plot.store=1;    % 0 don't store/ 1 store curv, iFactor and more... (default 1)
+    display_plot.savefigs=1;  % save stored values for iFactor, omega ...
+    
     % White effect
     % display_plot.y_video=128/256;
     % display_plot.x_video=92/256;

@@ -6,6 +6,7 @@ function [figures_out] = displayfig_tgivenparams(matrix_in,struct)
         orientation_ini = 1;
         orientation_fin = struct.wave.n_orient;
         
+        
         figures_out = displayfig_t_s_o(matrix_in, time_ini, time_fin, scale_ini, scale_fin, orientation_ini, orientation_fin);
 
 
