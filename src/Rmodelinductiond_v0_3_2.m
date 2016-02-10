@@ -32,6 +32,9 @@ var_noise=0.1*2;
 % zli.ON_OFF=0; % 0: separate, 1: abs, 2:square
 % zli.nu_0=2;
 
+zli.Delta = round(zli.Delta / zli.reduccio_JW);
+
+
 % Delta
 Delta=zeros(n_scales);
 switch (wave.multires)
@@ -311,6 +314,7 @@ end
 if XOP_DEBUG
 	veure_J_W(all_J,all_W,K);
 end
+
 	
 for s=1:n_scales
 	
@@ -585,8 +589,9 @@ for t_membr=1:n_membr  % membrane time
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 		% infleunce of the neighboring spatial frequencies
-		
-        disp('WARNING: scales interact!!!!!!')
+		if XOP_DEBUG
+            disp('WARNING: scales interact!!!!!!');
+        end
         
 		x_ee=convolucio_optima(x_ee,scale_filter,0,0);
 		y_ie=convolucio_optima(y_ie,scale_filter,0,0);		
@@ -598,7 +603,10 @@ for t_membr=1:n_membr  % membrane time
         % 		sum_newgx_toroidal_x=cell(n_scales,1);
 		I_norm=zeros(M,N,n_scales,K);		
 
-		disp('Compte!!!!!!! No calculem I_norm incloent les escales !!!!!');
+        if XOP_DEBUG
+            disp('Compte!!!!!!! No calculem I_norm incloent les escales !!!!!');
+        end
+        
 % 		sum_newgx_toroidal_x=cell(n_scales,1);
 % 		
 % 		for s=radius_sc+1:radius_sc+n_scales
@@ -676,6 +684,7 @@ for t_membr=1:n_membr  % membrane time
 			
 		if XOP_DEBUG
 			show_x_y(fig,x,y,I_norm,Iitheta{t_membr},n_scales);
+            
 % 			show_x_y(fig,x,x_ei,x_ee,y_ie,n_scales);
 % 			I_norm_base=I_norm_base*0; % Xavier. I_norm=0;
 

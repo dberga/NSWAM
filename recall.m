@@ -4,7 +4,7 @@
 %reads eCSF and iFactor from outputted .mats and computes the IDWT, mean in time, normalization ... 
 function [] = recall(image_name)
     
-    delete_files = 1; %delete mats after creating imgs
+    delete_files = 0; %delete mats after creating imgs
     
     
     output_folder = 'output';
@@ -38,6 +38,14 @@ function [] = recall(image_name)
     c3_residual = load(c3_residualpath); c3_residual = c3_residual.matrix_in;
     c3_Ls = load(c3_Lspath); c3_Ls = c3_Ls.matrix_in;
 
+    %residual forced to zero
+    if struct.compute.output_from_residu == 0
+	for s=1:struct.wave.n_scales-1
+		c1_residual{s} = zeros(size(c1_residual{s}));
+		c2_residual{s} = zeros(size(c2_residual{s}));
+		c3_residual{s} = zeros(size(c3_residual{s}));
+	end
+    end
       
     c1_iFactor = load(c1_iFactorpath); c1_iFactor = c1_iFactor.matrix_in;
     c2_iFactor = load(c2_iFactorpath); c2_iFactor = c2_iFactor.matrix_in;
@@ -47,8 +55,8 @@ function [] = recall(image_name)
         c1_iFactor{ff}{struct.wave.n_scales}{1} = 0;
         c2_iFactor{ff}{struct.wave.n_scales}{1} = 0;
         c3_iFactor{ff}{struct.wave.n_scales}{1} = 0;
-     end
-
+    end
+	
 	%c1_eCSFpath = [ output_folder_mats '/' image_name '_' 'eCSF' '_channel(' channels{1} ')' '.mat'];
 	%c2_eCSFpath = [ output_folder_mats '/' image_name '_' 'eCSF' '_channel(' channels{2} ')' '.mat'];
 	%c3_eCSFpath = [ output_folder_mats '/' image_name '_' 'eCSF' '_channel(' channels{3} ')' '.mat'];
@@ -68,29 +76,13 @@ function [] = recall(image_name)
         c3_eCSF{ff}{struct.wave.n_scales}{1} = 0;
      end
     
-    c1_iFactor_rec = RF_to_rec_channel(c1_iFactor,c1_residual,c1_Ls,struct);
-    c2_iFactor_rec = RF_to_rec_channel(c2_iFactor,c2_residual,c2_Ls,struct);
-    c3_iFactor_rec = RF_to_rec_channel(c3_iFactor,c3_residual,c3_Ls,struct);
-    iFactor_rec(:,:,1,:) = c1_iFactor_rec;
-    iFactor_rec(:,:,2,:) = c2_iFactor_rec;
-    iFactor_rec(:,:,3,:) = c3_iFactor_rec;
-    iFactor_recmean = static_computeframesmean(iFactor_rec,struct.zli.n_membr,struct.zli.n_frames_promig);
-    %iFactor_recmean = get_the_ostimulus(iFactor_recmean,struct.image.gamma,struct.image.srgb_flag);
-    
-    smap_iFactor = rec_to_smap(iFactor_recmean,struct.compute.smethod);
+    smap_iFactor = RF_to_smap(c1_iFactor,c1_residual,c1_Ls,c2_iFactor,c2_residual,c2_Ls,c3_iFactor,c3_residual,c3_Ls,struct);
+
     imwrite(smap_iFactor,[output_folder_imgs '/' 'iFactor_' output_image]);
     
-    
-    c1_eCSF_rec = RF_to_rec_channel(c1_eCSF,c1_residual,c1_Ls,struct);
-    c2_eCSF_rec = RF_to_rec_channel(c2_eCSF,c2_residual,c2_Ls,struct);
-    c3_eCSF_rec = RF_to_rec_channel(c3_eCSF,c3_residual,c3_Ls,struct);
-    eCSF_rec(:,:,1,:) = c1_eCSF_rec;
-    eCSF_rec(:,:,2,:) = c2_eCSF_rec;
-    eCSF_rec(:,:,3,:) = c3_eCSF_rec;
-    eCSF_recmean = static_computeframesmean(eCSF_rec,struct.zli.n_membr,struct.zli.n_frames_promig);
-    % eCSF_recmean = get_the_ostimulus(eCSF_recmean,struct.image.gamma,struct.image.srgb_flag);
-     
-    smap_eCSF = rec_to_smap(eCSF_recmean,struct.compute.smethod);
+    smap_eCSF = RF_to_smap(c1_eCSF,c1_residual,c1_Ls,c2_eCSF,c2_residual,c2_Ls,c3_eCSF,c3_residual,c3_Ls,struct);
+   
+
     imwrite(smap_eCSF,[output_folder_imgs '/' 'eCSF_' output_image]);
    
 	if delete_files == 1

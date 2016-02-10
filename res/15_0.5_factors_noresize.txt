@@ -1,0 +1,25 @@
+
+scale=1
+factor_scale = 2
+d = 121
+
+scale=2
+factor_scale = 4
+d = 241
+
+scale=3
+factor_scale = 8
+d = 481
+
+scale=4
+factor_scale = 16
+d = 961
+
+scale=5
+factor_scale = 32
+d = 1921
+
+scale=6
+factor_scale = 64
+d = 3841
+

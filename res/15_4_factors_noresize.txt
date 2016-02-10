@@ -1,0 +1,125 @@
+
+o=1
+scale=1
+factor_scale = 2
+d = 17x17
+
+o=2
+scale=1
+factor_scale = 2
+d = 17x17
+
+o=3
+scale=1
+factor_scale = 2
+d = 17x17
+
+o=4
+scale=1
+factor_scale = 2
+d = 17x17
+----------
+o=1
+scale=2
+factor_scale = 4
+d = 33x33
+
+o=2
+scale=2
+factor_scale = 4
+d = 33x33
+
+o=3
+scale=2
+factor_scale = 4
+d = 33x33
+
+o=4
+scale=2
+factor_scale = 4
+d = 33x33
+
+---------
+o=1
+scale=3
+factor_scale = 8
+d = 65x65
+
+o=2
+scale=3
+factor_scale = 8
+d = 65x65
+
+o=3
+scale=3
+factor_scale = 8
+d = 65x65
+
+o=4
+scale=3
+factor_scale = 8
+d = 65x65
+
+---------
+o=1
+scale=4
+factor_scale = 16
+d = 129x129
+
+o=2
+scale=4
+factor_scale = 16
+d = 129x129
+
+o=3
+scale=4
+factor_scale = 16
+d = 129x129
+
+o=4
+scale=4
+factor_scale = 16
+d = 129x129
+
+----------
+o=1
+scale=5
+factor_scale = 32
+d = 257x257
+
+o=2
+scale=5
+factor_scale = 32
+d = 257x257
+
+o=3
+scale=5
+factor_scale = 32
+d = 257x257
+
+o=4
+scale=5
+factor_scale = 32
+d = 257x257
+
+-------
+o=1
+scale=6
+factor_scale = 64
+d = 513x513
+
+o=2
+scale=6
+factor_scale = 64
+d = 513x513
+
+o=3
+scale=6
+factor_scale = 64
+d = 513x513
+
+o=4
+scale=6
+factor_scale = 64
+d = 513x513
+

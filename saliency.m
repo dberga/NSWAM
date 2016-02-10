@@ -2,7 +2,7 @@
 function [] = saliency(input_image,image_name)
 
 %resize if necessary
-%input_image = autoresize(input_image,1);
+input_image = autoresize(input_image,2);
 
 %if image is monochromatic, copy channels
 if(size(input_image,3)<3)

@@ -34,7 +34,9 @@ d=Distance_XOP(xx/factor_scale,yy/factor_scale,zli.dist_type)*zli.reduccio_JW;
 % d=sqrt(xx.*xx+yy.*yy);
 % d=sqrt(xx.*xx+yy.*yy)*0.5; % Xavier: per tal de "ajuntar" els pixels separats per un pixel entremig
 
-
+    %disp('scale');scale
+    %disp('factor_scale');factor_scale
+    %disp('size of d'); size(d)
 
 
 theta=angle_orient(orient,multires);

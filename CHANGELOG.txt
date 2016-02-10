@@ -74,6 +74,11 @@
 3. for monochromatic images, copy channels 2 and 3 as same as 1st channel, otherwise NCZLd only computes intensity and recall fails on taking other channels
 4. do not discriminate on processing neurodynamic when image is uniform (need to recall from chromatic, chromatic2)
 
+------v9 version 9
+
+1. implemented pmax2 smethod (max on orientation and channel)
+2. residual forced to zeros (already done in the past, redone in recall code)
+3. reduccio relative to Delta (adjustable connectivity matrix factor)
 
 
 
