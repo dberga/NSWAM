@@ -2,7 +2,14 @@
 function [] = saliency(input_image,image_name)
 
 %resize if necessary
-%input_image = autoresize(input_image);
+%input_image = autoresize(input_image,1);
+
+%if image is monochromatic, copy channels
+if(size(input_image,3)<3)
+        input_image(:,:,2) = input_image(:,:,1);
+        input_image(:,:,3) = input_image(:,:,1);
+end
+
 
 %set path parameters
 output_prefix = 's';
@@ -36,7 +43,7 @@ if exist(output_recall1, 'file') && exist(output_recall2, 'file')
 	disp([image_name_noext ' already exists']);
 
 else
-	if exist(struct_path, 'file') && exist(c1_iFactorpath, 'file') && exist(c2_iFactorpath, 'file') && exist(c3_iFactorpath, 'file') exist(c1_residualpath, 'file') && exist(c2_residualpath, 'file') && exist(c3_residualpath, 'file') && exist(c1_Lspath, 'file') && exist(c2_Lspath, 'file') && exist(c3_Lspath, 'file')
+	if exist(struct_path, 'file') && exist(c1_iFactorpath, 'file') && exist(c2_iFactorpath, 'file') && exist(c3_iFactorpath, 'file') && exist(c1_residualpath, 'file') && exist(c2_residualpath, 'file') && exist(c3_residualpath, 'file') && exist(c1_Lspath, 'file') && exist(c2_Lspath, 'file') && exist(c3_Lspath, 'file')
 		%do nothing
 		disp([image_name_noext ' mats already exist, computing reconstructing image']);
 	else

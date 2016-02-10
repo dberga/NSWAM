@@ -67,6 +67,13 @@
 2. store mats correctly (only iFactor, struct, residual (c) and Ls)
 3. compute neurodynamic only if the output does not exist, computer only recall if mats exist
 
+------v8 version 8
+
+1. implemented smap for channel combination (channel opponents) of squared mean (already existing) "channelsqmean", pointwise max "channelmax" and wta channel "channelwta"
+2. fixed typo in condition before recall [") exist(" to ") && exist("]
+3. for monochromatic images, copy channels 2 and 3 as same as 1st channel, otherwise NCZLd only computes intensity and recall fails on taking other channels
+4. do not discriminate on processing neurodynamic when image is uniform (need to recall from chromatic, chromatic2)
+
 
 
 

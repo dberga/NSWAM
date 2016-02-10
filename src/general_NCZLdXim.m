@@ -14,7 +14,8 @@ clear strct struct wave zli display_plot compute
 %%%%%%%% Default parameters %%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-strct=get_default_parameters_NCZLd();
+%strct=get_default_parameters_NCZLd();
+strct=load_default_parameters_NCZLd('default_struct.mat');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%% Review nargin%%%%%%%%%%%%%%%%%%%%

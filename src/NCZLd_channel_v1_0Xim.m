@@ -17,10 +17,10 @@ devlog('Ha entrat a la funcio NCZLd_channel_v1_0Xim');
 %%%%% discriminate if image is uniform %%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[cond, img_out] = NCZLd_channel_discriminateuniform(img_in,struct.zli.n_membr); %! duplicitat, s'hauria de fer a NCZLd
-if cond==true
-    return;
-end
+%[cond, img_out] = NCZLd_channel_discriminateuniform(img_in,struct.zli.n_membr); %! duplicitat, s'hauria de fer a NCZLd
+%if cond==true
+%    return;
+%end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -383,7 +383,8 @@ function [job] = NCZLd_channel_createjob(jobmanager, dir)
         devlog('Executant els canals en paralel');
         p=dir;
 
-        jm=findResource('scheduler','type','jobmanager','Name',jobmanager,'LookupURL','localhost');
+        %jm=findResource('scheduler','type','jobmanager','Name',jobmanager,'LookupURL','localhost');
+        jm = parcluster;
         get(jm);
         job = createJob(jm);
         set(job,'FileDependencies',p)

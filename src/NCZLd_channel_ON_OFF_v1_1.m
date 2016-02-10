@@ -87,6 +87,7 @@ switch(ON_OFF)
             curv_ON_OFF{2}=curv_OFF;
             p=compute.dir;
             jm=findResource('scheduler','type','jobmanager','Name',compute.jobmanager,'LookupURL','localhost')
+            %jm = parcluster;
             get(jm)
             job = createJob(jm);
             set(job,'FileDependencies',p)

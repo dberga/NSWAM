@@ -124,6 +124,7 @@ function [job] = NCZLd_createjob(jobmanager, dir)
         p=dir;
 
         jm=findResource('scheduler','type','jobmanager','Name',jobmanager,'LookupURL','localhost');
+        %jm = parcluster;
         get(jm);
         job = createJob(jm);
         set(job,'FileDependencies',p)

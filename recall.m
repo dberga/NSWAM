@@ -4,7 +4,7 @@
 %reads eCSF and iFactor from outputted .mats and computes the IDWT, mean in time, normalization ... 
 function [] = recall(image_name)
     
-    delete_files = 0; %delete mats after creating imgs
+    delete_files = 1; %delete mats after creating imgs
     
     
     output_folder = 'output';
@@ -77,7 +77,7 @@ function [] = recall(image_name)
     iFactor_recmean = static_computeframesmean(iFactor_rec,struct.zli.n_membr,struct.zli.n_frames_promig);
     %iFactor_recmean = get_the_ostimulus(iFactor_recmean,struct.image.gamma,struct.image.srgb_flag);
     
-    smap_iFactor = rec_to_smap(iFactor_recmean);
+    smap_iFactor = rec_to_smap(iFactor_recmean,struct.compute.smethod);
     imwrite(smap_iFactor,[output_folder_imgs '/' 'iFactor_' output_image]);
     
     
@@ -90,7 +90,7 @@ function [] = recall(image_name)
     eCSF_recmean = static_computeframesmean(eCSF_rec,struct.zli.n_membr,struct.zli.n_frames_promig);
     % eCSF_recmean = get_the_ostimulus(eCSF_recmean,struct.image.gamma,struct.image.srgb_flag);
      
-    smap_eCSF = rec_to_smap(eCSF_recmean);
+    smap_eCSF = rec_to_smap(eCSF_recmean,struct.compute.smethod);
     imwrite(smap_eCSF,[output_folder_imgs '/' 'eCSF_' output_image]);
    
 	if delete_files == 1

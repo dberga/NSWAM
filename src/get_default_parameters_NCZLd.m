@@ -38,14 +38,14 @@ function [wave] = get_default_parameters_wave_NCZLd()
 
     % number of scales (if 0: code calculates it automatically)
 
-    wave.n_scales=0; 
+    wave.n_scales=0;	%auto 
     % wave.n_scales=5;
     % wave.n_scales=4; 
     wave.fin_scale_offset=1;					% last plane to process will be n_scales - fin_scale (and its size will be wave.mida_min),
                                                     % i.e. if =0 then residual will be processed (and its size will be wave.mida_min)
     wave.ini_scale=1;							% Initial scale to process: scale=1 is the highest frequency plane
-    wave.fin_scale = wave.ini_scale + wave.fin_scale_offset; %this will be changed on selecting the multires.decomp. on NCZLd
-    wave.n_orient=0; 
+    wave.fin_scale = wave.ini_scale + wave.fin_scale_offset; %auto
+    wave.n_orient=0; %auto
 
     % size of the last wavelet plane to process
     % (see below zli.fin_scale_offset parameter in order to include or not residual plane)
@@ -62,53 +62,59 @@ function [csfparams] = get_default_parameters_csf_NCZLd()
     
     csfparams.profile = 'exemple';
     %csfparams.profile = 'Xavier';
+
+    %profile1    
+    params_xavi_intensity.fOffsetMax=0.;
+    params_xavi_intensity.fContrastMaxMax=1;
+    params_xavi_intensity.fContrastMaxMin=0.;
+    params_xavi_intensity.fSigmaMax1=1.25;
+    params_xavi_intensity.fSigmaMax2=1.25;
+    params_xavi_intensity.fContrastMinMax=1.;
+    params_xavi_intensity.fContrastMinMin=1.;
+    params_xavi_intensity.fSigmaMin1=2;
+    params_xavi_intensity.fSigmaMin2=1.;
+    params_xavi_intensity.fOffsetMin=2;
+
+    params_xavi_chromatic.fOffsetMax=1;
+    params_xavi_chromatic.fContrastMaxMax=2;
+    params_xavi_chromatic.fContrastMaxMin=0.;
+    params_xavi_chromatic.fSigmaMax1= 2;
+    params_xavi_chromatic.fSigmaMax2=1.25;
+    params_xavi_chromatic.fContrastMinMax=1.;
+    params_xavi_chromatic.fContrastMinMin=1.;
+    params_xavi_chromatic.fSigmaMin1=2;
+    params_xavi_chromatic.fSigmaMin2=2;
+    params_xavi_chromatic.fOffsetMin=2;
+
+    %profile2
+    params_naila_intensity.fOffsetMax=0.;
+    params_naila_intensity.fContrastMaxMax=4.981624;
+    params_naila_intensity.fContrastMaxMin=0.;
+    params_naila_intensity.fSigmaMax1=1.021035;
+    params_naila_intensity.fSigmaMax2=1.048155;
+    params_naila_intensity.fContrastMinMax=1.;
+    params_naila_intensity.fContrastMinMin=1.;
+    params_naila_intensity.fSigmaMin1=0.212226;
+    params_naila_intensity.fSigmaMin2=2.;
+    params_naila_intensity.fOffsetMin=0.530974;
     
-    
+    params_naila_chromatic.fOffsetMax=0.724440;
+    params_naila_chromatic.fContrastMaxMax=3.611746;
+    params_naila_chromatic.fContrastMaxMin=0.;
+    params_naila_chromatic.fSigmaMax1= 1.360638;
+    params_naila_chromatic.fSigmaMax2=0.796124;
+    params_naila_chromatic.fContrastMinMax=1.;
+    params_naila_chromatic.fContrastMinMin=1.;
+    params_naila_chromatic.fSigmaMin1=0.348766;
+    params_naila_chromatic.fSigmaMin2=0.348766;
+    params_naila_chromatic.fOffsetMin=1.059210;
+
     if strcmp(csfparams.profile,'Xavier')
-            params_intensity.fOffsetMax=0.;
-            params_intensity.fContrastMaxMax=1;
-            params_intensity.fContrastMaxMin=0.;
-            params_intensity.fSigmaMax1=1.25;
-            params_intensity.fSigmaMax2=1.25;
-            params_intensity.fContrastMinMax=1.;
-            params_intensity.fContrastMinMin=1.;
-            params_intensity.fSigmaMin1=2;
-            params_intensity.fSigmaMin2=1.;
-            params_intensity.fOffsetMin=2;
-
-            params_chromatic.fOffsetMax=1;
-            params_chromatic.fContrastMaxMax=2;
-            params_chromatic.fContrastMaxMin=0.;
-            params_chromatic.fSigmaMax1= 2;
-            params_chromatic.fSigmaMax2=1.25;
-            params_chromatic.fContrastMinMax=1.;
-            params_chromatic.fContrastMinMin=1.;
-            params_chromatic.fSigmaMin1=2;
-            params_chromatic.fSigmaMin2=2;
-            params_chromatic.fOffsetMin=2;
-
+        params_intensity = params_xavi_intensity;
+	    params_chromatic = params_xavi_chromatic;
     else
-            params_intensity.fOffsetMax=0.;
-            params_intensity.fContrastMaxMax=4.981624;
-            params_intensity.fContrastMaxMin=0.;
-            params_intensity.fSigmaMax1=1.021035;
-            params_intensity.fSigmaMax2=1.048155;
-            params_intensity.fContrastMinMax=1.;
-            params_intensity.fContrastMinMin=1.;
-            params_intensity.fSigmaMin1=0.212226;
-            params_intensity.fSigmaMin2=2.;
-            params_intensity.fOffsetMin=0.530974;
-            
-            params_chromatic.fOffsetMax=0.724440;
-            params_chromatic.fContrastMaxMax=3.611746;
-            params_chromatic.fContrastMaxMin=0.;
-            params_chromatic.fSigmaMax1= 1.360638;
-            params_chromatic.fSigmaMax2=0.796124;
-            params_chromatic.fContrastMinMax=1.;
-            params_chromatic.fContrastMinMin=1.;
-            params_chromatic.fSigmaMin1=0.348766;
-            params_chromatic.fSigmaMin2=0.348766;
-            params_chromatic.fOffsetMin=1.059210;
+        params_intensity = params_naila_intensity;
+	    params_chromatic = params_naila_chromatic;
 
     end
     
