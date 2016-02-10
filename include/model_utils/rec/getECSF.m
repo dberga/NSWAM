@@ -13,10 +13,12 @@ function [eCSF] = channel_calceCSF(iFactor,n_scales,ini_scale,fin_scale,n_membr,
     eCSF=cell([n_membr,n_scales,1]);
     for ff=1:n_membr
         for scale=ini_scale:fin_scale
-            n_orient=size(iFactor{1}{scale},2);
+            n_orient=size(iFactor{ff}{scale},2);
+            eCSF{ff}{scale} = cell([n_orient,1]);
             for o=1:n_orient
     %             		curv_final{ff}{scale}{i}=curv_final{ff}{scale}{i};
     % 	      		eCSF{ff}{scale}{o}=generate_csf(iFactor{ff}{scale}{o}(:,:), scale,zli.nu_0,'intensity');
+
                 eCSF{ff}{scale}{o}=generate_csf_givenparams(iFactor{ff}{scale}{o}(:,:), scale,nu_0,channel,csf_params_intensity,csf_params_chromatic);
                 
                 

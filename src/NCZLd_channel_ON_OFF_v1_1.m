@@ -206,10 +206,12 @@ r_gy_final_OFF_meanized = tmatrix_to_matrix(r_gy_final_OFF,struct,1);
 display_tmatrix_channel(r_gy_final_ON,'gy_final_ON',channel,struct);
 display_tmatrix_channel(r_gy_final_OFF,'gy_final_OFF',channel,struct);
 %display_tmatrix_channel(gy_final_ALL,'gy_final_ALL',channel,struct);
-display_matrix_channel(r_gy_final_ON_meanized,'gy_final_ON_meanized',channel,struct);
-display_matrix_channel(r_gy_final_OFF_meanized,'gy_final_OFF_meanized',channel,struct);
-%display_matrix_channel(r_gy_final_ALL_meanized,'gy_final_ALL_meanized',channel,struct);
 
+if struct.compute.tmem_rw_res == 1
+display_matrix_channel(r_gy_final_ON_meanized,'gy_final_ON_res',channel,struct);
+display_matrix_channel(r_gy_final_OFF_meanized,'gy_final_OFF_res',channel,struct);
+%display_matrix_channel(r_gy_final_ALL_meanized,'gy_final_ALL_res',channel,struct);
+end
 
 
 

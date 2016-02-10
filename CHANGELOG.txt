@@ -81,4 +81,15 @@
 3. reduccio relative to Delta (adjustable connectivity matrix factor)
 
 
+------v10 version 10
+
+1. parametrized orgb_flag (enable or disable opponent2rgb at the end)
+2. parametrized energy_norm (enable or disable energy normalization at the end)
+3. parametrized autoresize_ds
+4. kappax and kappay relative to reduccio
+5. implemented autoresize_nd
+6. parametrized autoresize_nd
+7. parametrized tmem_res (temporal fusion using max or mean) and tmem_rw_res (temporal fusion before (1) or after (0) reconstruction - for single or for all tmem)
+8. parametrized delete_mats
+9. output subfolder is the name of the conf_struct (you can now compute several configurations)
 

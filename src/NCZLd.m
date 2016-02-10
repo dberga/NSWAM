@@ -1,4 +1,4 @@
-function [img,img_out] = NCZLd(img,struct)
+function [] = NCZLd(img,struct)
 
 % from general_NCZLd.m to NCZLd_channel_v1_0.m
 
@@ -43,36 +43,16 @@ end
         
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% NCZLd for every channel %%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-[opp_out] =NCZLd_dispatcher(img, opp,struct);
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% copy n_membr times %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%
-
-img_out = dyncopy(opp_out,struct.zli.n_membr); %img_out = opp_out
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Plot and store %%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-NCZLd_plot_results(img, img_out, struct);
-
-NCZLd_store_results(img, img_out, struct);
-
 store_matrix_givenparams(struct,'struct',struct);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% Static case - compute mean of frames (that was copied n_membr times) %%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% NCZLd for every channel %%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if struct.compute.dynamic==0
-    img_out = static_computeframesmean(img_out , struct.zli.n_membr,struct.zli.n_frames_promig);
-end
+NCZLd_dispatcher(img, opp,struct);
 
 
 
@@ -134,41 +114,28 @@ end
 
 %-----
 
-function [opp_out] =NCZLd_dispatcher(im, opp,struct)
+function [] =NCZLd_dispatcher(im, opp,struct)
     channel_type={'chromatic', 'chromatic2', 'intensity'};
     
    
     
     if struct.compute.HDR==1    %2 channels
-        [opp_out] = NCZLd_CORE_HDR(im,opp,channel_type,struct);
+        NCZLd_CORE_HDR(im,opp,channel_type,struct);
     else                        %3 channels
-        [opp_out] = NCZLd_CORE_NOHDR(im,opp,channel_type,struct);
+        NCZLd_CORE_NOHDR(im,opp,channel_type,struct);
     end
     
     
 end
 
-function [opp_out] = NCZLd_CORE_HDR(img,opp,channel_type,struct)
-     % opp_out(:,:,1:3,:)=zeros(size(opp,1),size(opp,2),3,size(opp,4));
-    opp_out=zeros(size(img,1),size(img,2),3,struct.zli.n_membr); % process channels separetely, preallocate mem
-    %opp_out = zeros([size(opp) struct.zli.n_membr]); %fixed size= optimized (preallocated speed) %4 dims: x,y,channel,time
+function [] = NCZLd_CORE_HDR(img,opp,channel_type,struct)
     
-    for i=1:2
-		if struct.compute.dynamic==0
-			for ff=1:struct.zli.n_membr
-				opp_out(:,:,i,ff)=double(opp(:,:,i)); %copy frames %!duplicitat aqui
-			end
-        end
-    end
-    im=double(opp(:,:,3,:));
-    %opp_out(:,:,3,:)=NCZLd_channel_v1_0(im,struct,channel_type{i});
-    opp_out(:,:,3,:)=NCZLd_channel_v1_0Xim(im,struct,channel_type{i}); %!algo se hace mal aqui
+    NCZLd_channel_v1_0Xim(im,struct,channel_type{2}); %!algo se hace mal aqui
 end
 
-function [opp_out] = NCZLd_CORE_NOHDR(img,opp,channel_type,struct)
+function [] = NCZLd_CORE_NOHDR(img,opp,channel_type,struct)
     
     
-    opp_out=zeros(size(img,1),size(img,2),3,struct.zli.n_membr); % process channels separetely, preallocate mem
     
     
     for i=1:3
@@ -181,16 +148,15 @@ function [opp_out] = NCZLd_CORE_NOHDR(img,opp,channel_type,struct)
 
              
         else
-             out = NCZLd_CORE_ITERATIVE(im, i,channel_type, struct);
-             opp_out(:,:,i,:) = out;
+             NCZLd_CORE_ITERATIVE(im, i,channel_type, struct);
+             
 
         end
     end
     
      for i=1:3
              if(struct.compute.parallel_channel==1) 
-                 out = NCZLd_copyresults_parallel(job,i,struct); %recall job results
-                 opp_out(:,:,i,:) = out;
+                 NCZLd_copyresults_parallel(job,i,struct); %recall job results
              end
      end
      
@@ -202,9 +168,9 @@ function [t] = NCZLd_CORE_PARALLEL(job,im, channel, channel_type, struct)
      t=createTask(job, @NCZld_channel_v1_0Xim, 1, {im,struct,channel_type{channel}});
 end
 
-function [opp_out] = NCZLd_CORE_ITERATIVE(im,channel, channel_type, struct)
+function [] = NCZLd_CORE_ITERATIVE(im,channel, channel_type, struct)
     %opp_out(:,:,channel,:)=NCZLd_channel_v1_0(im,struct,channel_type{channel});
-        opp_out=NCZLd_channel_v1_0Xim(im,struct,channel_type{channel}); %x,y,time
+        NCZLd_channel_v1_0Xim(im,struct,channel_type{channel}); %x,y,time
 end
 
 function [opp_out] = NCZLd_copyresults_parallel(job,ch_it,struct)

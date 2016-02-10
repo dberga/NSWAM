@@ -48,11 +48,12 @@ devlog('Ha entrat a la funcio NCZLd_channel_v1_0Xim');
 curv_meanized = tmatrix_to_matrix(curv,struct,1);
 display_matrix_channel(curv_meanized,'omega',channel,struct);
 
+if struct.compute.tmem_rw_res == 1
 if struct.display_plot.store_irrelevant==1
 %store_matrix_givenparams_channel(curv,'omega',channel,struct);
-store_matrix_givenparams_channel(curv,'omega_meanized',channel,struct);
+store_matrix_givenparams_channel(curv,'omega',channel,struct);
 end
-
+end
 store_matrix_givenparams_channel(c,'residual',channel,struct);
 store_matrix_givenparams_channel(Ls,'Ls',channel,struct);
 
@@ -63,7 +64,7 @@ store_matrix_givenparams_channel(Ls,'Ls',channel,struct);
 tic
 
     
-[iFactor, curv_final] = NCZLd_channel_dispatcher(curv,struct,channel);
+[iFactor] = NCZLd_channel_dispatcher(curv,struct,channel);
 
 toc
 
@@ -77,89 +78,12 @@ toc
 display_tmatrix_channel(iFactor,'iFactor',channel,struct);
 store_matrix_givenparams_channel(iFactor,'iFactor',channel,struct);
 
-iFactor_meanized = tmatrix_to_matrix(iFactor,struct,1);
-display_matrix_channel(iFactor_meanized,'iFactor',channel,struct);
-
-if struct.display_plot.store_irrelevant==1
-store_matrix_givenparams_channel(iFactor_meanized,'iFactor_meanized',channel,struct);
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%   calc and apply eCSF   %%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-
-[eCSF] = NCZLd_channel_calceCSF(iFactor,curv,struct.wave.n_scales,struct.wave.ini_scale,struct.wave.fin_scale,struct.zli.n_membr,channel, struct.csfparams.nu_0, struct.csfparams.params_intensity,struct.csfparams.params_chromatic);
-[curv_final] = NCZLd_channel_applyeCSF(eCSF,curv_final,struct.wave.ini_scale,struct.wave.fin_scale,struct.zli.n_membr);
-
-
-
- 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%   display eCSF (output of eCSF)   %%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-display_tmatrix_channel(eCSF,'eCSF',channel,struct);
-if struct.display_plot.store_irrelevant==1
-store_matrix_givenparams_channel(eCSF,'eCSF',channel,struct);
+if struct.compute.tmem_rw_res == 1
+    iFactor_meanized = tmatrix_to_matrix(iFactor,struct,1);
+    display_matrix_channel(iFactor_meanized,'iFactor_res',channel,struct);
+    store_matrix_givenparams_channel(iFactor_meanized,'iFactor',channel,struct);
 end
 
-eCSF_meanized = tmatrix_to_matrix(eCSF,struct,1);
-display_matrix_channel(eCSF_meanized,'eCSF',channel,struct);
-
-if struct.display_plot.store_irrelevant==1
-store_matrix_givenparams_channel(eCSF_meanized,'eCSF_meanized',channel,struct);
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Change curv_final for IDWT (choose iFactor, eCSF or eCSF*iFactor) %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-[curv_final] = NCZLd_channel_outputfromcsf(curv_final, curv, iFactor, eCSF ,struct.zli.n_membr,struct.wave.n_scales,struct.compute.output_from_csf);
-[curv_final] = NCZLd_channel_outputfromresidu(curv_final, struct.zli.n_membr, struct.wave.n_scales, struct.compute.output_from_residu);
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%   display curv_final (output of [iFactor],[eCSF] or [eCSF*iFactor])   %%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-display_tmatrix_channel(curv_final,'curv_final',channel,struct);
-if struct.display_plot.store_irrelevant==1
-store_matrix_givenparams_channel(curv_final,'curv_final',channel,struct);
-end
-curv_final_meanized = tmatrix_to_matrix(curv_final,struct,1);
-display_matrix_channel(curv_final_meanized,'curv_final',channel,struct);
-if struct.display_plot.store_irrelevant==1
-store_matrix_givenparams_channel(curv_final_meanized,'curv_final_meanized', channel,struct);
-end
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% INVERSE wavelet decomposition %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-[img_out] = NCZLd_channel_IDWTdispatcher(curv_final,img_in,struct.wave.ini_scale,struct.wave.fin_scale,struct.wave.n_scales,struct.zli.n_membr,struct.wave.multires,w,c,Ls);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%   display image_out (IDWT of curv_final   %%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-display_imatrix_channel(uint8(normalize_map(img_out)),'img_out',channel,struct);
-if struct.display_plot.store_irrelevant==1
-store_matrix_givenparams_channel(img_out,'img_out',channel,struct);
-end
 
 
 
@@ -341,35 +265,35 @@ function [mean_orig] = NCZLd_channel_DWTdispatcher_residualmean(curv,fin_scale,n
 end
 
 
-function [iFactor curv_final] = NCZLd_channel_prepareout(curv,n_scales,n_membr)
+function [curv_final] = NCZLd_channel_prepareout(curv,n_scales,n_membr)
 
 
 % wavelet decomposition output
 curv_final=curv;			% in order to define it with the same structure/preallocate
-iFactor=curv;               % in order to define it with the same structure/preallocate
+
 for ff=1:n_membr
     for scale=1:n_scales
-        n_orient=size(iFactor{ff}{scale},2);
+        n_orient=size(curv_final{ff}{scale},2);
         for o=1:n_orient
-            iFactor{ff}{scale}{o}(:)=1.;
+            curv_final{ff}{scale}{o}(:)=1.;
         end
     end
 end
 
 end
 
-function [iFactor curv_final] = NCZLd_channel_dispatcher(curv,struct,channel)
+function [curv_final ] = NCZLd_channel_dispatcher(curv,struct,channel)
 
         % parallel/non parallel channels
         if(struct.compute.parallel_scale==1)
             job = NCZLd_channel_createjob(struct.compute.jobmanager, struct.compute.dir);
             t=createTask(job, @NCLZd_channel_ON_OFF_v1_1, 1, {curv,struct,channel});
-            [iFactor curv_final] = NCZLd_copyresults_parallel(job,struct);
+            [curv_final] = NCZLd_copyresults_parallel(job,struct);
         else % no parallel
             % [curvtmp_final,iFactortmp]=Rmodelinductiond_v0_3_2(curv_tmp,struct);
 
             [curv_final, curv_ON_final, curv_OFF_final, iFactor_ON, iFactor_OFF] =NCZLd_channel_ON_OFF_v1_1(curv,struct,channel);
-            iFactor=curv_final;
+            
         %     load([image.name '_iFactor' channel 'nstripes' num2str(struct.image.nstripes) '.mat']);
         % 	curv_final = iFactor;
 
@@ -394,9 +318,9 @@ function [job] = NCZLd_channel_createjob(jobmanager, dir)
         
 end
 
-function [iFactor curv_final] = NCZLd_copyresults_parallel(job,struct)
+function [curv_final] = NCZLd_copyresults_parallel(job,struct)
      
-    [iFactor curv_final] = NCZLd_channel_prepareout(curv,struct.wave.n_scales,struct.zli.n_membr);
+    [curv_final] = NCZLd_channel_prepareout(curv,struct.wave.n_scales,struct.zli.n_membr);
      
     % copy results (only parallel)
     if(struct.compute.parallel_scale==1)
@@ -413,7 +337,6 @@ function [iFactor curv_final] = NCZLd_copyresults_parallel(job,struct)
     %        for orient=1:n_orient
                 for ff=1:struct.zli.n_membr
                  curv_final{ff}{scale}=out{scale-ini_scale+1}{1}{ff};
-                 iFactor{ff}{scale}=out{scale-ini_scale+1}{2}{ff};
                 end
     %        end
         end

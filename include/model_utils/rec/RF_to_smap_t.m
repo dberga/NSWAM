@@ -1,35 +1,31 @@
 
-function [smap] = RF_to_smap(c1_RF,c1_residual,c1_Ls,c2_RF,c2_residual,c2_Ls,c3_RF,c3_residual,c3_Ls,struct)
+function [smap] = RF_to_smap_t(c1_RF,c1_residual,c1_Ls,c2_RF,c2_residual,c2_Ls,c3_RF,c3_residual,c3_Ls,struct)
 
 
 if strcmp(struct.compute.smethod,'pmax2')==1
 	
 	
 	n_scales =  struct.wave.n_scales;
-	n_membr = struct.zli.n_membr;
 	%method = struct.wave.multires;
 	
 	allmax_RF = c1_RF;
 	allresidual_RF = c1_residual;
 
 
-	
-	for ff=1:n_membr
 		for s=1:n_scales-1
-		    [RFmax, RFresidual] = get_RF_max(c1_RF,c1_residual,c1_Ls,c2_RF,c2_residual,c2_Ls,c3_RF,c3_residual,c3_Ls,struct,ff,s);
-		    allmax_RF{ff}{s}{1} = RFmax;
-            allmax_RF{ff}{s}{2} = RFmax;
-            allmax_RF{ff}{s}{3} = RFmax;
+		    [RFmax, RFresidual] = get_RF_max_t(c1_RF,c1_residual,c1_Ls,c2_RF,c2_residual,c2_Ls,c3_RF,c3_residual,c3_Ls,struct,s);
+		    allmax_RF{s}{1} = RFmax;
+        	    allmax_RF{s}{2} = RFmax;
+	            allmax_RF{s}{3} = RFmax;
 		    allresidual_RF{s} = RFresidual;
 		end
-	end
-
+	
 
 	%reconstruct opponent channels (IDWT)
-    all_RF_rec = RF_to_rec_channel(allmax_RF,allresidual_RF,c1_Ls,struct);
-	RF_rec(:,:,1,:) = all_RF_rec;
-	RF_rec(:,:,2,:) = all_RF_rec;
-	RF_rec(:,:,3,:) = all_RF_rec;
+    all_RF_rec = RF_to_rec_channel_t(allmax_RF,allresidual_RF,c1_Ls,struct);
+	RF_rec(:,:,1) = all_RF_rec;
+	RF_rec(:,:,2) = all_RF_rec;
+	RF_rec(:,:,3) = all_RF_rec;
 
 	
 
@@ -40,24 +36,19 @@ if strcmp(struct.compute.smethod,'pmax2')==1
 else
 	%reconstruct opponent channels (IDWT)
 
-	c1_RF_rec = RF_to_rec_channel(c1_RF,c1_residual,c1_Ls,struct);
-	c2_RF_rec = RF_to_rec_channel(c2_RF,c2_residual,c2_Ls,struct);
-	c3_RF_rec = RF_to_rec_channel(c3_RF,c3_residual,c3_Ls,struct);
-	RF_rec(:,:,1,:) = c1_RF_rec;
-	RF_rec(:,:,2,:) = c2_RF_rec;
-	RF_rec(:,:,3,:) = c3_RF_rec;
+	c1_RF_rec = RF_to_rec_channel_t(c1_RF,c1_residual,c1_Ls,struct);
+	c2_RF_rec = RF_to_rec_channel_t(c2_RF,c2_residual,c2_Ls,struct);
+	c3_RF_rec = RF_to_rec_channel_t(c3_RF,c3_residual,c3_Ls,struct);
+	RF_rec(:,:,1) = c1_RF_rec;
+	RF_rec(:,:,2) = c2_RF_rec;
+	RF_rec(:,:,3) = c3_RF_rec;
 
 	
 
 
 end
-    %make temporal mean
-    if strcmp(struct.compute.tmem_res,'max') == 1
-        RF_recmean = static_computeframesmax(RF_rec,struct.zli.n_membr,struct.zli.n_frames_promig);
-    else
-        RF_recmean = static_computeframesmean(RF_rec,struct.zli.n_membr,struct.zli.n_frames_promig);
-    end
-    
+	   
+    RF_recmean = RF_rec;
     
     
     %from opponent to color (no)

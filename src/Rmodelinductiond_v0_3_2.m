@@ -33,6 +33,9 @@ var_noise=0.1*2;
 % zli.nu_0=2;
 
 zli.Delta = round(zli.Delta / zli.reduccio_JW);
+zli.kappax = zli.kappax/(zli.reduccio_JW*zli.reduccio_JW);
+zli.kappay = zli.kappay/(zli.reduccio_JW*zli.reduccio_JW);
+
 
 
 % Delta

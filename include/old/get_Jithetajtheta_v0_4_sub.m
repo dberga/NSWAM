@@ -138,8 +138,8 @@ J_exc=zli.kappax*J_exc/(factor_scale^2);
 W_inh=zli.kappay*W_inh/(factor_scale^2);
 
 
-sum(J_exc(:))
-sum(W_inh(:))
+%sum(J_exc(:));
+%sum(W_inh(:)); 
 
 
 end

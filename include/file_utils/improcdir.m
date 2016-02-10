@@ -1,8 +1,9 @@
 
-function [] = improcdir(process,format,mode,input_path)
+function [] = improcdir(process,format,mode,input_path,args)
 
 if(nargin < 4)
 	directory = uigetdir(pwd, 'Select a folder');           %get folder dir
+    args = [];
 else
 	directory = input_path;
 end
@@ -17,14 +18,21 @@ switch mode
         for i=1:N_files
             disp(files(i).name); %files array with names
             img = imread(files(i).name);
-            feval(process,img,files(i).name);
+            feval(process,img,files(i).name,args);
         end
     case 1
         parfor i=1:N_files
             disp(files(i).name); %files array with names
             img = imread(files(i).name);
-            feval(process,img, files(i).name);
+            feval(process,img, files(i).name,args);
         end
+    otherwise
+        for i=1:N_files
+            disp(files(i).name); %files array with names
+            img = imread(files(i).name);
+            feval(process,img,files(i).name,args);
+        end
+        
 end
 
 
