@@ -1,0 +1,14 @@
+1.changed the structure of folders from a single folder of 191 files to a folder of the following structure:
+			include/ ->include files for dependencies (color opponents, decompositions, csf, convol...)
+			libs/ ->other projects (ciwam...)
+			input/ ->input files (images or videos)
+			output/ ->output files (smaps or perc. images)
+			src/	->main model files (NCZLd ...)
+			
+2. added DWT and IDWT decomp. and inv.decomp for case of 'wav', it was missing
+3. changed output types (image or saliency) for cases of:
+	-output_from_model (case 'M' or 'M&w')
+	-output_from_csf (case 'model','eCSF' or 'model&eCSF')
+	-output_from_residu (case '1' or '0')
+
+
