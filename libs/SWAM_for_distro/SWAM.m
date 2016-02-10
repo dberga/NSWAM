@@ -18,7 +18,7 @@ opp_img = rgb2opponent(img, gamma, srgb_flag);
 
 % generate swam for each channel:
 rec(:,:,1) = SWAM_per_channel(opp_img(:,:,1),wlev,nu_0,'colour',window_sizes);
-rec(:,:,2) = SWAM_per_channel(opp_img(:,:,2),wlev,nu_0,'colour',window_sizes);
+rec(:,:,2) = SWAM_per_channel(opp_img(:,:,2),wlev,nu_0,'colour2',window_sizes);
 rec(:,:,3) = SWAM_per_channel(opp_img(:,:,3),wlev,nu_0,'intensity',window_sizes);
 
 % combine channels:
@@ -49,6 +49,11 @@ function rec = SWAM_per_channel(channel,wlev,nu_0,mode,window_sizes)
 channel = double(channel);
 [w wc]  = DWT(channel,wlev);
 
+%figure;
+%allZctr = cell([wlev 3]);
+%allws = cell([wlev 3]);
+%allalpha = cell([wlev 3]);
+
 % for each scale:
 for s = 1:wlev
     % for horizontal, vertical and diagonal orientations:
@@ -56,12 +61,20 @@ for s = 1:wlev
            
     	% retrieve wavelet plane:
         ws = w{s,1}(:,:,orientation);
-
+        %allws{s}{orientation} = ws;
+        
+        %subplot(wlev,3,orientation*s), subimage(ws);
+        %imshow(ws);
+        
     	% calculate center-surround responses:
         Zctr = relative_contrast(ws,orientation, window_sizes);
-
+        %allZctr{s}{orientation} = Zctr;
+        
+        
+        
         % return alpha values:
         alpha = generate_csf(Zctr, s, nu_0, mode);
+        %allalpha{s}{orientation} = alpha;
         
         % save alpha value:
         wp{s,1}(:,:,orientation) = alpha;
@@ -71,13 +84,29 @@ for s = 1:wlev
     wc{s,1} = zeros(size(alpha/2,1)/2,size(alpha/2,2)/2) + 1;
 end
 
+ 
+        
 % reconstruct the image using inverse wavelet transform:
 rec = IDWT(wp,wc,size(channel,2),size(channel,1));
 
+%[figure_disp] = SWAM_channel_display_texample(allZctr,1,wlev,1,3,mode);
+%SWAM_channel_figure_display(figure_disp,'jpg','output/','Zctr','',mode);
+%[figure_disp] = SWAM_channel_display_texample(allws,1,wlev,1,3,mode);
+%SWAM_channel_figure_display(figure_disp,'jpg','output/','ws','',mode);
+%[figure_disp] = SWAM_channel_display_texample(allalpha,1,wlev,1,3,mode);
+%SWAM_channel_figure_display(figure_disp,'jpg','output/','alpha','',mode);
+
+ 
 % normalization:
 if sum(rec(:)) > 0
     rec = rec./sum(rec(:));
 end
+
+%map_max = max(rec(:));
+%map_min = min(rec(:));
+%smap_channel    = floor(255*(rec - map_min)/(map_max - map_min));
+%figure_disp = imshow(uint8(smap_channel));
+%SWAM_channel_figure_display(figure_disp,'jpg','output/','nsal','',mode);
 
 end
 
@@ -132,3 +161,36 @@ r    = sigma_cen./(sigma_sur+1.e-6);
 zctr = r.^2./(1+r.^2);
 
 end
+
+
+
+
+
+function [figure_disp] = SWAM_channel_display_texample(image,sinit,sfinal,oinit,ofinal,channel)
+    
+
+        figure_disp = figure;
+        
+        count = 0;
+        for s=sinit:sfinal
+            for o=oinit:ofinal
+                count = count +1;
+                
+                
+                subplot(length(sinit:sfinal),length(oinit:ofinal),count), subimage(image{s}{o}(:,:));
+                title([channel '_t(mean)']);
+                xlabel(['scale=' int2str(s)]);
+                ylabel(['orientation' int2str(o)]);
+                
+                
+            end
+        end
+        
+end
+
+function [] =  SWAM_channel_figure_display(figin,format,output_folder,output_prefix,output_suffix,channel)
+
+    saveas(figin,[output_folder output_prefix '_' channel '_' output_suffix '.' format]);
+    
+end
+

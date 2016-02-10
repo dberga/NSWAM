@@ -1,4 +1,4 @@
-function rec = IDWT(w, c, width, height)
+function rec = Ia_trous(w, c)
 
 wlev    = length(c);
 rec   = c{wlev,1};

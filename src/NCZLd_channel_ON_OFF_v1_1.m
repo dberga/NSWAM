@@ -1,4 +1,4 @@
-function [curv_final_out, curv_ON_final, curv_OFF_final, iFactor_ON, iFactor_OFF] = NCZLd_channel_ON_OFF_v1_1(curv_in,struct,channel, nstripes)
+function [curv_final_out, curv_ON_final, curv_OFF_final, iFactor_ON, iFactor_OFF] = NCZLd_channel_ON_OFF_v1_1(curv_in,struct,channel)
 
 % from NCZLd_channel_ON_OFF_v1_1.m to Rmodelinductiond_v0_3_2.m
 
@@ -179,16 +179,16 @@ end
 if struct.display_plot.store==1
    % save([struct.compute.outputstr '' image.name '_curv' channel '.mat'],'curv');
    % save([struct.compute.outputstr '' image.name '_curv_final' channel '.mat'],'curv_final');
-   save([struct.compute.outputstr '' image.name '_curv_final_out' channel 'nstripes' num2str(nstripes) '.mat'],'curv_final_out');
+   save([struct.compute.outputstr '' image.name '_curv_final_out' channel 'nstripes' num2str(struct.image.nstripes) '.mat'],'curv_final_out');
     switch(ON_OFF)
         case 0
           %  save([struct.compute.outputstr '' image.name '_curv_ON' channel '.mat'],'curv_ON');
           %  save([struct.compute.outputstr '' image.name '_curv_OFF' channel '.mat'],'curv_OFF');
           %  save([struct.compute.outputstr '' image.name '_curv_ON_final' channel '.mat'],'curv_ON_final');
           %  save([struct.compute.outputstr '' image.name '_curv_OFF_final' channel '.mat'],'curv_OFF_final');
-            save([struct.compute.outputstr '' image.name '_iFactor_ON' channel 'nstripes' num2str(nstripes) '.mat'],'iFactor_ON');
-            save([struct.compute.outputstr '' image.name '_iFactor_OFF' channel 'nstripes' num2str(nstripes) '.mat'],'iFactor_OFF');
-            save([struct.compute.outputstr '' image.name '_iFactor' channel 'nstripes' num2str(nstripes) '.mat'],'iFactor');
+            save([struct.compute.outputstr '' image.name '_iFactor_ON' channel 'nstripes' num2str(struct.image.nstripes) '.mat'],'iFactor_ON');
+            save([struct.compute.outputstr '' image.name '_iFactor_OFF' channel 'nstripes' num2str(struct.image.nstripes) '.mat'],'iFactor_OFF');
+            save([struct.compute.outputstr '' image.name '_iFactor' channel 'nstripes' num2str(struct.image.nstripes) '.mat'],'iFactor');
           %  save([struct.compute.outputstr '' image.name '_INH_ON' channel '.mat'],'gy_final_ON');
           %  save([struct.compute.outputstr '' image.name '_INH_OFF' channel '.mat'],'gy_final_OFF');
           %  save([struct.compute.outputstr '' image.name '_INH_ALL' channel '.mat'],'gy_final_ALL');

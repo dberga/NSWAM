@@ -5,10 +5,9 @@ function [] = saliency(input_image,image_name)
 output_folder = 'output';
 output_image = ['sal_' image_name];
 experiment_name = 'image_name';
-nstripes = 0;
 
 %apply neurodynamical model, obtain inverse tranform of iFactors
-[imgin,imgout] = general_NCZLdXim(input_image,experiment_name,nstripes);
+[imgin,imgout] = general_NCZLdXim(input_image,experiment_name);
 
 %normalize each color channel
 normalized_color_smap = zeros(size(imgout));
@@ -21,17 +20,15 @@ end
 %combine channels and normalize final map
 smap = opponentcombine(normalized_color_smap);
 normalized_smap = normalize_map(smap);
-fmap = uint8(normalized_smap);
-
-disp(size(smap));
-disp(size(normalized_smap));
-disp(size(fmap));
+fmap = normalized_smap;
+fmap = uint8(fmap);
 
 %plot output
-figure; 
-subplot(1,2,1); imshow(uint8(imgin)); 
-subplot(1,2,2); imshow(fmap); 
-        %imagesc(smap);%colormap('gray');
+    %figure; 
+    %subplot(1,2,1); imshow(uint8(imgin)); 
+    %subplot(1,2,2); imshow(fmap); 
+    %imagesc(fmap);
+        %colormap('gray');
 
 %write output image on output folder
 imwrite(fmap,[output_folder '/' output_image]);

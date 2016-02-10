@@ -1,3 +1,5 @@
+-----v1 (version 1)
+
 1.changed the structure of folders from a single folder of 191 files to a folder of the following structure:
 			include/ ->include files for dependencies (color opponents, decompositions, csf, convol...)
 			libs/ ->other projects (ciwam...)
@@ -10,5 +12,25 @@
 	-output_from_model (case 'M' or 'M&w')
 	-output_from_csf (case 'model','eCSF' or 'model&eCSF')
 	-output_from_residu (case '1' or '0')
+
+-----v2 (version 2)
+
+1. general_NCZLd: overwrite of struct parameters (zli, display_plot, compute, wave...), copied/overwritten in get_default_parameters
+2. general_NCZLd: removed temporal function variables (ex. zli, display_plot ...), now usage of struct variables (less memory usage, less code)...
+3. general_NCZLd,NCZLd,NCZLd_per_channel,NCZLd_ON_OFF: nstripes parameter set on struct.image.nstripes (no usage as argument on each function)
+4. general_NCZLd: erased duplicities, functionalities inside functions 
+5. general_NCZLd: added dynamic case for general_NCZLd_setstimulus
+6. NCZLd: removed temporal function variables (ex. zli, display_plot ...), now usage of struct variables (less memory usage, less code)...
+7. NCZLd: erased duplicities, functionalities inside functions 
+... for NCZLd_channel
+9. default parameters: zli.fin_scale, zli.fin_scale_offset, zli.ini_scale changed to  wave.fin_scale, wave.fin_scale_offset, wave.ini_scale 
+10. NCZLd_channel: erased img = double(img_in), using img_in = double(img_in)
+11. NCZLd_channel: repaired variable names and values for fin_scale (equal to n_scales - offset)
+12. NCZLd_channel: added functions for making means selecting specific frames (ex. tinit=6, tfinal=10)
+13. NCZLd_channel: added functions for displaying/plotting matrixes on scale and orientation, per channel
+14. NCZLd_channel: erased duplicated redefinition of struct.wave.fin_scale, now in NCZLd
+15. executa: added saliency procedure on saliency_naila. executa executes saliency for SWAM and NCZLd
+
+
 
 
