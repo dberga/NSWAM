@@ -93,3 +93,6 @@
 8. parametrized delete_mats
 9. output subfolder is the name of the conf_struct (you can now compute several configurations)
 
+------v11 version 11
+
+1. implemented gaussian 
