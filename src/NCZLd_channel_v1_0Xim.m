@@ -107,7 +107,9 @@ end
 
 
 display_tmatrix_channel(eCSF,'eCSF',channel,struct);
+if struct.display_plot.store_irrelevant==1
 store_matrix_givenparams_channel(eCSF,'eCSF',channel,struct);
+end
 
 eCSF_meanized = tmatrix_to_matrix(eCSF,struct,1);
 display_matrix_channel(eCSF_meanized,'eCSF',channel,struct);

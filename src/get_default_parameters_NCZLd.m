@@ -321,9 +321,9 @@ function [display_plot] = get_default_parameters_display_plot_NCZLd()
     display_plot.plot_wavelet_planes=0;  % display wavelet coefficients (default 0)
     display_plot.store_img_img_out=1;   % 0 don't save/ 1 save img and img_out
     
-    display_plot.store=1;    % 0 don't store/ 1 store curv, iFactor and more... (default 1)
-    display_plot.store_irrelevant=0;    % 0 don't store irrelevant/ 1 store irrelevant params (J, W...)... (default 1)
-    display_plot.savefigs=0;  % save stored values for iFactor, omega ...
+    display_plot.store=1;    % 0 don't store/ 1 iFactor, c (residual) and Ls (from decomp) and struct [default= 1]
+    display_plot.store_irrelevant=0;    % 0 don't store irrelevant/ 1 store irrelevant params (J, W...)... (default= 1)
+    display_plot.savefigs=0;  % save figures for stored values for iFactor, omega ...
     
     
     

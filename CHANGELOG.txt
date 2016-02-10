@@ -61,4 +61,12 @@
 1. cluster scripts done
 2. added "display_plot.store_irrelevant" (it allows to store only relevant parameters, as iFactor, eCSF, residual, struct...)
 
+------v7 version 7
+
+1. resized input images is available (autoresize function)
+2. store mats correctly (only iFactor, struct, residual (c) and Ls)
+3. compute neurodynamic only if the output does not exist, computer only recall if mats exist
+
+
+
 
