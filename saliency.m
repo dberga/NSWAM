@@ -3,7 +3,7 @@ function [] = saliency(input_image,image_name)
 
 %set output parameters
 output_folder = 'output_imgs';
-output_image = ['sal_' image_name];
+output_image = ['s' image_name];
 experiment_name =  image_name;
 
 

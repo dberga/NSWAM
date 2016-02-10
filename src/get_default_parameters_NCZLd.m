@@ -50,8 +50,8 @@ function [wave] = get_default_parameters_wave_NCZLd()
     % (see below zli.fin_scale_offset parameter in order to include or not residual plane)
     wave.mida_min=32; wave.nmida_min = num2str(wave.mida_min);
 
-    wave.csf_params = 'exemple';
-    %wave.csf_params = 'Xavier';
+    %wave.csf_params = 'exemple';
+    wave.csf_params = 'Xavier';
 
 
 end
@@ -196,8 +196,8 @@ function [compute] = get_default_parameters_compute_NCZLd()
     compute.output_from_model='M';
     %compute.output_from_model='M&w'; %iFactor.*curv
 
-    compute.output_from_csf= 'model';
-    %compute.output_from_csf= 'eCSF';
+    %compute.output_from_csf= 'model';
+    compute.output_from_csf= 'eCSF';
     %compute.output_from_csf= 'model&eCSF'; %iFactor.*eCSF
 
     compute.output_from_residu= 0; % 0=sense residu

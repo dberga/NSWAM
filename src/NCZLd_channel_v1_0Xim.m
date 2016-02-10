@@ -112,7 +112,7 @@ store_matrix_givenparams(eCSF_meanized,'eCSF_meanized',struct);
 
 
 
-[curv_final] = NCZLd_channel_outputfromcsf(curv_final, curv, iFactor, eCSF ,struct.zli.n_membr,struct.wave.fin_scale,struct.compute.output_from_csf);
+[curv_final] = NCZLd_channel_outputfromcsf(curv_final, curv, iFactor, eCSF ,struct.zli.n_membr,struct.wave.n_scales,struct.compute.output_from_csf);
 [curv_final] = NCZLd_channel_outputfromresidu(curv_final, struct.zli.n_membr, struct.wave.n_scales, struct.compute.output_from_residu);
 
 
@@ -142,7 +142,7 @@ store_matrix_givenparams(curv_final_meanized,'curv_final_meanized',struct);
 
 devlog(['saving img_out...']);
 
-display_imatrix_channel(img_out,'img_out',channel,struct);
+display_imatrix_channel(uint8(normalize_map(img_out)),'img_out',channel,struct);
 store_matrix_givenparams(img_out,'img_out',struct);
 
 

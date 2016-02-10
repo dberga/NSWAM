@@ -38,4 +38,11 @@
 3. load_store/store_functions: functions for storing and matrixes on scale, orientation...
 4. erased whitening function (tmp-128)*0.75+128 ...
 5. added functionality for using color opponents
+6. fixed outputfromcsf function, it was using fin_scale as argument to put the residual, now using n_scales
+
+------v4 version 4
+
+
+1. added metrics file in libs
+
 
