@@ -5,14 +5,18 @@
 function [] = recall(image_name, conf_struct_path)
     
     if nargin < 2
-        conf_struct_path = 'default_struct.mat';
+	conf_struct_path = 'default_struct.mat';
+    conf_struct = load(conf_struct_path);
+    else
+        [conf_struct_path_folder,conf_struct_path_name,conf_struct_path_ext] = fileparts(conf_struct_path);
+        conf_struct = load(conf_struct_path);
     end
-    %conf_struct = load(conf_struct_path); conf_struct = conf_struct.matrix_in;
+    conf_struct = conf_struct.matrix_in;
     
     
     
     output_folder = 'output';
-    output_subfolder = remove_extension(conf_struct_path) ;
+    output_subfolder = conf_struct_path_name ;
     output_path = [output_folder '/' output_subfolder '/'];
     output_folder_imgs = [output_path 'output_imgs'];
     output_folder_mats = [output_path 'output_mats'];
@@ -22,6 +26,9 @@ function [] = recall(image_name, conf_struct_path)
     
     image_struct_path = [ output_folder_mats '/' image_name_noext '_' 'struct' '.mat'];
     image_struct = load(image_struct_path); image_struct = image_struct.matrix_in;
+    image_struct.compute = conf_struct.compute;
+    image_struct.image = conf_struct.image;
+    
     channels = {'chromatic', 'chromatic2' ,'intensity'};
     
     

@@ -3,13 +3,18 @@ function [] = saliency(input_image,image_name,conf_struct_path)
 
 if nargin < 3
 	conf_struct_path = 'default_struct.mat';
+else
+    [conf_struct_path_folder,conf_struct_path_name,conf_struct_path_ext] = fileparts(conf_struct_path);
+    
 end
+
 
 
 conf_struct = load(conf_struct_path);
 conf_struct = conf_struct.matrix_in;
 ds_res = conf_struct.compute.autoresize_ds;
 nd_res = conf_struct.compute.autoresize_nd;
+fovear = conf_struct.compute.foveate;
 
 %resize if necessary
 if ds_res ~= 0
@@ -26,11 +31,16 @@ if(size(input_image,3)<3)
         input_image(:,:,3) = input_image(:,:,1);
 end
 
+%foveate function
+if fovear ~= 0
+    input_image = foveate(input_image,conf_struct);
+end
+    
 
 %set path parameters
 output_prefix = '';
 output_folder = 'output';
-output_subfolder = remove_extension(conf_struct_path) ;
+output_subfolder = conf_struct_path_name ;
 output_path = [output_folder '/' output_subfolder '/'];
 output_folder_imgs = [output_path 'output_imgs'];
 output_folder_mats = [output_path 'output_mats'];

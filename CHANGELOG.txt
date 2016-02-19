@@ -95,4 +95,14 @@
 
 ------v11 version 11
 
-1. implemented gaussian 
+1. implemented distort_gaussian (sums a gaussian to each channel)
+
+------v12 version 12
+
+1. implemented distort_fisheye (makes fisheye on specific centroid)
+2. implemented foveate (taking fov_type: gaussian, fisheye...)
+3. parametrized fov_type
+4. implemented zli_magnification
+
+
+

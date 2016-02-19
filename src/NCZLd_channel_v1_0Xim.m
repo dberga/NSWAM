@@ -28,7 +28,8 @@ devlog('Ha entrat a la funcio NCZLd_channel_v1_0Xim');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
  
-    
+disp(['channel=' channel]);
+
 [curv, w, c, Ls] = NCZLd_channel_DWTdispatcher(img_in,  struct.compute.dynamic, struct.wave.multires,struct.wave.n_scales, struct.zli.n_membr);
 
 [curv] = NCZLd_channel_DWTdispatcher_replicatestatic(curv,struct.compute.dynamic,struct.wave.n_scales,struct.zli.n_membr); %! duplicitat, s'hauria de fer a NCZLd

@@ -3,11 +3,19 @@
 addpath('include/file_utils');
 raddpath('include');
 
-
-
 %NCZLd - Xavi/Xim/David
 addpath('src');
-improcdir('saliency','jpg',1,'input','default_struct.mat');
+
+input_dir = 'input';
+conf_dir = 'conf';
+fileformat = 'jpg';
+funcio = 'saliency';
+conf_mats= dir(fullfile(conf_dir, ['*.mat']));
+
+parfor i=1:length(conf_mats)
+    conf_path = [conf_dir '/' conf_mats(i).name];
+    improcdir(funcio,fileformat,1,input_dir,conf_path);
+end
 
 
 %IMPROCDIR IS:
