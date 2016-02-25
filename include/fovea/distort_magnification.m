@@ -27,8 +27,6 @@ function [ output_image ] = distort_magnification(  input_image , fixcoord_X, fi
     output_image = zeros(round(mag_M),round(mag_N));
 
     
-    rangX = [];
-    rangY = [];
     for c=1:C %channel
         for y=1:M %coord Y
             
@@ -43,9 +41,6 @@ function [ output_image ] = distort_magnification(  input_image , fixcoord_X, fi
                 Y = round(Y)+1;
                 output_image(Y,X,c) = input_image(y,x,c);
 
-                %just for debugging
-                rangX = [rangX X];
-                rangY = [rangY Y];
                 
               
                 end
@@ -53,15 +48,6 @@ function [ output_image ] = distort_magnification(  input_image , fixcoord_X, fi
         
        
     end
-    
-     
-          
-    %%just for debugging
-    %min(rangX)
-    %min(rangY)
-    %max(rangX)
-    %max(rangY)
-          
     
     
     output_image = output_image/255;

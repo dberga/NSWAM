@@ -66,15 +66,22 @@ end
     end
     
 
-     %normalize each channel with respect to energy (per repartir)
-	if struct.image.energy_norm == 1    
-        normalized_color_smap = zeros(size(RF_recmean,1),size(RF_recmean,2));
-        for op=1:3 %for each opponent channel, normalize with respect to sum value
-          normalized_color_smap(:,:,op) = normalize_channel(RF_recmean(:,:,op));
-        end
-    else
-        normalized_color_smap = RF_recmean;
-    end
+        %1=normalize each channel with respect to energy (per repartir)
+	%2=normalize each channel with respect to zli's (value - mean)/stdev
+	switch(struct.image.fusion)
+		case 1	
+			normalized_color_smap = zeros(size(RF_recmean,1),size(RF_recmean,2));
+			for op=1:3 %for each opponent channel, normalize with respect to sum value
+			  normalized_color_smap(:,:,op) = normalize_channel(RF_recmean(:,:,op));
+			end
+		case 2
+			normalized_color_smap = zeros(size(RF_recmean,1),size(RF_recmean,2));
+			for op=1:3 %for each opponent channel, normalize with respect to sum value
+			  normalized_color_smap(:,:,op) = normalize_channel2(RF_recmean(:,:,op));
+			end
+		otherwise
+			normalized_color_smap = RF_recmean;
+	end
     
 
 	%combine channels

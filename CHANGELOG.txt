@@ -104,5 +104,10 @@
 3. parametrized fov_type
 4. implemented zli_magnification
 
+------v13 version 13
+
+1. implemented fusion with (values-mean)/stdev
+2. implemented zli_magnification_inv
+
 
 
