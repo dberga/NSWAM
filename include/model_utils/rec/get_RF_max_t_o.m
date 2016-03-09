@@ -5,7 +5,7 @@
 
 
 
-function [RFmax_s, residualmax_s,Lsmax_s] = get_RF_max_t(RF_s_o_c,residual_s_c,Ls_s_c,struct)
+function [RFmax_s_o, residualmax_s,Lsmax_s] = get_RF_max_t_o(RF_s_o_c,residual_s_c,Ls_s_c,struct)
 
 	
 	RFmax_s = cell(struct.wave.n_scales,1);
@@ -34,11 +34,13 @@ function [RFmax_s, residualmax_s,Lsmax_s] = get_RF_max_t(RF_s_o_c,residual_s_c,L
                     end
                 end
             end
+            RFmax_s_o{s}{o} = RFmax;
+            residualmax_s_o{s} = RFresidual;
+            Lsmax_s_o{s} = RFls;
         end
-        RFmax_s{s} = RFmax;
-        residualmax_s{s} = RFresidual;
-        Lsmax_s{s} = RFls;
+        
     end
-    RFmax_s{struct.wave.n_scales} = RF_s_o_c{struct.wave.n_scales};
+    RFmax_s_o{struct.wave.n_scales} = RF_s_o_c{struct.wave.n_scales};
 
 end
+

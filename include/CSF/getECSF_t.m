@@ -1,12 +1,12 @@
 
 function [ecsf] = getECSF_t(iFactor, struct, channel)
 
-	ecsf = channel_calceCSF(iFactor,struct.wave.n_scales,struct.wave.ini_scale,struct.wave.fin_scale,struct.zli.n_membr,channel, struct.csfparams.nu_0, struct.csfparams.params_intensity,struct.csfparams.params_chromatic);
+	ecsf = channel_calceCSF(iFactor,struct.wave.n_scales,struct.wave.ini_scale,struct.wave.fin_scale,channel, struct.csfparams.nu_0, struct.csfparams.params_intensity,struct.csfparams.params_chromatic);
 
 end
 
 
-function [eCSF] = channel_calceCSF(iFactor,n_scales,ini_scale,fin_scale,n_membr,channel, nu_0, csf_params_intensity, csf_params_chromatic)
+function [eCSF] = channel_calceCSF(iFactor,n_scales,ini_scale,fin_scale,channel, nu_0, csf_params_intensity, csf_params_chromatic)
 
 
     % e-CSF (experimental part, no modification by default)

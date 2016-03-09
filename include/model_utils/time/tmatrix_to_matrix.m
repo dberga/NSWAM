@@ -15,14 +15,17 @@ function [matrix] = tmatrix_to_matrix(tmatrix,struct, portion)
     oinit = 1;
     ofinal = struct.wave.n_orient;
     
-    m_type = struct.compute.tmem_res;
+    m_type = struct.image.tmem_res;
     
     if strcmp(m_type,'mean') == 1
         matrix = get_tmean_matrix(tmatrix,tinit,tfinal,sinit,sfinal,oinit,ofinal);
+        matrix{sfinal+1} = tmatrix{tinit}{sfinal+1};
     else if strcmp(m_type,'max') == 1
         matrix = get_tmax_matrix(tmatrix,tinit,tfinal,sinit,sfinal,oinit,ofinal);
+        matrix{sfinal+1} = tmatrix{tinit}{sfinal+1};
     else
         matrix = get_tmean_matrix(tmatrix,tinit,tfinal,sinit,sfinal,oinit,ofinal);
+        matrix{sfinal+1} = tmatrix{tinit}{sfinal+1};
     end
     
 end

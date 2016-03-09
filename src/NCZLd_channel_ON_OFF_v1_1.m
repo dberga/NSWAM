@@ -122,7 +122,7 @@ switch(ON_OFF)
         end
         
         for t_membr=1:n_membr
-            switch compute.output_from_model
+            switch image.output_from_model
                 case 'M&w'
                     % Si l'output de Z.Li es la senyal processada
                     curv_ON_final{t_membr}=curv_ON{t_membr}.*iFactor_ON{t_membr}*zli.normal_output; %M+.*w+
@@ -207,7 +207,7 @@ display_tmatrix_channel(r_gy_final_ON,'gy_final_ON',channel,struct);
 display_tmatrix_channel(r_gy_final_OFF,'gy_final_OFF',channel,struct);
 %display_tmatrix_channel(gy_final_ALL,'gy_final_ALL',channel,struct);
 
-if struct.compute.tmem_rw_res == 1
+if struct.image.tmem_rw_res == 1
 display_matrix_channel(r_gy_final_ON_meanized,'gy_final_ON_res',channel,struct);
 display_matrix_channel(r_gy_final_OFF_meanized,'gy_final_OFF_res',channel,struct);
 %display_matrix_channel(r_gy_final_ALL_meanized,'gy_final_ALL_res',channel,struct);

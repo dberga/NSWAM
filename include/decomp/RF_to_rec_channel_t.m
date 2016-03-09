@@ -38,7 +38,7 @@ function [img_out] = IDWTdispatcher(RF,n_scales,method,residual, Ls)
     img_out=zeros(RFsize(1),RFsize(2));
     %img_out=zeros(size(img_in));
     
-    w = cell(n_scales);
+    w = cell(n_scales-1,1);
     c = residual;
     
     
@@ -97,3 +97,5 @@ function [img_out] = IDWTdispatcher(RF,n_scales,method,residual, Ls)
        return;   
     end
 end
+
+

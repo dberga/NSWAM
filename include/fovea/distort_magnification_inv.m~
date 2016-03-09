@@ -35,16 +35,15 @@ function [ output_image ] = distort_magnification_inv(  input_cortex , fixcoord_
     coords_cortex_cols = coords(1:end,2);
     
     
-    [coords_image_rows,coords_image_cols] =Cortex2Image(coords_cortex_rows,coords_cortex_cols,M,N,fixcoord_X, fixcoord_Y, e0, lambda, vAngle);
+    [coords_image_rows,coords_image_cols] =Cor(coords_cortex_rows,coords_cortex_cols,M,N,fixcoord_X, fixcoord_Y, e0, lambda, vAngle);
     
-    coords_image_cols = round(coords_image_cols);
-    coords_image_rows = round(coords_image_rows);
+    all_x = round(coords_image_cols);
+    all_y = round(coords_image_rows);
     
-    [coords_image_rows,coords_image_cols] = limit_coords(coords_image_rows,coords_image_cols,1,1,M,N);
-    
-    output_image(coords_image_rows,coords_image_cols) = input_cortex(coords_cortex_rows,coords_cortex_cols);
+    output_image(all_y,all_x) = input_cortex(coords_cortex_rows,coords_cortex_cols);
     
 
+    output_image = imresize(output_image,[M N]);
 
     output_image = output_image/255;
 end

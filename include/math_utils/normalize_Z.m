@@ -1,5 +1,5 @@
 
-function channel_out = normalize_channel2(channel_in)
+function channel_out = normalize_Z(channel_in)
 
     if sum(channel_in(:)) > 0
 	s_mean = mean(channel_in(:));

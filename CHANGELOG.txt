@@ -107,7 +107,28 @@
 ------v13 version 13
 
 1. implemented fusion with (values-mean)/stdev
-2. implemented zli_magnification_inv
-
+2. reordered steps on reconstruction
+   -> from:
+	1. compute eCSF
+	2. make pmax2
+	3. normalization with zli Z
+	4. make temporal mean
+   ->changed again:
+	1. make temporal mean
+	2. compute ecsf
+	3. make pmax2
+	4. normalization with zli Z
+3. implemented Cortex2Image, Image2Cortex
+4. implemented Cortex2Polar, Polar2Cortex
+5. fixed zli_magnification, now with Cortex2Image
+6. fixed zli_magnification_inv, now with Image2Cortex
+7. reuse .mats with iFactor and residuals from a specific folder, not from config
+	->al usar el foveal, se tendrá que hacer neurodinamico siempre, por lo tanto, tendran que guardarse mats para cada fijacion
+8. changed conf variables on default_struct.mat and code,
+	struct.compute -> there are the variables that can be changed on reconstruction (variables that take effect after neurodynamic processing) -> ex. output_from_ecsf ...
+	struct.image -> there are the variables that cannot be changed on reconstruction (variables that take effect before neurodynamic processing) -> ex. autoresize...
+	struct.zli -> there are the variables that cannot be changed on reconstruction (variables that take effect before neurodynamic processing) -> ex. reduccio_RW
+	struct.csfparams -> there are the variables that can be changed on reconstruction (variables that take effect after neurodynamic processing) -> ex. nu_0
+	struct.wave -> there are the variables that cannot be changed on reconstruction (variables that take effect before neurodynamic processing) -> ex. multires (n_scales and n_orient will be automatically calculated, given multires)
 
 

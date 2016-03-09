@@ -37,11 +37,22 @@ function [ output_cortex ] = distort_magnification(  input_image , fixcoord_X, f
     coords_cortex_cols = round(coords_cortex_cols);
     coords_cortex_rows = round(coords_cortex_rows);
     
-    [coords_cortex_rows,coords_cortex_cols] = limit_coords(coords_cortex_rows,coords_cortex_cols,1,1,cM,cN);
+    [coords_cortex_rows,coords_cortex_cols] = limit_coords(coords_cortex_rows,coords_cortex_cols,);
     
     output_cortex(coords_cortex_rows,coords_cortex_cols) = input_image(coords_image_rows,coords_image_cols);
 
     output_cortex = output_cortex/255;
 end
 
+              
 
+function [m_out,n_out] = limit_coords(m_coords, n_coords, M_start, N_start, M_end,N_end)
+        
+    out_idx = find(m_coords < M_start || m_coords > M_end || n_coords < N_start || n_coords > N_end);
+    
+    m_out = m_coords;
+    n_out = n_coords;
+    m_out(out_idx) = [];
+    n_out(out_idx) = [];
+
+end

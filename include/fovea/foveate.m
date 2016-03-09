@@ -4,10 +4,10 @@
 function [im_out] = foveate(im_in, struct)
 
     if nargin < 2
-        struct.compute.fov_type = 'zli_magnification';
+        struct.image.fov_type = 'zli_magnification';
     end
     
-    switch struct.compute.fov_type 
+    switch struct.image.fov_type 
         case 'gaussian'
             im_out = distort_gaussian(im_in);
         case 'fisheye'

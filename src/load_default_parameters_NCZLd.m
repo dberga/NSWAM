@@ -8,14 +8,14 @@ strct = strct.matrix_in;
 [conf_struct_path_folder,conf_struct_path_name,conf_struct_path_ext] = fileparts(mat_path);
 output_subfolder = conf_struct_path_name ;
 output_folder = 'output';
-output_folder_figs = 'output_figs';
-output_folder_mats = 'output_mats';
-output_folder_imgs = 'output_imgs';
+output_folder_figs = 'figs'; %output_folder_figs = 'output_figs';
+output_folder_mats = 'mats'; %output_folder_mats = 'output_mats';
+output_folder_imgs = [output_folder '/' output_subfolder '/']; %output_folder_imgs = 'output_imgs';
 
 strct.compute.outputstr = [output_folder '/' output_subfolder '/'];
-strct.compute.outputstr_figs = [strct.compute.outputstr output_folder_figs];
-strct.compute.outputstr_mats = [strct.compute.outputstr output_folder_mats];
-strct.compute.outputstr_imgs = [strct.compute.outputstr output_folder_imgs];
+strct.compute.outputstr_figs = output_folder_figs;
+strct.compute.outputstr_mats = output_folder_mats;
+strct.compute.outputstr_imgs = output_folder_imgs;
 
 end
 

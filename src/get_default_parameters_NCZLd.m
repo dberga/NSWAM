@@ -266,9 +266,6 @@ function [compute] = get_default_parameters_compute_NCZLd()
     % compute.output_type='image';
     % compute.output_type='saliency';
 
-    compute.output_from_model='M';
-    %compute.output_from_model='M&w'; %iFactor.*curv
-
     %compute.output_from_csf= 'model';
     compute.output_from_csf= 'eCSF';
     %compute.output_from_csf= 'model&eCSF'; %iFactor.*eCSF
@@ -312,6 +309,9 @@ function [image] = get_default_parameters_image_NCZLd()
     % J.Neurosciences, 1999
     image.stim=3; % (this doesn't appear in the default parameters)
     image.nstripes = 0;
+    
+     image.output_from_model='M'; %iFactor
+    %image.output_from_model='M&w'; %iFactor.*curv
 
 
 end

@@ -12,9 +12,9 @@ end
 
 conf_struct = load(conf_struct_path);
 conf_struct = conf_struct.matrix_in;
-ds_res = conf_struct.compute.autoresize_ds;
-nd_res = conf_struct.compute.autoresize_nd;
-fovear = conf_struct.compute.foveate;
+ds_res = conf_struct.image.autoresize_ds;
+nd_res = conf_struct.image.autoresize_nd;
+fovear = conf_struct.image.foveate;
 
 %resize if necessary
 if ds_res ~= 0
@@ -42,9 +42,9 @@ output_prefix = '';
 output_folder = 'output';
 output_subfolder = conf_struct_path_name ;
 output_path = [output_folder '/' output_subfolder '/'];
-output_folder_imgs = [output_path 'output_imgs'];
-output_folder_mats = [output_path 'output_mats'];
-output_folder_figs = [output_path 'output_figs'];
+output_folder_imgs = output_path; %output_folder_imgs = [output_path 'output_imgs'];
+output_folder_mats = 'mats'; %output_folder_mats = [output_path 'output_mats'];
+output_folder_figs = 'figs'; %output_folder_figs = [output_path 'output_figs'];
 output_extension = '.png';
 image_name_noext = remove_extension(image_name);
 output_image = [output_prefix image_name_noext];

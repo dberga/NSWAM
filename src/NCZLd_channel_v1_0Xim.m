@@ -49,7 +49,7 @@ disp(['channel=' channel]);
 curv_meanized = tmatrix_to_matrix(curv,struct,1);
 display_matrix_channel(curv_meanized,'omega',channel,struct);
 
-if struct.compute.tmem_rw_res == 1
+if struct.image.tmem_rw_res == 1
 if struct.display_plot.store_irrelevant==1
 %store_matrix_givenparams_channel(curv,'omega',channel,struct);
 store_matrix_givenparams_channel(curv,'omega',channel,struct);
@@ -79,7 +79,7 @@ toc
 display_tmatrix_channel(iFactor,'iFactor',channel,struct);
 store_matrix_givenparams_channel(iFactor,'iFactor',channel,struct);
 
-if struct.compute.tmem_rw_res == 1
+if struct.image.tmem_rw_res == 1
     iFactor_meanized = tmatrix_to_matrix(iFactor,struct,1);
     display_matrix_channel(iFactor_meanized,'iFactor_res',channel,struct);
     store_matrix_givenparams_channel(iFactor_meanized,'iFactor',channel,struct);
