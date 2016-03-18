@@ -26,7 +26,7 @@ function [ output_image ] = distort_magnification_inv(  input_cortex , fixcoord_
     
     %[mag_N,mag_M,~]=mag_coord(360, 360, e0, lambda);
     
-    output_image = zeros(M,N);
+    output_image = zeros(M,N,3);
     
     
     [A,B] = meshgrid(1:cM,1:cN);
@@ -35,33 +35,17 @@ function [ output_image ] = distort_magnification_inv(  input_cortex , fixcoord_
     coords_cortex_cols = coords(1:end,2);
     
     
-    [coords_image_rows,coords_image_cols] =Cortex2Image(coords_cortex_rows,coords_cortex_cols,M,N,fixcoord_X, fixcoord_Y, e0, lambda, vAngle);
+    [coords_image_cols,coords_image_rows] =Cortex2Image(coords_cortex_cols,coords_cortex_rows,M,N,fixcoord_X,fixcoord_Y, e0, lambda, vAngle);
     
     coords_image_cols = round(coords_image_cols);
     coords_image_rows = round(coords_image_rows);
     
-    [coords_image_rows,coords_image_cols] = limit_coords(coords_image_rows,coords_image_cols,1,1,M,N);
+    [coords_image_rows,coords_image_cols,coords_cortex_rows,coords_cortex_cols] = limit_coords_both(coords_image_rows,coords_image_cols,coords_cortex_rows,coords_cortex_cols,1,1,cM,cN);
     
-    output_image(coords_image_rows,coords_image_cols) = input_cortex(coords_cortex_rows,coords_cortex_cols);
-    
+    output_image = recoord(input_cortex,output_image,coords_cortex_rows,coords_cortex_cols, coords_image_rows, coords_image_cols);
 
 
     output_image = output_image/255;
 end
 
               
-
-%     max_r = sqrt(M^2 + N^2);
-%     max_rho = (360*max_r)/vAngle;
-%     max_theta = 2*pi; %X maxim = recta cap a la dreta en polar
-%     [max_N,~] = pol2cart(max_theta,max_rho);
-%     max_theta = pi*0.5; %Y maxim = recta cap amunt en polar
-%     [~,max_M] = pol2cart(max_theta,max_rho);
-%     max_M = max_M*2;
-%     max_N = max_N*2;
-%     input_image2 = imresize(input_image,[max_M max_N]);
-% 
-%     xcenter = round((fixcoord_X/N)*max_N);
-%     ycenter = round((fixcoord_Y/M)*max_M);	
-%     [ e_center, theta_center] = get_coord_props( 0,0,xcenter,ycenter,M,N,vAngle );
-%     [Xcenter,Ycenter,~] = mag_coord(e_center, theta_center, e0, lambda);

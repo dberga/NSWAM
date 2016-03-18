@@ -391,22 +391,7 @@ function [curv_final] = NCZLd_channel_applyeCSF(eCSF,curv,ini_scale,fin_scale,n_
 end
 
 
-function [curv_final] = NCZLd_channel_outputfromcsf(curv_final,curv, iFactor, eCSF ,n_membr,n_scales,option)
-    
-    switch option
-         case 'model'
-            curv_final = iFactor; %nothing
-         case 'eCSF'
-             for ff=1:n_membr 
-                eCSF{ff}{n_scales}{1} = curv{ff}{n_scales}{1}; %copy residu to eCSF
-             end
-             curv_final = eCSF; %alpha
 
-         case 'model&eCSF'
-             %do nothing; %M.*alpha(M.*w)
-
-    end
-end
 
 
 function [curv_final] = NCZLd_channel_outputfromresidu(curv_final_in, n_membr, n_scales, option)

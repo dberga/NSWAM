@@ -131,4 +131,8 @@
 	struct.csfparams -> there are the variables that can be changed on reconstruction (variables that take effect after neurodynamic processing) -> ex. nu_0
 	struct.wave -> there are the variables that cannot be changed on reconstruction (variables that take effect before neurodynamic processing) -> ex. multires (n_scales and n_orient will be automatically calculated, given multires)
 
+------v13-2 version 13-2
 
+1. Fixed Cortex2Image and Image2Cortex, as well as distort_magnification and distort_magnification_inv. (rows and cols, corresponding to fixcoord corrected)
+2. added function recoord (avoid out of memory)
+3. creared function confgen (config generator) - pending to finish
