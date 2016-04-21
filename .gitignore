@@ -1,7 +1,7 @@
 output/
 input/
 input2/
-conf/
-conf2/
+conf*/
 mats/
 figs/
+mats

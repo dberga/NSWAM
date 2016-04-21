@@ -7,8 +7,14 @@
         %exemple: ds = 2^2 = 4
         %if s=256x256,ds=2 -> snew = 256/4 = 64x64
  
+    
     if nargin < 2
-        ds = 2;
+        ds = 0;
+        image_resized = input_image;
+        while max(size(image_resized)) > 1000
+            image_resized = autoresize(input_image,ds);
+            ds = ds +1;
+        end
     end
     
     

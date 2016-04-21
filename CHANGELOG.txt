@@ -136,3 +136,19 @@
 1. Fixed Cortex2Image and Image2Cortex, as well as distort_magnification and distort_magnification_inv. (rows and cols, corresponding to fixcoord corrected)
 2. added function recoord (avoid out of memory)
 3. creared function confgen (config generator) - pending to finish
+
+-----v14 version 14
+
+1. finished the confgen function
+2. changed autoresize_ds and saliency.m for autoresizing proportionally according to less than 1024
+
+-----v15 version 15
+
+1. added saliency2,executa2 for executing the model for all config without using the neurodynamical system (only reconstruct if mats are found)
+2. symbolic links to mats are done
+3. foveal code done, distort (vPixel2vAngle, vAngle2rAngle, rAngle2rPixel), undistort (rPixel2rAngle, rAngle2vAngle, vAngle2vPixel)
+	-also done frame removal if needed (clean_distort_frames)
+	-also done *alternative solutions for vAngle2rAngle and rAngle2vAngle
+4. added executa2 and saliency2 (which will compute all smaps but in case there is no "mat" file, it will not compute neurodynamic)
+   also added executa3 which will compute configurations in conf3
+

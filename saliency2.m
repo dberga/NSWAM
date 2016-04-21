@@ -17,10 +17,8 @@ nd_res = conf_struct.image.autoresize_nd;
 fovear = conf_struct.image.foveate;
 
 %resize if necessary
-if ds_res ~= -1    
+if ds_res ~= 0
     input_image = autoresize(input_image,ds_res);
-else
-    input_image = autoresize(input_image);
 end
 
 if nd_res ~= 0
@@ -76,22 +74,24 @@ else
 		
         %do nothing
 		disp([image_name_noext ' mats already exist, computing reconstructing image']);
+
+	mkdir(output_folder_imgs);
+	%reads iFactor from outputted .mats and computes the IDWT, mean in time, normalization ... 
+	recall(image_name,conf_struct_path); 
     else
         
         mkdir(output_folder_mats);
         mkdir(output_folder_figs);
 		%apply neurodynamical model, obtain inverse tranform of iFactors
-		general_NCZLdXim(input_image,experiment_name,conf_struct_path);
+		%general_NCZLdXim(input_image,experiment_name,conf_struct_path);
 
 		%no need to compute smap, done in recall
 		%fmap = rec_to_smap(imgout);       
 		%writeout(fmap,output_image,output_folder,output_extension);
-
+		disp('no neurodym');	
     end
     
-    mkdir(output_folder_imgs);
-	%reads iFactor from outputted .mats and computes the IDWT, mean in time, normalization ... 
-	recall(image_name,conf_struct_path); 
+    
 
 	
 end

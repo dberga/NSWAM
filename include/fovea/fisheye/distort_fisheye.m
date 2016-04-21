@@ -6,19 +6,22 @@ function [ output_image ] = distort_fisheye( input_image, cx, cy, scaling, expon
 ncols = size(input_image,2);
 nrows = size(input_image,1);
 
-if nargin < 2
+if nargin < 4
     
-    cx = round(ncols/2);
-    cy = round(nrows/2);
+    
     exp = 3;
     scaling = ncols/2;
     sx = scaling;
     sy = scaling*(nrows/ncols);
 else
-    
-    sx = scaling;
-    sy = scaling*(nrows/ncols);
-    exp = exponent;
+    if nargin < 2
+        cx = round(ncols/2);
+        cy = round(nrows/2);
+    else
+        sx = scaling;
+        sy = scaling*(nrows/ncols);
+        exp = exponent;    
+    end
     
 end
 

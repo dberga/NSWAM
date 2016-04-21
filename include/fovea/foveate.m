@@ -14,8 +14,12 @@ function [im_out] = foveate(im_in, struct)
             im_out = distort_fisheye(im_in); 
         case 'zli_magnification'
             im_out = distort_magnification(im_in); 
-	case 'zli_magnification_inv'
+        case 'zli_magnification_inv'
             im_out = distort_magnification_inv(im_in); 
+        case 'zli_foveal_magnification'
+            im_out = distort_foveal_magnification(im_in); 
+        case 'zli_foveal_magnification_inv'
+            im_out = distort_foveal_magnification_inv(im_in); 
         otherwise
            im_out = distort_fisheye(im_in); 
     end
