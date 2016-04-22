@@ -40,8 +40,8 @@ function [ output_image ] = distort_fovea( input_image , ifix, jfix, vAngle , ga
     [coords_retinal_rows, coords_retinal_cols] = rAngle2rPixel(azimuth_retinal,eccentricity_retinal,ifix, jfix, M, N, vAngle);
 
     %ERASE COORDINATES THAT ARE OUT OF THE LIMITS (1 to M, 1 to N)  
-    [coords_retinal_rows,coords_retinal_cols,coords_image_rows,coords_image_cols] = limit_coords_both2(coords_retinal_rows,coords_retinal_cols,coords_image_rows,coords_image_cols,1,1,rM,rN);
-    %[coords_retinal_rows,coords_retinal_cols] = limit_coords(coords_retinal_rows,coords_retinal_cols,1,1,rM,rN);
+    %[coords_retinal_rows,coords_retinal_cols,coords_image_rows,coords_image_cols] = limit_coords_both2(coords_retinal_rows,coords_retinal_cols,coords_image_rows,coords_image_cols,1,1,rM,rN);
+        %%[coords_retinal_rows,coords_retinal_cols] = limit_coords(coords_retinal_rows,coords_retinal_cols,1,1,rM,rN);
     
     
     %ROUND PIXEL COORDINATES, DOUBLES TO INTEGERS
@@ -51,12 +51,12 @@ function [ output_image ] = distort_fovea( input_image , ifix, jfix, vAngle , ga
     
     
     %FROM PIXEL COORDINATES OF RETINA TO VISUAL, OR REVERSE, OR SAME
-    %output_image = recoord2(input_image,output_image, coords_image_rows,coords_image_cols, coords_retinal_rows, coords_retinal_cols);
+    %%output_image = recoord2(input_image,output_image, coords_image_rows,coords_image_cols, coords_retinal_rows, coords_retinal_cols);
     output_image = recoord2(input_image,output_image, coords_retinal_rows,coords_retinal_cols, coords_image_rows, coords_image_cols);
-    %output_image = recoord2(input_image,output_image, coords_image_rows,coords_image_cols, coords_image_rows,coords_image_cols);
+    %%output_image = recoord2(input_image,output_image, coords_image_rows,coords_image_cols, coords_image_rows,coords_image_cols);
     
     %REMOVER MARCOS SI EXISTEN
-    %output_image = clean_distort_frames(output_image,coords_image_rows,coords_image_cols);
+    output_image = clean_distort_frames(output_image,coords_image_rows,coords_image_cols);
     
     
     %TO DOUBLES

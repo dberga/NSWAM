@@ -1,6 +1,7 @@
 function [ output_image ] = undistort_fovea( input_image, ifix, jfix, vAngle, gamma )
 
-
+    %add foveal padding
+    
     [rM,rN,C] = size(input_image);
     M = rM;
     N = rN;  
@@ -42,8 +43,8 @@ function [ output_image ] = undistort_fovea( input_image, ifix, jfix, vAngle, ga
     [coords_image_rows, coords_image_cols] = vAngle2vPixel(azimuth_visual,eccentricity_visual,ifix, jfix, rM, rN, vAngle);
 
     %ERASE COORDINATES THAT ARE OUT OF THE LIMITS (1 to M, 1 to N)    
-    [coords_image_rows,coords_image_cols,coords_retinal_rows,coords_retinal_cols] = limit_coords_both2(coords_image_rows,coords_image_cols,coords_retinal_rows,coords_retinal_cols,1,1,rM,rN);
-    %[coords_image_rows,coords_image_cols] = limit_coords(coords_image_rows,coords_image_cols,1,1,M,N);
+    %[coords_image_rows,coords_image_cols,coords_retinal_rows,coords_retinal_cols] = limit_coords_both2(coords_image_rows,coords_image_cols,coords_retinal_rows,coords_retinal_cols,1,1,rM,rN);
+        %%[coords_image_rows,coords_image_cols] = limit_coords(coords_image_rows,coords_image_cols,1,1,M,N);
         
     %ROUND PIXEL COORDINATES, DOUBLES TO INTEGERS
     coords_image_rows = round(coords_image_rows);
