@@ -1,6 +1,8 @@
-function [ output_image ] = undistort_fovea( input_image, ifix, jfix, vAngle, gamma )
+function [ output_image ] = undistort_fovea( input_image, ifix, jfix, vAngle, gamma,e0 )
 
-    %add foveal padding
+    %AGREGAR MARCOS SI SE QUITARON EN DISTORT
+    %[margin_up,margin_down,margin_left,margin_right] = calc_padding_margins(input_image,ifix,jfix,vAngle,gamma);
+    %input_image= add_foveal_padding( input_image, margin_up, margin_down, margin_left, margin_right);
     
     [rM,rN,C] = size(input_image);
     M = rM;
@@ -13,7 +15,8 @@ function [ output_image ] = undistort_fovea( input_image, ifix, jfix, vAngle, ga
     if nargin < 5
 
        vAngle = 30;
-       gamma = 1.5;
+       gamma = 10;
+       e0= 1;
        
        if nargin < 2
            ifix = round(N/2); %center
@@ -37,7 +40,7 @@ function [ output_image ] = undistort_fovea( input_image, ifix, jfix, vAngle, ga
     [azimuth_retinal, eccentricity_retinal] =rPixel2rAngle(coords_retinal_rows,coords_retinal_cols,ifix,jfix,rM,rN,vAngle);
     
     %RETINAL ANGLES TO VISUAL ANGLES
-    [azimuth_visual,eccentricity_visual] = rAngle2vAngle(azimuth_retinal,eccentricity_retinal, gamma);
+    [azimuth_visual,eccentricity_visual] = rAngle2vAngle(azimuth_retinal,eccentricity_retinal, gamma, e0);
     
     %VISUAL ANGLES TO VISUAL PIXELS
     [coords_image_rows, coords_image_cols] = vAngle2vPixel(azimuth_visual,eccentricity_visual,ifix, jfix, rM, rN, vAngle);

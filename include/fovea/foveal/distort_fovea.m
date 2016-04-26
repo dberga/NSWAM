@@ -1,4 +1,4 @@
-function [ output_image ] = distort_fovea( input_image , ifix, jfix, vAngle , gamma)
+function [ output_image ] = distort_fovea( input_image , ifix, jfix, vAngle , gamma, e0)
 
     [M,N,C] = size(input_image);
     rM = M;
@@ -9,7 +9,8 @@ function [ output_image ] = distort_fovea( input_image , ifix, jfix, vAngle , ga
     if nargin < 5
 
        vAngle = 30;
-       gamma = 1.5;
+       gamma = 10;
+       e0 = 1;
        
        if nargin < 2
            ifix = round(N/2); %center
@@ -34,7 +35,7 @@ function [ output_image ] = distort_fovea( input_image , ifix, jfix, vAngle , ga
     [azimuth_visual, eccentricity_visual] =vPixel2vAngle(coords_image_rows,coords_image_cols,ifix,jfix,M,N,vAngle);
     
     %VISUAL ANGLES TO RETINAL ANGLES
-    [azimuth_retinal,eccentricity_retinal] = vAngle2rAngle(azimuth_visual,eccentricity_visual, gamma);
+    [azimuth_retinal,eccentricity_retinal] = vAngle2rAngle(azimuth_visual,eccentricity_visual, gamma, e0);
     
     %RETINAL ANGLES TO RETINAL PIXELS
     [coords_retinal_rows, coords_retinal_cols] = rAngle2rPixel(azimuth_retinal,eccentricity_retinal,ifix, jfix, M, N, vAngle);
@@ -56,8 +57,9 @@ function [ output_image ] = distort_fovea( input_image , ifix, jfix, vAngle , ga
     %%output_image = recoord2(input_image,output_image, coords_image_rows,coords_image_cols, coords_image_rows,coords_image_cols);
     
     %REMOVER MARCOS SI EXISTEN
-    output_image = clean_distort_frames(output_image,coords_image_rows,coords_image_cols);
-    
+    %[margin_up,margin_down,margin_left,margin_right] = calc_padding_margins(input_image,ifix,jfix,vAngle,gamma);
+    %output_image= clear_foveal_padding(output_image,margin_up,margin_down,margin_left,margin_right);
+
     
     %TO DOUBLES
     output_image = output_image/255;
