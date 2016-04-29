@@ -71,8 +71,11 @@ function [smap] = RF_to_smap_t(RF_s_o_c,residual_s_c,Ls_s_c,struct)
             smap = channelsqmean(RF_c);
     end
 
+    %undistort
+    if struct.image.foveate == 1
+        smap = foveate(smap,struct,1);
+    end
     
-     
     %normalize according to a specific type (Z, energy ...)
     switch(struct.compute.fusion)
 		case 1	

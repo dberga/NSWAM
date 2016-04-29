@@ -2,29 +2,25 @@
 
 
 %reads eCSF and iFactor from outputted .mats and computes the IDWT, mean in time, normalization ... 
-function [] = recall(image_name, conf_struct, conf_struct_path, output_folder,output_folder_mats,output_extension)
+function [] = recall(image_name, conf_struct, conf_struct_path_name, output_folder,output_folder_mats,output_extension)
     
     if nargin < 6
     output_folder = 'output';
     output_folder_mats = 'mats'; %output_folder_mats = [output_path 'output_mats'];
     output_extension = '.png';
     
-    if nargin < 3
+    
+    end
+    
+    if nargin < 2
         conf_struct_path = 'default_struct.mat';
-        
-        if nargin < 2
-            conf_struct = load(conf_struct_path);
-            conf_struct = conf_struct.matrix_in;
-        end
-        
-    end
-    
-    end
-    
-    
+        conf_struct = load(conf_struct_path);
+    else
+        [conf_struct_path_folder,conf_struct_path_name,conf_struct_path_ext] = fileparts(conf_struct_path);
+        %conf_struct = load(conf_struct_path);
     [conf_struct_path_folder,conf_struct_path_name,conf_struct_path_ext] = fileparts(conf_struct_path);
     
-    
+    conf_struct = conf_struct.matrix_in;
     
     
     

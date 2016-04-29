@@ -18,8 +18,8 @@ function [im_out] = foveate(im_in, struct, flag)
     fov_type = struct.image.fov_type;
     fixationY = struct.image.fixationY;
     fixationX = struct.image.fixationX;
-    oM = struct.image.M;
-    oN = struct.image.N;
+    oM = size(struct.image.M,1);
+    oN = size(struct.image.N,2);
     end
     
     if oM == 0 || oN == 0
@@ -50,7 +50,7 @@ function [im_out] = foveate(im_in, struct, flag)
         case 1 %undistort
             switch fov_type
                 case 'zli_foveal_distortion'
-                    im_out = undistort_fovea(oM,oN, im_in,fixationY,fixationX); 
+                    im_out = undistort_fovea(struct.image.M,oN, im_in,fixationY,fixationX); 
             otherwise
                 %do nothing
             end

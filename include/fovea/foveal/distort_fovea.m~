@@ -1,8 +1,19 @@
 function [ output_image ] = distort_fovea( input_image , ifix, jfix, vAngle , lambda, e0)
+    im_in = double(i
 
-    [oM,oN,C] = size(input_image); 
-    input_image = double(input_image);
+    %ADD ZEROS PADDING IF IMAGE IS RECTANGULAR
+    input_image_padded = padding_rectangle_to_square(input_image);
     
+    %CHANGE ZEROS PADDING TO MEAN
+    input_image_paddedmean =  padding_zeros2mean(input_image_padded,input_image);
+    
+    
+    
+    [M,N,C] = size(input_image_paddedmean);
+    rM = M;
+    rN = N;  
+    output_image = zeros(rM,rN,3);
+
     %default parameters if not set
     if nargin < 5
 
@@ -11,48 +22,32 @@ function [ output_image ] = distort_fovea( input_image , ifix, jfix, vAngle , la
        e0 = 1;
        
        if nargin < 2
-           ifix = round(oM/2); %center
-           jfix = round(oN/2); %center
+           ifix = round(M/2); %center
+           jfix = round(N/2); %center
        end
 
     end
     
-    %CALCULATE PADDING (RECTANGULAR IMAGES)
-    [x_margin, y_margin] = padding_get_margins(oM,oN);
     
-    %RELOCATE FIXATION AFTER PADDING
-    ifix =  ifix+y_margin;
-    jfix = jfix+x_margin;
-    
-    %ADD PADDING (-inf)
-    input_image_padded = padding_rectangle2square(input_image,x_margin,y_margin,-inf);
-    
-    %CHANGE -inf PADDING TO MEAN
-    input_image_paddedmean =  padding_zeros2mean(input_image_padded,input_image, -inf);
-    
-    %RECALCULATE NEW ROWS AND COLS, NOW WE HAVE PADDED IMAGE
-    [pM,pN,C] = size(input_image_paddedmean);
-    output_image = zeros(pM,pN,C);
-
-    %GET CORRESPONDENCE COORDINATES OF IMAGE (pM,pN) matrix
-    [A,B] = meshgrid(1:pM,1:pN);
+    %GET CORRESPONDENCE COORDINATES OF IMAGE (M,N) matrix
+    [A,B] = meshgrid(1:M,1:N);
     
     coords = [A(:) B(:)];
     
     coords_image_rows = coords(1:end,1);
     coords_image_cols = coords(1:end,2);
 
-    coords_image_rows = reshape(coords_image_rows,pM,pN);
-    coords_image_cols = reshape(coords_image_cols,pM,pN);
+    coords_image_rows = reshape(coords_image_rows,M,N);
+    coords_image_cols = reshape(coords_image_cols,M,N);
         
     %VISUAL COORDINATES TO VISUAL ANGLES
-    [azimuth_visual, eccentricity_visual] =vPixel2vAngle(coords_image_rows,coords_image_cols,ifix,jfix,pM,pN,vAngle);
+    [azimuth_visual, eccentricity_visual] =vPixel2vAngle(coords_image_rows,coords_image_cols,ifix,jfix,M,N,vAngle);
     
     %VISUAL ANGLES TO RETINAL ANGLES
     [azimuth_retinal,eccentricity_retinal] = vAngle2rAngle(azimuth_visual,eccentricity_visual, lambda, e0);
     
     %RETINAL ANGLES TO RETINAL PIXELS
-    [coords_retinal_rows, coords_retinal_cols] = rAngle2rPixel(azimuth_retinal,eccentricity_retinal,ifix, jfix, pM, pN, vAngle);
+    [coords_retinal_rows, coords_retinal_cols] = rAngle2rPixel(azimuth_retinal,eccentricity_retinal,ifix, jfix, M, N, vAngle);
 
     %ERASE COORDINATES THAT ARE OUT OF THE LIMITS (1 to M, 1 to N)  
     %[coords_retinal_rows,coords_retinal_cols,coords_image_rows,coords_image_cols] = limit_coords_both2(coords_retinal_rows,coords_retinal_cols,coords_image_rows,coords_image_cols,1,1,rM,rN);
@@ -73,9 +68,16 @@ function [ output_image ] = distort_fovea( input_image , ifix, jfix, vAngle , la
     
     
     %CHANGE ZEROS PADDING TO MEAN
-    output_image =  padding_zeros2mean(output_image,input_image);
     
     
+    
+    
+    
+    
+    %REMOVER MARCOS SI EXISTEN
+    %[margin_up,margin_down,margin_left,margin_right] = calc_padding_margins(input_image,ifix,jfix,vAngle,lambda);
+    %output_image= clear_foveal_padding(output_image,margin_up,margin_down,margin_left,margin_right);
+
     
     %TO DOUBLES
     %output_image = output_image/255;

@@ -1,4 +1,4 @@
-function [ margin_up, margin_down, margin_left, margin_right ] = calc_padding_margins( input_image , ifix, jfix, vAngle , gamma )
+function [ margin_up, margin_down, margin_left, margin_right ] = calc_padding_margins( input_image , ifix, jfix, vAngle , lambda )
 
 [M,N,C] = size(input_image);
 m_half = round(M/2);
@@ -21,10 +21,10 @@ n_half = round(N/2);
 [amax_left_margin,emax_left_margin] = vPixel2vAngle(m_half,1,ifix,jfix,M,N,vAngle);
 [amax_right_margin,emax_right_margin] = vPixel2vAngle(m_half,N-1,ifix,jfix,M,N,vAngle);
 
-[amag_up_margin,emag_up_margin] = vAngle2rAngle(amax_up_margin,emax_up_margin, gamma);
-[amag_down_margin,emag_down_margin] = vAngle2rAngle(amax_down_margin,emax_down_margin, gamma);
-[amag_left_margin,emag_left_margin] = vAngle2rAngle(amax_left_margin,emax_left_margin, gamma);
-[amag_right_margin,emag_right_margin] = vAngle2rAngle(amax_right_margin,emax_right_margin, gamma);
+[amag_up_margin,emag_up_margin] = vAngle2rAngle(amax_up_margin,emax_up_margin, lambda);
+[amag_down_margin,emag_down_margin] = vAngle2rAngle(amax_down_margin,emax_down_margin, lambda);
+[amag_left_margin,emag_left_margin] = vAngle2rAngle(amax_left_margin,emax_left_margin, lambda);
+[amag_right_margin,emag_right_margin] = vAngle2rAngle(amax_right_margin,emax_right_margin, lambda);
 
 ediff_up = emag_up_margin - emax_up_margin;
 ediff_down = emag_down_margin - emax_down_margin;

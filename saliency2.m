@@ -1,11 +1,18 @@
 
-function [] = saliency(input_image,image_name,conf_struct_path)
+function [] = saliency2(input_image,image_name,conf_struct_path,output_folder,output_folder_mats,output_folder_figs,output_extension)
+
+if nargin < 7
+output_folder = 'output';
+output_folder_mats = 'mats'; %output_folder_mats = [output_path 'output_mats'];
+output_folder_figs = 'figs'; %output_folder_figs = [output_path 'output_figs'];
+output_extension = '.png';
 
 if nargin < 3
 	conf_struct_path = 'default_struct.mat';
 else
     [conf_struct_path_folder,conf_struct_path_name,conf_struct_path_ext] = fileparts(conf_struct_path);
     
+end
 end
 
 
@@ -17,8 +24,10 @@ nd_res = conf_struct.image.autoresize_nd;
 fovear = conf_struct.image.foveate;
 
 %resize if necessary
-if ds_res ~= 0
+if ds_res ~= -1    
     input_image = autoresize(input_image,ds_res);
+else
+    input_image = autoresize(input_image);
 end
 
 if nd_res ~= 0
@@ -39,13 +48,10 @@ end
 
 %set path parameters
 output_prefix = '';
-output_folder = 'output';
+
 output_subfolder = conf_struct_path_name ;
 output_path = [output_folder '/' output_subfolder '/'];
 output_folder_imgs = output_path; %output_folder_imgs = [output_path 'output_imgs'];
-output_folder_mats = 'mats'; %output_folder_mats = [output_path 'output_mats'];
-output_folder_figs = 'figs'; %output_folder_figs = [output_path 'output_figs'];
-output_extension = '.png';
 image_name_noext = remove_extension(image_name);
 output_image = [output_prefix image_name_noext];
 experiment_name =  image_name_noext;
@@ -83,7 +89,7 @@ else
         mkdir(output_folder_mats);
         mkdir(output_folder_figs);
 		%apply neurodynamical model, obtain inverse tranform of iFactors
-		%general_NCZLdXim(input_image,experiment_name,conf_struct_path);
+		%NCZLd(input_image,experiment_name,conf_struct_path);
 
 		%no need to compute smap, done in recall
 		%fmap = rec_to_smap(imgout);       

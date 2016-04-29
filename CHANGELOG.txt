@@ -152,3 +152,35 @@
 4. added executa2 and saliency2 (which will compute all smaps but in case there is no "mat" file, it will not compute neurodynamic)
    also added executa3 which will compute configurations in conf3
 
+-----v16 version 16
+
+1. erased duplicated borders on foveal distortion (for negative values getting to positive on vAngle2rAngle)
+2. added code of foveal distortion on saliency, added code of foveal undistortion on recall
+3. added code on saliency and recall for input of folders/paths
+4. changed code, erased general_NCZLd, NCZLd_channel, every step is in NCZLd
+5. add padding on rectangular images (be careful on undistortion)
+6. padding (black) to mean of image (to avoid activity)
+7. separar struct del saliency y struct del recall (sino el undistort pilla fixationX,fixationY considerando padding (mal))
+
+
+-----v17 version 17
+
+-1. no usar valor del mean para el padding sino utilizar los bordes o bien algun otro tipo
+-2. path de output de mats y demas, guardarlo en struct y reutilizarlo (modificar tambien load_default_parameters)
+-3. mezclar codigo de NCZLd, saliency y recall, separar cosas en plan pre-neurodynamic, post-neurodynamic
+-4. fixed distortion with wavelets
+-5. fixed problems with time for each fixation on GT (tmem relative to fixation time)
+-6. fixed problems with starting point on GT (tmem relative to fixation time)
+
+-----v18 version 18
+
+-1. implement scanpath (several fixations)
+	-output coords of fixations
+	-output of smaps
+	-output of image with fixation points, with scanpath in order (dibuix)
+2. parse GT datasets of scanpath
+3. make code for metrics/evaluation of scanpath
+
+-----v19 version 19
+
+1. dynamic with videos

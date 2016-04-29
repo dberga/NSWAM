@@ -2,7 +2,7 @@ function [ output_image ] = undistort_fovea( oM,oN, input_image, ifix, jfix, vAn
 
     [pM,pN,C] = size(input_image);
     input_image = double(input_image);
-    output_image = zeros(pM,pN,C);
+    output_image = zeros(pM,pN,3);
     
     %DEFAULT PARAMETERS (IF NOT SET)
     if nargin < 7
@@ -45,7 +45,11 @@ function [ output_image ] = undistort_fovea( oM,oN, input_image, ifix, jfix, vAn
     [azimuth_visual,eccentricity_visual] = rAngle2vAngle(azimuth_retinal,eccentricity_retinal, lambda, e0);
     
     %VISUAL ANGLES TO VISUAL PIXELS
-    [coords_image_rows, coords_image_cols] = vAngle2vPixel(azimuth_visual,eccentricity_visual,ifix, jfix, pM, pN, vAngle);
+    [coords_image_rows, coords_image_cols] = vAngle2vPixel(azimuth_visual,eccentricity_visual,ifix, jfix, rM, rN, vAngle);
+
+    %ERASE COORDINATES THAT ARE OUT OF THE LIMITS (1 to M, 1 to N)    
+    %[coords_image_rows,coords_image_cols,coords_retinal_rows,coords_retinal_cols] = limit_coords_both2(coords_image_rows,coords_image_cols,coords_retinal_rows,coords_retinal_cols,1,1,rM,rN);
+        %%[coords_image_rows,coords_image_cols] = limit_coords(coords_image_rows,coords_image_cols,1,1,M,N);
         
     %ROUND PIXEL COORDINATES, DOUBLES TO INTEGERS
     coords_image_rows = round(coords_image_rows);
@@ -56,7 +60,7 @@ function [ output_image ] = undistort_fovea( oM,oN, input_image, ifix, jfix, vAn
     %output_image = recoord2(input_image,output_image, coords_retinal_rows,coords_retinal_cols, coords_retinal_rows,coords_retinal_cols);
     output_image = recoord2(input_image,output_image, coords_image_rows,coords_image_cols, coords_retinal_rows, coords_retinal_cols);
     
-    %ERASE PADDING AFTER UNDISTORTION 
+    %REMOVER MARCOS SI EXISTEN
     %output_image = clean_distort_frames(output_image,coords_retinal_rows,coords_retinal_cols);
     output_image = padding_square2original(output_image,x_margin,y_margin);
     
