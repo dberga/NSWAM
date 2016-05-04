@@ -6,7 +6,7 @@ function [ i, j ] = vAngle2vPixel(azimuth_visual, eccentricity_visual, ifix,jfix
         %rho = distance relative to visual angle
         max_r = sqrt(M^2 + N^2);
 %         max_r = 1;
-		rho = (eccentricity_visual*max_r)/vAngle_image;
+		rho = (eccentricity_visual*la*max_r)/vAngle_image;
         
     [irel,jrel] = pol2cart(theta,rho);
     

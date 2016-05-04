@@ -6,8 +6,8 @@ function [ output_image ] = distort_fovea( input_image , ifix, jfix, vAngle , la
     %default parameters if not set
     if nargin < 5
 
-       vAngle = 30;
-       lambda = 10;
+       vAngle = 100;
+       lambda = 12;
        e0 = 1;
        
        if nargin < 2
@@ -35,16 +35,9 @@ function [ output_image ] = distort_fovea( input_image , ifix, jfix, vAngle , la
     output_image = zeros(pM,pN,C);
 
     %GET CORRESPONDENCE COORDINATES OF IMAGE (pM,pN) matrix
-    [A,B] = meshgrid(1:pM,1:pN);
+    [coords_image_cols,coords_image_rows] = meshgrid(1:pN,1:pM);
     
-    coords = [A(:) B(:)];
     
-    coords_image_rows = coords(1:end,1);
-    coords_image_cols = coords(1:end,2);
-
-    coords_image_rows = reshape(coords_image_rows,pM,pN);
-    coords_image_cols = reshape(coords_image_cols,pM,pN);
-        
     %VISUAL COORDINATES TO VISUAL ANGLES
     [azimuth_visual, eccentricity_visual] =vPixel2vAngle(coords_image_rows,coords_image_cols,ifix,jfix,pM,pN,vAngle);
     
@@ -66,9 +59,9 @@ function [ output_image ] = distort_fovea( input_image , ifix, jfix, vAngle , la
     
     
     %FROM PIXEL COORDINATES OF RETINA TO VISUAL, OR REVERSE, OR SAME
-    %%output_image = recoord2(input_image,output_image, coords_image_rows,coords_image_cols, coords_retinal_rows, coords_retinal_cols);
-    output_image = recoord2(input_image_paddedmean,output_image, coords_retinal_rows,coords_retinal_cols, coords_image_rows, coords_image_cols);
-    %%output_image = recoord2(input_image,output_image, coords_image_rows,coords_image_cols, coords_image_rows,coords_image_cols);
+    output_image = recoord2(input_image_paddedmean,output_image,coords_retinal_rows, coords_retinal_cols);
+    %output_image = recoord2(input_image_paddedmean,output_image, coords_retinal_rows,coords_retinal_cols, coords_image_rows, coords_image_cols);
+    %%output_image = recoord2(input_image_paddedmean,output_image, coords_image_rows,coords_image_cols, coords_image_rows,coords_image_cols);
     
     
     

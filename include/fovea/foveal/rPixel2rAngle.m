@@ -1,4 +1,4 @@
-function [ azimuth_retinal, eccentricity_retinal ] = rPixel2rAngle( X, Y , Xfix, Yfix, M, N, vAngle)
+function [ azimuth_retinal, eccentricity_retinal ] = rPixel2rAngle( X, Y , Xfix, Yfix, M, N, vAngle_retina,lambda)
 
     Xrel = X - Xfix;
     Yrel = Y - Yfix;
@@ -10,7 +10,8 @@ function [ azimuth_retinal, eccentricity_retinal ] = rPixel2rAngle( X, Y , Xfix,
         azimuth_retinal = theta*(180/pi);
         %e = eccentricity in retinal angles
         max_r = sqrt(M^2 + N^2);
-        eccentricity_retinal = (rho/max_r)*vAngle;
+%         max_r = 1;
+        eccentricity_retinal = (rho/max_r)*vAngle_retina;
     
 end
 

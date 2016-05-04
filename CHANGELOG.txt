@@ -161,16 +161,20 @@
 5. add padding on rectangular images (be careful on undistortion)
 6. padding (black) to mean of image (to avoid activity)
 7. separar struct del saliency y struct del recall (sino el undistort pilla fixationX,fixationY considerando padding (mal))
-
+8. hacer funcion que elimina padding de una imagen (segun token de color)
+-9. corregir codigo fovea
+-10. aplicar padding y demas a la correccion de fovea
 
 -----v17 version 17
 
 -1. no usar valor del mean para el padding sino utilizar los bordes o bien algun otro tipo
 -2. path de output de mats y demas, guardarlo en struct y reutilizarlo (modificar tambien load_default_parameters)
--3. mezclar codigo de NCZLd, saliency y recall, separar cosas en plan pre-neurodynamic, post-neurodynamic
+-3. mezclar codigo de NCZLd, saliency y recall y RF_to_smap separar cosas en plan pre-neurodynamic, post-neurodynamic
 -4. fixed distortion with wavelets
 -5. fixed problems with time for each fixation on GT (tmem relative to fixation time)
 -6. fixed problems with starting point on GT (tmem relative to fixation time)
+-7. eliminar padding en imagenes que tienen padding (muchas sinteticas tienen padding gris por defecto)
+-8. no reutilizar mats si el image_struct no tiene los pre-neurodyn parametros iguales a los de la struct
 
 -----v18 version 18
 
@@ -183,4 +187,13 @@
 
 -----v19 version 19
 
-1. dynamic with videos
+1. use mex as neurodynamic, modify config structure
+2. dynamic saliency with videos
+3. multilayer (input other values on other RF)
+	-motion
+	-disparity
+	-recognition
+
+
+
+

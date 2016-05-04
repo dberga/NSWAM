@@ -1,4 +1,4 @@
-function [ azimuth_visual, eccentricity_visual ] = vPixel2vAngle( i, j, ifix, jfix, M, N, vAngle )
+function [ azimuth_visual, eccentricity_visual ] = vPixel2vAngle( i, j, ifix, jfix, M, N, vAngle_image ,lambda)
 
     
 irel = i - ifix;
@@ -11,7 +11,7 @@ jrel = j - jfix;
         azimuth_visual = theta*(180/pi);
         %e = eccentricity in visual angles
         max_r = sqrt(M^2 + N^2);
-        eccentricity_visual = (rho/max_r)*vAngle;   
+        eccentricity_visual = (rho/max_r)*vAngle_image;   
 
 end
 
