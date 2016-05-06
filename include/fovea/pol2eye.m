@@ -1,10 +1,10 @@
-function [ azimuth,e ] = pol2eye( theta,rho,M,N,vAngle)
+function [ azimuth,eccentricity ] = pol2eye( theta,rho,M,N,vAngle,lambda)
 
         %azimuth = theta to angle
         azimuth = theta*(180/pi);
         %e = relative to visual angle and image
         max_r = sqrt(M^2 + N^2);
-        e = (rho/max_r)*vAngle;
+        eccentricity = (rho/max_r)*vAngle;
         
 
 end

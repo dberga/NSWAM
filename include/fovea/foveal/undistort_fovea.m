@@ -1,67 +1,52 @@
-function [ output_image ] = undistort_fovea( oM,oN, input_image, ifix, jfix, vAngle, lambda,e0 )
+function [ image ] = undistort_fovea( retinal_image , ifix, jfix, vAngle_image , lambda, e0)
 
-    [pM,pN,C] = size(input_image);
-    input_image = double(input_image);
-    output_image = zeros(pM,pN,C);
+
+    [M,N,C] = size(retinal_image);
     
-    %DEFAULT PARAMETERS (IF NOT SET)
+    %default parameters if not set
     if nargin < 7
 
-       vAngle = 10;
-       lambda = 12;
+       vAngle_image = 60;
+       
+       %max_r = sqrt(M*M+N*N);
+%        lambda = sqrt(M*M+N*N)/vAngle_retina
+        %vAngle_retina = 3*vAngle_image;
+       %lambda = max_r/vAngle_retina;
+       vAngle_retina = 10;
+       lambda = 1.2;
        e0= 1;
        
        if nargin < 4
-           ifix = round(pM/2); %center
-           jfix = round(pN/2); %center
+           ifix = round(M/2); %center
+           jfix = round(N/2); %center
        end
     end
     
     
+    %GET CORRESPONDENCE COORDINATES OF IMAGE (pM,pN) matrix
+    [coords_image_cols,coords_image_rows] = meshgrid(1:N,1:M);
     
-    %CALCULATE PADDING (RECTANGULAR IMAGES)
-    %[x_margin, y_margin] = padding_get_margins(oM,oN);
+    %VISUAL COORDINATES TO VISUAL ANGLES
+    [azimuth_visual, eccentricity_visual] =vPixel2vAngle(coords_image_rows,coords_image_cols,ifix,jfix,M,N,vAngle_image,lambda);
     
-    %RELOCATE FIXATION AFTER PADDING
-    %ifix =  ifix+y_margin;
-    %jfix = jfix+x_margin;
+    %VISUAL ANGLES TO RETINAL ANGLES
+    [azimuth_retinal,eccentricity_retinal] = vAngle2rAngle(azimuth_visual,eccentricity_visual, lambda, e0);
     
-    
-    %GET CORRESPONDENCE COORDINATES OF IMAGE (M,N) matrix
-    [A,B] = meshgrid(1:pM,1:pN);
-    
-    coords = [A(:) B(:)];
-    
-    coords_retinal_rows = A;
-    coords_retinal_cols = B;
+    %RETINAL ANGLES TO RETINAL PIXELS
+    [coords_retinal_rows, coords_retinal_cols] = rAngle2rPixel(azimuth_retinal,eccentricity_retinal,ifix, jfix, M, N, vAngle_retina,lambda);
 
-    %coords_retinal_rows = reshape(coords_retinal_rows,pM,pN);
-    %coords_retinal_cols = reshape(coords_retinal_cols,pM,pN);
-    
-    %RETINAL COORDINATES TO RETINAL ANGLES
-    [azimuth_retinal, eccentricity_retinal] =rPixel2rAngle(coords_retinal_rows,coords_retinal_cols,ifix,jfix,pM,pN,vAngle);
-    
-    %RETINAL ANGLES TO VISUAL ANGLES
-    [azimuth_visual,eccentricity_visual] = rAngle2vAngle(azimuth_retinal,eccentricity_retinal, lambda, e0);
-    
-    %VISUAL ANGLES TO VISUAL PIXELS
-    [coords_image_rows, coords_image_cols] = vAngle2vPixel(azimuth_visual,eccentricity_visual,ifix, jfix, pM, pN, vAngle);
         
     %ROUND PIXEL COORDINATES, DOUBLES TO INTEGERS
-    coords_image_rows = round(coords_image_rows);
-    coords_image_cols = round(coords_image_cols);
+    coords_retinal_rows = round(coords_retinal_rows);
+    coords_retinal_cols = round(coords_retinal_cols);
+    
+    
     
     %FROM PIXEL COORDINATES OF RETINA TO VISUAL, OR REVERSE, OR SAME
-     %output_image = recoord2(input_image,output_image, coords_retinal_rows,coords_retinal_cols, coords_image_rows, coords_image_cols);
-    output_image = recoord2(input_image,output_image, coords_image_rows,coords_image_cols, coords_retinal_rows, coords_retinal_cols);
-    %output_image = recoord2(input_image,output_image, coords_retinal_rows,coords_retinal_cols, coords_retinal_rows,coords_retinal_cols);
+    image = recoord2(retinal_image,coords_retinal_rows, coords_retinal_cols);
     
-    %ERASE PADDING AFTER UNDISTORTION 
-    %output_image = clean_distort_frames(output_image,coords_retinal_rows,coords_retinal_cols);
-    %output_image = padding_square2original(output_image,x_margin,y_margin);
     
-    %TO DOUBLES
-    %output_image = output_image/255;
 
+    
 end
 
