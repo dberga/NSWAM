@@ -162,14 +162,15 @@
 6. padding (black) to mean of image (to avoid activity)
 7. separar struct del saliency y struct del recall (sino el undistort pilla fixationX,fixationY considerando padding (mal))
 8. hacer funcion que elimina padding de una imagen (segun token de color)
--9. corregir codigo fovea
--10. aplicar padding y demas a la correccion de fovea
+x-9. corregir codigo fovea
+x-10. aplicar padding y demas a la correccion de fovea
+11. agregar funciones para eliminar outliers (nan, inf) y tambien para mapeo de coordenadas
 
 -----v17 version 17
 
--1. no usar valor del mean para el padding sino utilizar los bordes o bien algun otro tipo
--2. path de output de mats y demas, guardarlo en struct y reutilizarlo (modificar tambien load_default_parameters)
--3. mezclar codigo de NCZLd, saliency y recall y RF_to_smap separar cosas en plan pre-neurodynamic, post-neurodynamic
+x-1. no usar valor del mean para el padding sino utilizar los bordes o bien algun otro tipo
+2. path de output de mats y demas, guardarlo en struct y reutilizarlo (modificar tambien load_default_parameters)
+3. mezclar codigo de NCZLd, saliency y recall y RF_to_smap separar cosas en plan pre-neurodynamic, post-neurodynamic
 -4. fixed distortion with wavelets
 -5. fixed problems with time for each fixation on GT (tmem relative to fixation time)
 -6. fixed problems with starting point on GT (tmem relative to fixation time)

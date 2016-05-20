@@ -1,0 +1,27 @@
+function [ out_map ] = remove_outliers( in_map)
+
+    sorted_in_map = sort(in_map(:));
+    mmin2=sorted_in_map(2);
+    mmax2 = sorted_in_map(end-1);
+    
+    %remove inf and nan
+    in_map(isinf(in_map) & in_map > 0) = NaN;
+    in_map(isinf(in_map) & in_map < 0) = NaN;
+    in_map(isnan(in_map)) = NaN;
+        
+    %remove outliers
+    
+    mmin = min(min(in_map));
+    if abs(mmin) - abs(mmin2) > mean(std(in_map))
+        mmin=mmin2;
+        in_map(in_map < mmin) = mmin;
+    end
+    mmax = max(max(in_map));
+    
+    if abs(mmax) - abs(mmax2) > mean(std(in_map))
+        mmax=mmax2;
+        in_map(in_map > mmax) = mmax;
+    end
+    
+end
+
