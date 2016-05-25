@@ -104,7 +104,7 @@ end
 
 %foveate function
 if fovear == 1
-    input_image = foveate(input_image,conf_struct,0);
+    input_image = foveate(input_image,0,conf_struct);
 end
     
 

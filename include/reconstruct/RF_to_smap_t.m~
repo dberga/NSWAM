@@ -99,7 +99,7 @@ function [smap] = RF_to_smap_t(RF_s_o_c,residual_s_c,Ls_s_c,struct)
     
     %undistort
     if struct.image.foveate == 1
-        smap = foveate(smap,1,struct);
+        smap = foveate(smap,1,);
     end
 
 	%space to uint8

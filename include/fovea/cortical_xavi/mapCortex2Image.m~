@@ -46,13 +46,14 @@ if c_cortex > 1
     for c=1:c_cortex
         cortex_channel = cortex(:,:,c);
         img_channel = zeros(img_height,img_width);
-        img_channel(coord_img(correct))=cortex_channel(sub2ind(size_cortex,i(correct'),j(correct')));
-        img(:,:,c) = img_channel;
+        img_channel(coord_cortex(correct))=img_channel(sub2ind(size_img,i(correct'),j(correct')));
+        cortex(:,:,c) = cortex_channel;
     end
 else
     img(coord_img(correct))=cortex(sub2ind(size_cortex,i(correct'),j(correct')));
 end
 
+img(coord_img(correct))=cortex(sub2ind(size_cortex,i(correct'),j(correct')));
 
 % for ic = coord_img
 % 	coord_cortex = [i(ic) j(ic)];

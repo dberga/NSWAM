@@ -8,7 +8,6 @@ function [im_out] = foveate(im_in, flag, struct )
     if nargin < 3
         fov_type = 'cortical';
         [oM,oN,~] = size(im_in);
-        
         fixationY = round(oM/2);
         fixationX = round(oN/2);
         
@@ -23,8 +22,6 @@ function [im_out] = foveate(im_in, flag, struct )
     fixationX = struct.image.fixationX;
     oM = struct.image.M;
     oN = struct.image.N;
-    
-        
     end
     
     if oM == 0 || oN == 0
@@ -38,8 +35,7 @@ function [im_out] = foveate(im_in, flag, struct )
     end
     
     
-    cM = oM*4;
-    cN = oN*4;
+    
             
     switch flag
         case 0 %distort
@@ -49,27 +45,25 @@ function [im_out] = foveate(im_in, flag, struct )
             case 'fisheye'
                 im_out = distort_fisheye(im_in); 
             case 'cortical'
-                [im_in,fixationY,fixationX] = pad_image(im_in,fixationY,fixationX);
+                    %[im_in,fixationY,fixationX] = pad_image(im_in,fixationY,fixationX);
                 im_out = distort_cortex(im_in,fixationY,fixationX); 
             case 'cortical_xavi'
-                [im_in,fixationY,fixationX] = pad_image(im_in,fixationY,fixationX);
-                im_out = mapImage2Cortex(im_in,pi,cM,cN,fixationX,fixationY);
+                    %[im_in,fixationY,fixationX] = pad_image(im_in,fixationY,fixationX);
+                im_out = mapImage2Cortex(im_in,pi,1024,1024,round(oM/2),round(oN/2));
             otherwise
-               [im_in,fixationY,fixationX] = pad_image(im_in,fixationY,fixationX);
+                    %[im_in,fixationY,fixationX] = pad_image(im_in,fixationY,fixationX);
                im_out = distort_cortex(im_in,fixationY,fixationX); 
             end
         case 1 %undistort
             switch fov_type
                 case 'cortical'
-                        
+                        %[im_in,fixationY,fixationX] = unpad_image(im_in,fixationY,fixationX,oM,oN);
                     im_out = undistort_cortex(im_in,fixationY,fixationX); 
-                    [im_out,~,~] = unpad_image(im_out,fixationY,fixationX,oM,oN);
                 case 'cortical_xavi'
-                    im_out = mapCortex2Image(im_in,pi,oM,oN,round(oM/2),round(oN/2));
-                    [im_out,~,~] = unpad_image(im_out,fixationY,fixationX,oM,oN);
+                    im_out = mapCortex2Image(im_in,pi,1024,1024,round(oM/2),round(oN/2));
                 otherwise
-                    im_out = undistort_cortex(im_in,fixationY,fixationX); 
-                    [im_out,~,~] = unpad_image(im_out,fixationY,fixationX,oM,oN);
+                     [im_in,fixationY,fixationX] = unpad_image(im_in,fixationY,fixationX,oM,oN);
+                   im_out = undistort_fovea(im_in,fixationY,fixationX); 
             end
         otherwise
             %do nothing
