@@ -4,6 +4,7 @@
 function [im_out] = foveate(im_in, flag, struct )
 
     im_in = double(im_in);
+    [M,N,~] = size(im_in);
     
     if nargin < 3
         fov_type = 'cortical';
@@ -65,7 +66,7 @@ function [im_out] = foveate(im_in, flag, struct )
                     im_out = undistort_cortex(im_in,fixationY,fixationX); 
                     [im_out,~,~] = unpad_image(im_out,fixationY,fixationX,oM,oN);
                 case 'cortical_xavi'
-                    im_out = mapCortex2Image(im_in,pi,oM,oN,round(oM/2),round(oN/2));
+                    im_out = mapCortex2Image(im_in,pi,M,N,fixationX,fixationY);
                     [im_out,~,~] = unpad_image(im_out,fixationY,fixationX,oM,oN);
                 otherwise
                     im_out = undistort_cortex(im_in,fixationY,fixationX); 
