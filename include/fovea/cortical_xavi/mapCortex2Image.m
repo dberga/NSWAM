@@ -1,7 +1,6 @@
 function [img] = mapCortex2Image(cortex,img_diag_angle,img_width, img_height, fov_x, fov_y)
 
 size_cortex = [size(cortex,1) size(cortex,2)];
-c_cortex = size(cortex,3);
 
 cortex_height = size_cortex(1); 
 cortex_width = size_cortex(2); 
@@ -13,8 +12,8 @@ img = zeros(img_height,img_width);
 
 size_img = size(img);
 
-cortex_max_elong_mm = 108;
-cortex_max_az_mm = 45;
+cortex_max_elong_mm = 120;
+cortex_max_az_mm = 60;
 
 
 cortex_elong2pix_mm = cortex_width/cortex_max_elong_mm;
@@ -42,16 +41,8 @@ i = round((coord_i_cortex*cortex_az2pix_mm)+cortex_height_2+1);
 coord_cortex = [i;j];
 correct = find(all(inside(coord_cortex',repmat(size_cortex,[numel(img) 1]) ),2)');
 
-if c_cortex > 1
-    for c=1:c_cortex
-        cortex_channel = cortex(:,:,c);
-        img_channel = zeros(img_height,img_width);
-        img_channel(coord_img(correct))=cortex_channel(sub2ind(size_cortex,i(correct'),j(correct')));
-        img(:,:,c) = img_channel;
-    end
-else
-    img(coord_img(correct))=cortex(sub2ind(size_cortex,i(correct'),j(correct')));
-end
+img(coord_img(correct))=cortex(sub2ind(size_cortex,i(correct'),j(correct')));
+
 
 
 % for ic = coord_img

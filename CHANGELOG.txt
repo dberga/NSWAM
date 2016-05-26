@@ -165,6 +165,7 @@
 x-9. corregir codigo fovea
 x-10. aplicar padding y demas a la correccion de fovea
 11. agregar funciones para eliminar outliers (nan, inf) y tambien para mapeo de coordenadas
+12. cortical magnification en mapImage2Cortex y mapCortex2Image (xavi), distort_cortex y undistort_cortex (david)
 
 -----v17 version 17
 

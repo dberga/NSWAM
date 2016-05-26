@@ -6,19 +6,14 @@ function [ image ] = undistort_cortex( cortex, ifix, jfix, M, N, diag_visualAngl
     cortex_max_az = 60;
 
     %DEFAULT PARAMETERS (IF NOT SET)
-    if nargin < 6
 
         %lambda = 1.2;
         %e0= 1;
-        M = M/4;
-        N = N/4;
-        diag_visualAngle = pi/4;
     
-       if nargin < 4
-           ifix = round(M/2); %center
-           jfix = round(N/2); %center
-       end
-    end
+   if nargin < 2
+       ifix = round(M/2); %center
+       jfix = round(N/2); %center
+   end
     
 
     %GET VISUAL FILS AND COLS PIXEL COORDS

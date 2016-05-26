@@ -1,18 +1,18 @@
-function [ cortex ] = distort_cortex( image, ifix, jfix, cM, cN, diag_visualAngle )
+function [ cortex ] = distort_cortex( image, ifix, jfix, cN, diag_visualAngle )
 
     [M,N,~] = size(image);
     diag_visualPixels = sqrt(M^2 + N^2);
-    cortex_max_elong = 60;
-    cortex_max_az = 120;
+    cortex_max_elong = 120;
+    cortex_max_az = 60;
+    
 
     %DEFAULT PARAMETERS (IF NOT SET)
-    if nargin < 6
+    if nargin < 5
 
         %lambda = 1.2;
         %e0= 1;
-        cM = M*4;
-        cN = N*4;
-        diag_visualAngle = pi/2;
+        cN = 1024;
+        diag_visualAngle = pi;
     
        if nargin < 4
            ifix = round(M/2); %center
@@ -20,6 +20,7 @@ function [ cortex ] = distort_cortex( image, ifix, jfix, cM, cN, diag_visualAngl
        end
     end
     
+    cM = round((cortex_max_az/cortex_max_elong)*cN);
 
     %GET CORTEX FILS AND COLS PIXEL COORDS
     [cols_cortex,fils_cortex] = meshgrid(1:cN,1:cM);
