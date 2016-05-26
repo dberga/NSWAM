@@ -92,6 +92,9 @@ function [smap] = RF_to_smap_t(RF_s_o_c,residual_s_c,Ls_s_c,struct)
         case 5
             smap = normalize_Z(smap);
             smap = normalize_minmax(smap);
+        case 6
+            smap = normalize_Zp(smap);
+            smap = normalize_minmax(smap);
     
 		otherwise
 			%do nothing

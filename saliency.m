@@ -67,7 +67,6 @@ struct=load_default_parameters_NCZLd(conf_struct_path);
 
 struct.image.M = size(input_image,1);
 struct.image.N = size(input_image,2);
-struct.image.fov_type = 'zli_foveal_distortion';
 struct.image.fixationY = round(size(input_image,1)/2);
 struct.image.fixationX = round(size(input_image,2)/2);
 struct.image.single = experiment_name;
