@@ -37,13 +37,13 @@ function [smap] = RF_to_smap_t(RF_s_o_c,residual_s_c,Ls_s_c,struct)
             [c1_residual_s,c2_residual_s,c3_residual_s] = separate_channels_norient(residual_s_c,struct);
             [c1_Ls_s,c2_Ls_s,c3_Ls_s] = separate_channels_norient(Ls_s_c,struct);
             
-            for s=1:struct.wave.n_scales-1
-            for o=1:struct.wave.n_orient
+            %for s=1:struct.wave.n_scales-1
+            %for o=1:struct.wave.n_orient
                 RF_c(:,:,1) = RF_to_rec_channel_t(c1_RF_s_o,c1_residual_s,c1_Ls_s,struct);
                 RF_c(:,:,2) = RF_to_rec_channel_t(c2_RF_s_o,c2_residual_s,c2_Ls_s,struct);
                 RF_c(:,:,3) = RF_to_rec_channel_t(c3_RF_s_o,c3_residual_s,c3_Ls_s,struct);
-            end
-            end
+            %end
+            %end
     end
     
     

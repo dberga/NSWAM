@@ -22,6 +22,7 @@ function [curv w c Ls] = multires_dispatcher(img, method,n_scales ,n_membr)
             end
        case 'a_trous'
             for ff=1:niter_wav  % note: that's for videos only
+
               [w c] = a_trous(img(:,:,ff), n_scales-1);
                 for s=1:n_scales-1
                     for o=1:3

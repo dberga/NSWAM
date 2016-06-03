@@ -39,7 +39,7 @@ function [im_out] = foveate(im_in, flag, struct )
     end
     
     
-    cN = 1024;
+    cN = 128;
             
     switch flag
         case 0 %distort
@@ -68,7 +68,7 @@ function [im_out] = foveate(im_in, flag, struct )
                     %[im_out,~,~] = unpad_image(im_out,fixationY,fixationX,oM,oN);
                 case 'cortical_xavi'
                     for c=1:size(im_in,3)
-                        im_out(:,:,c) = mapCortex2Image(im_in(:,:,c),pi,oM,oN,fixationX,fixationY);
+                        im_out(:,:,c) = mapCortex2Image(im_in(:,:,c),pi,oN,oM,fixationX,fixationY);
                     end
                     %[im_out,~,~] = unpad_image(im_out,fixationY,fixationX,oM,oN);
                 otherwise

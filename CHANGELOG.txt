@@ -163,14 +163,16 @@
 7. separar struct del saliency y struct del recall (sino el undistort pilla fixationX,fixationY considerando padding (mal))
 8. hacer funcion que elimina padding de una imagen (segun token de color)
 x-9. corregir codigo fovea
-x-10. aplicar padding y demas a la correccion de fovea
+10. aplicar padding y demas a la correccion de fovea
 11. agregar funciones para eliminar outliers (nan, inf) y tambien para mapeo de coordenadas
 12. cortical magnification en mapImage2Cortex y mapCortex2Image (xavi), distort_cortex y undistort_cortex (david)
 13. implemented IG metric
-x-14. fix metrics (some use binary maps, others use density maps)
+14. fix metrics (some use binary maps, others use density maps)
 15. added normamize_Zp (zli normalization erasing zeros)
+16. quitar gx final per gx per iter, a partir de aqui guardar iFactor por 100 iters (10 iter x 10 tmem) cambiar meanize en post-neurodinamic (no de ff=1 to 10 sino tambien iter)
 
 -----v17 version 17
+
 
 x-1. no usar valor del mean para el padding sino utilizar los bordes o bien algun otro tipo
 2. path de output de mats y demas, guardarlo en struct y reutilizarlo (modificar tambien load_default_parameters)
@@ -180,6 +182,8 @@ x-1. no usar valor del mean para el padding sino utilizar los bordes o bien algu
 -6. fixed problems with starting point on GT (tmem relative to fixation time)
 -7. eliminar padding en imagenes que tienen padding (muchas sinteticas tienen padding gris por defecto)
 -8. no reutilizar mats si el image_struct no tiene los pre-neurodyn parametros iguales a los de la struct
+-9. funcion para printar ifactor por canal, tiempo y tambien mean por cada mapa de orientacion y escala (overshooting)
+
 
 -----v18 version 18
 

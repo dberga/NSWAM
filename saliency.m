@@ -1,8 +1,7 @@
 
 function [] = saliency(input_image,image_name,conf_struct_path,output_folder,output_folder_mats,output_folder_figs,output_extension)
 
-
-clear struct wave zli display_plot compute 
+clear struct wave zli display_plot compute matrix_in conf_struct image_struct
 
 if nargin < 7
 output_folder = 'output';
@@ -17,6 +16,7 @@ end
 end
 
 
+apply_neuro = 1;
 [conf_struct_path_folder,conf_struct_path_name,conf_struct_path_ext] = fileparts(conf_struct_path);
 
 
@@ -76,12 +76,7 @@ struct.image.single = experiment_name;
         %%% Calc scales and orient %%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        %if n_scales = 0
-        [struct.wave.n_scales, struct.wave.ini_scale, struct.wave.fin_scale]= calc_scales(input_image, struct.wave.ini_scale, struct.wave.fin_scale_offset, struct.wave.mida_min, struct.wave.multires); % calculate number of scales (n_scales) automatically
 
-        [struct.wave.n_orient] = calc_norient(input_image,struct.wave.multires,struct.wave.n_scales,struct.zli.n_membr);
-        devlog(strcat('Nombre scales a la funci channel_v1_0: ', num2str(struct.wave.n_scales)));
-        
         
 
 %resize if necessary
@@ -107,7 +102,12 @@ if fovear == 1
 end
     
 
+%if n_scales = 0
+[struct.wave.n_scales, struct.wave.ini_scale, struct.wave.fin_scale]= calc_scales(input_image, struct.wave.ini_scale, struct.wave.fin_scale_offset, struct.wave.mida_min, struct.wave.multires); % calculate number of scales (n_scales) automatically
 
+[struct.wave.n_orient] = calc_norient(input_image,struct.wave.multires,struct.wave.n_scales,struct.zli.n_membr);
+devlog(strcat('Nombre scales a la funci channel_v1_0: ', num2str(struct.wave.n_scales)));
+        
 
 
 mkdir(output_folder_imgs);
@@ -124,89 +124,89 @@ mkdir(output_folder_figs);
         
 		
     else
-        
-        disp([image_name_noext ' pre neurodynamical process ']);
-        
-        input_image = double(input_image);
-        devlog(int2str(size(input_image(:,:,1))) );
-        
-        
+        if apply_neuro == 1
+		disp([image_name_noext ' pre neurodynamical process ']);
+		
+		input_image = double(input_image);
+		devlog(int2str(size(input_image(:,:,1))) );
+		
+		
 
 
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%% Plot and store  struct %%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		%%%%% Plot and store  struct %%%%%%
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-        store_matrix_givenparams(struct,'struct',struct);
+		store_matrix_givenparams(struct,'struct',struct);
 
-        
-        
-        % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % %%%%%%%  stimulus (image) to opponent
-        % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-        input_image = get_the_cstimulus(input_image,struct.image.gamma,struct.image.srgb_flag);%! color  to opponent
+		
+		
+		% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		% %%%%%%%  stimulus (image) to opponent
+		% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%%%% Apply neurodynamical %%%%%%%%%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        channels={'chromatic', 'chromatic2', 'intensity'};
-        for op=1:3
-
-            channel = channels{op};
-            im_opponent = input_image(:,:,op);
-
-            im_opponent_dynamic = dynrep_channel(im_opponent,struct.zli.n_membr); %if static, replicate frames
-
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%% wavelet decomposition %%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-            [curv, w, c, Ls] = multires_dispatcher(im_opponent_dynamic, struct.wave.multires,struct.wave.n_scales, struct.zli.n_membr);
-
-            [curv] = dyncopy_curv(curv,struct.wave.n_scales,struct.zli.n_membr); %! duplicitat, s'hauria de fer a NCZLd
+		input_image = get_the_cstimulus(input_image,struct.image.gamma,struct.image.srgb_flag);%! color  to opponent
 
 
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%% store dwt (curv) %%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-            if struct.image.tmem_rw_res == 1
-            if struct.display_plot.store_irrelevant==1
-            %store_matrix_givenparams_channel(curv,'omega',channel,struct);
-            store_matrix_givenparams_channel(curv,'omega',channel,struct);
-            end
-            end
-            store_matrix_givenparams_channel(c,'residual',channel,struct);
-            store_matrix_givenparams_channel(Ls,'Ls',channel,struct);
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		%%%%%%%% Apply neurodynamical %%%%%%%%%%%%%%
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		
+		channels={'chromatic', 'chromatic2', 'intensity'};
+		for op=1:3
 
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%% apply neurodinamic %%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            t_ini=tic;
-            disp([image_name_noext ' neurodynamical process on channel: ' channel]);
-            
-            [curv_final, curv_ON_final, curv_OFF_final, iFactor_ON, iFactor_OFF] =NCZLd_channel_ON_OFF_v1_1(curv,struct,channel);
-            iFactor = curv_final;
+		    channel = channels{op};
+		    im_opponent = input_image(:,:,op);
 
-            toc(t_ini);
+		    im_opponent_dynamic = dynrep_channel(im_opponent,struct.zli.n_membr); %if static, replicate frames
 
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%% store iFactor %%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            store_matrix_givenparams_channel(iFactor,'iFactor',channel,struct);
+		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		    %%%%% wavelet decomposition %%%%%%%
+		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-            if struct.image.tmem_rw_res == 1
-                iFactor_meanized = tmatrix_to_matrix(iFactor,struct,1);
-                display_matrix_channel(iFactor_meanized,'iFactor_res',channel,struct);
-                store_matrix_givenparams_channel(iFactor_meanized,'iFactor',channel,struct);
-            end
-        end
+		    [curv, w, c, Ls] = multires_dispatcher(im_opponent_dynamic, struct.wave.multires,struct.wave.n_scales, struct.zli.n_membr);
 
+		    [curv] = dyncopy_curv(curv,struct.wave.n_scales,struct.zli.n_membr); %! duplicitat, s'hauria de fer a NCZLd
+
+
+		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		    %%%%% store dwt (curv) %%%%%%%
+		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+		    %store_matrix_givenparams_channel(curv,'omega',channel,struct);
+
+		    store_matrix_givenparams_channel(c,'residual',channel,struct);
+		    store_matrix_givenparams_channel(Ls,'Ls',channel,struct);
+
+		        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		    %%%%% apply neurodinamic %%%%%%%
+		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		    t_ini=tic;
+		    disp([image_name_noext ' neurodynamical process on channel: ' channel]);
+		   
+		    [iFactor, iFactor_ON, iFactor_OFF] =NCZLd_channel_ON_OFF_v2_1(curv,struct,channel);
+
+
+		    toc(t_ini);
+
+		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		    %%%%% store iFactor %%%%%%%
+		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		    store_matrix_givenparams_channel(iFactor,'iFactor',channel,struct);
+
+
+            %if struct.image.tmem_rw_res == 1
+		    %    iFactor_meanized = timatrix_to_matrix(iFactor,struct);
+		    %    store_matrix_givenparams_channel(iFactor_meanized,'iFactor',channel,struct);
+		    %end
+		end
+	else
+		disp('apply_neuro inactive');
+
+	end
     end
     disp([image_name_noext ' post-neurodynamical process']);
     
@@ -269,9 +269,11 @@ mkdir(output_folder_figs);
         end
         if image_struct.image.tmem_rw_res == 0
          for ff=1:image_struct.zli.n_membr
-             c1_iFactor{ff}{image_struct.wave.n_scales}{1} = zeros(size(c1_iFactor{ff}{image_struct.wave.n_scales}{1}));
-             c2_iFactor{ff}{image_struct.wave.n_scales}{1} = zeros(size(c2_iFactor{ff}{image_struct.wave.n_scales}{1}));
-            c3_iFactor{ff}{image_struct.wave.n_scales}{1} = zeros(size(c3_iFactor{ff}{image_struct.wave.n_scales}{1}));
+             for it=1:image_struct.zli.n_iter
+                c1_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c1_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
+                c2_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c2_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
+                c3_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c3_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
+             end
          end
         else
          c1_iFactor{image_struct.wave.n_scales}{1} = zeros(size(c1_iFactor{image_struct.wave.n_scales}{1}));
@@ -298,7 +300,7 @@ mkdir(output_folder_figs);
         %%%%%unified RF cells %%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        RF_t_s_o_c = unify_channels_t(c1_iFactor,c2_iFactor,c3_iFactor,image_struct);
+        RF_ti_s_o_c = unify_channels_ti(c1_iFactor,c2_iFactor,c3_iFactor,image_struct);
         
         residual_s_c = unify_channels_norient(c1_residual,c2_residual,c3_residual,image_struct);
         
@@ -308,7 +310,8 @@ mkdir(output_folder_figs);
         %%%%%recons function %%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-		smap = RF_to_smap(RF_t_s_o_c,residual_s_c,Ls_s_c,image_struct);
+        RF_s_o_c = timatrix_to_matrix(RF_ti_s_o_c,struct);
+		smap = RF_to_smap_t(RF_s_o_c,residual_s_c,Ls_s_c,image_struct);
 
     
     else
