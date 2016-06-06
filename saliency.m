@@ -114,17 +114,19 @@ mkdir(output_folder_imgs);
 mkdir(output_folder_mats);
 mkdir(output_folder_figs);
 
+if exist(image_struct_path, 'file') && exist(c1_iFactorpath, 'file') && exist(c2_iFactorpath, 'file') && exist(c3_iFactorpath, 'file') && exist(c1_residualpath, 'file') && exist(c2_residualpath, 'file') && exist(c3_residualpath, 'file') && exist(c1_Lspath, 'file') && exist(c2_Lspath, 'file') && exist(c3_Lspath, 'file')
+	
+	%do nothing, recall afterwards
+	neurocalculate = 0;
+	neurorecons = 1;
+else
+	neurocalculate = 1;
+	neurorecons = 1;
+end
 
 
 
-	if exist(image_struct_path, 'file') && exist(c1_iFactorpath, 'file') && exist(c2_iFactorpath, 'file') && exist(c3_iFactorpath, 'file') && exist(c1_residualpath, 'file') && exist(c2_residualpath, 'file') && exist(c3_residualpath, 'file') && exist(c1_Lspath, 'file') && exist(c2_Lspath, 'file') && exist(c3_Lspath, 'file')
-		
-        %do nothing, recall afterwards
-  
-        
-		
-    else
-        if apply_neuro == 1
+    if neurocalculate == 1
 		disp([image_name_noext ' pre neurodynamical process ']);
 		
 		input_image = double(input_image);
@@ -198,16 +200,17 @@ mkdir(output_folder_figs);
 		    store_matrix_givenparams_channel(iFactor,'iFactor',channel,struct);
 
 
-            %if struct.image.tmem_rw_res == 1
+            	%if struct.image.tmem_rw_res == 1
 		    %    iFactor_meanized = timatrix_to_matrix(iFactor,struct);
 		    %    store_matrix_givenparams_channel(iFactor_meanized,'iFactor',channel,struct);
 		    %end
 		end
-	else
-		disp('apply_neuro inactive');
-
+	
 	end
-    end
+    
+
+    if neurorecons == 1
+
     disp([image_name_noext ' post-neurodynamical process']);
     
     %esto deberia ir en la primera parte del if, usar iFactor, c y Ls
@@ -367,7 +370,7 @@ mkdir(output_folder_figs);
 	    %delete(c3_eCSFpath);
 	end
 
-	
+	end
 end
 
 end

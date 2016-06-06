@@ -6,7 +6,7 @@ function [matrix] = timatrix_to_matrix(timatrix,struct)
 
     
     
-    tinit=1;
+    tinit=struct.zli.n_membr-struct.zli.n_frames_promig+1; %index start at 1
     tfinal = struct.zli.n_membr;
     iinit=1;
     ifinal=struct.zli.n_iter; %all

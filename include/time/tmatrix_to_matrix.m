@@ -8,7 +8,7 @@ function [matrix] = tmatrix_to_matrix(tmatrix,struct, portion)
         portion = 1;
     end
     
-    tinit=1;
+    tinit=struct.zli.n_membr-struct.zli.n_frames_promig+1; %index start at 1
     tfinal = struct.zli.n_membr;
     sinit = struct.wave.ini_scale;
     sfinal = struct.wave.fin_scale;

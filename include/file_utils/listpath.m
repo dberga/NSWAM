@@ -1,4 +1,4 @@
-function [listfiles] = listpath(path) %recursive addpath
+function [listfiles] = listpath(path) %list files
     
 maindir = dir(path);
 listfiles = cell(1,length(maindir)-3);

@@ -40,7 +40,18 @@ function [im_out] = foveate(im_in, flag, struct )
     
     
     cN = 128;
-            
+    vAngle = 35.12; vAngle = vAngle*(pi/180); %to radians
+
+% Distance in cm: 61.00
+% Screen width resolution in px: 1024
+% Screen height resolution in px: 768
+% Screen width in cm: 38.61
+% Screen height in cm: 28.96
+% Width of screen subtends 35.12° visual angle
+% 1° of horizontal visual angle: 28.24 pixels
+% Height of screen subtends 26.71° visual angle
+% 1° of vertical visual angle: 28.24 pixels
+
     switch flag
         case 0 %distort
             switch fov_type 
@@ -50,11 +61,11 @@ function [im_out] = foveate(im_in, flag, struct )
                 im_out = distort_fisheye(im_in); 
             case 'cortical'
                 %[im_in,fixationY,fixationX] = pad_image(im_in,fixationY,fixationX);
-                im_out = distort_cortex(im_in,fixationY,fixationX,cN,pi); 
+                im_out = distort_cortex(im_in,fixationY,fixationX,cN,vAngle); 
             case 'cortical_xavi'
                 %[im_in,fixationY,fixationX] = pad_image(im_in,fixationY,fixationX);
                 for c=1:size(im_in,3)
-                    im_out(:,:,c) = mapImage2Cortex(im_in(:,:,c),pi,cN,fixationX,fixationY);
+                    im_out(:,:,c) = mapImage2Cortex(im_in(:,:,c),vAngle,cN,fixationX,fixationY);
                 end
             otherwise
                %[im_in,fixationY,fixationX] = pad_image(im_in,fixationY,fixationX);
@@ -64,11 +75,11 @@ function [im_out] = foveate(im_in, flag, struct )
             switch fov_type
                 case 'cortical'
                         
-                    im_out = undistort_cortex(im_in,fixationY,fixationX,oM,oN,pi); 
+                    im_out = undistort_cortex(im_in,fixationY,fixationX,oM,oN,vAngle); 
                     %[im_out,~,~] = unpad_image(im_out,fixationY,fixationX,oM,oN);
                 case 'cortical_xavi'
                     for c=1:size(im_in,3)
-                        im_out(:,:,c) = mapCortex2Image(im_in(:,:,c),pi,oN,oM,fixationX,fixationY);
+                        im_out(:,:,c) = mapCortex2Image(im_in(:,:,c),vAngle,oN,oM,fixationX,fixationY);
                     end
                     %[im_out,~,~] = unpad_image(im_out,fixationY,fixationX,oM,oN);
                 otherwise
