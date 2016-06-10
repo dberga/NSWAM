@@ -1,5 +1,5 @@
 
-function [] = saliency(input_image,image_name,conf_struct_path,output_folder,output_folder_mats,output_folder_figs,output_extension)
+function [] = saliency2(input_image,image_name,conf_struct_path,output_folder,output_folder_mats,output_folder_figs,output_extension)
 
 clear struct wave zli display_plot compute matrix_in conf_struct image_struct
 

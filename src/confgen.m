@@ -279,7 +279,7 @@ end
 
 function [csfparams] = get_all_parameters_csf_NCZLd()
     %csfparams.nu_0 = num2cell(0.5:0.5:6);
-    csfparams.nu_0 ={1,2,2.357,3,4,5,6};
+    csfparams.nu_0 ={2,2.357,3,4,5};
     
     
     profile1.params_intensity.fOffsetMax=0.;
@@ -470,11 +470,11 @@ function [compute] = get_all_parameters_compute_NCZLd()
     % compute.output_type='image';
     % compute.output_type='saliency';
 
-    %compute.output_from_csf= {'model','eCSF','model&eCSF'};
-    compute.output_from_csf= {'model','eCSF','model&eCSF'};
+    %compute.output_from_csf= {'iFactor','eCSF'};
+    compute.output_from_csf= {'iFactor','eCSF'};
     
     %compute.output_from_residu= {0,1};
-    compute.output_from_residu= {0,1};
+    compute.output_from_residu= {0};
 
     %compute.smethod= {'sqmean','pmax','pmaxc','pmax2','wta'};
     compute.smethod= {'sqmean','pmax','pmaxc','pmax2','wta'};
@@ -483,10 +483,10 @@ function [compute] = get_all_parameters_compute_NCZLd()
     compute.delete_mats= {0};
     
     %compute.orgb_flag= {1,0};
-    compute.orgb_flag= {1,0};
+    compute.orgb_flag= {0};
     
-    %compute.fusion= {1,2,3,4,5};
-    compute.fusion= {2,3,4,5};
+    %compute.fusion= {1,2,3,4,5,6};
+    compute.fusion= {1,2,3,4,5,6};
 
 end
 
@@ -499,7 +499,7 @@ function [image] = get_all_parameters_image_NCZLd()
 
     
 
-
+    image.name = {'image'};
     %image.single_or_multiple={1,2};
     image.single_or_multiple={1};
     %image.single={'mach','che','whi','whi_swirl','whi_swirl_petit'};
@@ -508,6 +508,7 @@ function [image] = get_all_parameters_image_NCZLd()
      %image.multiple={'mach','che','whi'};
      %image.multiple={'whi','whi_new25','whi_new50'};
     image.multiple={'mach'};
+
 
     image.gamma={2.4};
     %image.srgb_flag = {-1,0,1};                      % -1 = rgb, 0= opponents without gamma correction. 1= opponents with gamma correction
@@ -519,10 +520,30 @@ function [image] = get_all_parameters_image_NCZLd()
     
     image.stim={3}; 
     image.nstripes = {0};
-    
+
+    %image.foveate = {0,1};
+    image.foveate = {0};
+    %image.fov_type = {'cortical_xavi','cortical', 'gaussian', 'fisheye'};
+    image.fov_type = {'cortical_xavi'};
+ 
     %image.output_from_model={'M&w','M'};
      image.output_from_model='M';
     
+    %image.autoresize_ds = {-1,0,1,2,3,4}; %-1 = resize to get < 1024, 0 = not resize, > 0 = 2^ds
+    image.autoresize_ds = {0};
+
+    %image.autoresize_nd = {0,10}; %proportion between image size and window size
+    image.autoresize_nd = {10};
+
+    %image.tmem_res = {'mean','max'}; %temporal mean of iFactor or temporal max?
+    image.tmem_res = {'mean'}; 
+
+    image.fixationX = {0}; %auto
+    image.fixationY = {0}; %auto
+
+
+    image.M = {0}; %auto
+    image.N = {0}; %auto
 
 
 end

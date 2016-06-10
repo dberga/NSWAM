@@ -83,7 +83,7 @@ function [im_out] = foveate(im_in, flag, struct )
                     end
                     %[im_out,~,~] = unpad_image(im_out,fixationY,fixationX,oM,oN);
                 otherwise
-                    im_out = undistort_cortex(im_in,fixationY,fixationX); 
+                    %im_out = undistort_cortex(im_in,fixationY,fixationX); 
                     %[im_out,~,~] = unpad_image(im_out,fixationY,fixationX,oM,oN);
             end
         otherwise
