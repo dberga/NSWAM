@@ -16,7 +16,6 @@ end
 end
 
 
-apply_neuro = 1;
 [conf_struct_path_folder,conf_struct_path_name,conf_struct_path_ext] = fileparts(conf_struct_path);
 
 

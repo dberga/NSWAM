@@ -9,7 +9,7 @@ function [gx_final,gy_final,gx_final_per_iter,gy_final_per_iter] = Rmodelinducti
 % orient=wav.orient;
 wave=struct.wave;
 use_fft=struct.compute.use_fft;
-n_scales=wave.n_scales;
+n_scales=wave.fin_scale;
 % make the structure explicit
 zli=struct.zli;
 compute=struct.compute;

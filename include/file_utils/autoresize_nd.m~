@@ -9,7 +9,7 @@ function [input_image_resized] = autoresize_nd(input_image,strct,nd_ctt)
     end
     
     [m n p]    = size(input_image);
-    nm_ratio = n/m;
+    mn_ratio = m/n;
     
     Delta_final = round(strct.zli.Delta / strct.zli.reduccio_JW);
     Delta_final = Delta_final * 2; %radius to diameter
@@ -17,14 +17,8 @@ function [input_image_resized] = autoresize_nd(input_image,strct,nd_ctt)
     mnew = nd_ctt*Delta_final; %m * (nd_ctt/(m/Delta_final));
     nnew = nd_ctt*Delta_final; %n * (nd_ctt/(n/Delta_final));
     
-    if nm_ratio > 1
-        m_resiz    = round(mnew/nm_ratio);
-        n_resiz    = round(nnew);
-    
-    else
-        m_resiz    = round(mnew);
-        n_resiz    = round(nnew*nm_ratio);
-    end
+    m_resiz    = round(mnew*mn_ratio);
+    n_resiz    = round(nnew);
     
     input_image_resized = imresize(input_image, [m_resiz n_resiz]);   
     

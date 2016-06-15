@@ -183,6 +183,7 @@ x-1. no usar valor del mean para el padding sino utilizar los bordes o bien algu
 -7. eliminar padding en imagenes que tienen padding (muchas sinteticas tienen padding gris por defecto)
 -8. no reutilizar mats si el image_struct no tiene los pre-neurodyn parametros iguales a los de la struct
 -9. funcion para printar ifactor por canal, tiempo y tambien mean por cada mapa de orientacion y escala (overshooting)
+10. corregit autoreize_nd, proportion with respect to biggest number (of width or height), not for Height
 
 
 -----v18 version 18
