@@ -95,18 +95,20 @@ function nn = inmod(n,l1,l2)
     modif2 = n < l1;
     modif3 = (modif1 | modif2);
     
-    odds = mod(ceil(n/l2),2); odds = logical(odds);
-    modif4 = modif3 & odds; %odds outside
-    modif5 = modif3 & ~odds; %even outside
+    odds = mod(ceil(abs(n)/l2),2); odds = logical(odds);
+    modif4 = modif3 & odds; %odds
+    modif5 = modif3 & ~odds; %even
     
     %transform values outside the map
-    nn(modif3)=mod(n(modif3),l2)+1; 
+    nn(modif3)=mod(n(modif3),l2); 
     
-    %for odd numbers outside, do not apply fliping
+    nn(modif3) = nn(modif3) +1;
+    
+    %for odds outside, do not apply fliping
         %nothing
     
-    %for even numbers outside, apply fliping
-    nn(modif5) = l2-(nn(modif5) -1);
+    %for pairs outside, apply fliping
+    nn(modif5) = l2-nn(modif5);
     
     
     

@@ -1,18 +1,18 @@
-function [ cortex ] = distort_cortex( image, ifix, jfix, cN, diag_visualAngle )
+function [ cortex ] = distort_cortex( image, ifix, jfix, cN, diag_visualAngle, lambda, e0 )
 
     [M,N,~] = size(image);
     diag_visualPixels = sqrt(M^2 + N^2);
+    
+    
+    %DEFAULT PARAMETERS (IF NOT SET)
     cortex_max_elong = 120;
     cortex_max_az = 60;
-    
+    if nargin < 7
 
-    %DEFAULT PARAMETERS (IF NOT SET)
-    if nargin < 5
-
-        %lambda = 1.2;
-        %e0= 1;
-        cN = 1024;
-        diag_visualAngle = pi;
+        lambda = 12; % mm
+        e0 = (1/180*pi); %degrees
+        cN = 128;
+        diag_visualAngle = pi/4;
     
        if nargin < 4
            ifix = round(M/2); %center
@@ -30,7 +30,7 @@ function [ cortex ] = distort_cortex( image, ifix, jfix, cN, diag_visualAngle )
      
      
     %CORTEX PIXELS TO VISUAL PIXELS
-     [visual_X,visual_Y] = cortexPixel2visualPixel(cortex_X,cortex_Y);
+     [visual_X,visual_Y] = cortexPixel2visualPixel(cortex_X,cortex_Y,lambda,e0);
         
 
     %VISUAL PIXELS TO VISUAL COORDS
@@ -59,8 +59,7 @@ cortex_Y = (cortex_fil-1-(cM/2))*cortex_pix2az;
 end
 
 
-function [visual_X,visual_Y] = cortexPixel2visualPixel(cortex_X,cortex_Y)
-
+function [visual_X,visual_Y] = cortexPixel2visualPixel(cortex_X,cortex_Y, lambda, e0)
 
 
 X = cortex_X;
@@ -71,9 +70,6 @@ neg_Y = find(Y<0);
 
 W = complex(abs(X),abs(Y));
 
-lambda = 12; % mm
-e0 = (1/180*pi);
-% e0 = 1;
 
 % Z = exp(W)-1;
 Z = expm1(W/lambda)*e0;
@@ -124,6 +120,7 @@ function [output_image] = insert_pixels(input_image,fils_in,cols_in,M_in,N_in,M_
             if fils_in(i,j) > 0 && fils_in(i,j) <= M_in && cols_in(i,j) > 0 && cols_in(i,j) <= N_in
               output_image(i,j,:) = input_image(fils_in(i,j),cols_in(i,j),:);
             else
+                
             end
         end
     end

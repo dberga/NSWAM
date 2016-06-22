@@ -1,20 +1,25 @@
-function [ image ] = undistort_cortex( cortex, ifix, jfix, M, N, diag_visualAngle )
+function [ image ] = undistort_cortex( cortex, ifix, jfix, M, N, diag_visualAngle, lambda, e0 )
 
     [cM,cN,~] = size(cortex);
     diag_visualPixels = sqrt(M^2 + N^2);
-    cortex_max_elong = 120;
-    cortex_max_az = 60;
+    
 
     %DEFAULT PARAMETERS (IF NOT SET)
-
-        %lambda = 1.2;
-        %e0= 1;
+    cortex_max_elong = 120;
+    cortex_max_az = 60;
+        
     
-   if nargin < 2
-       ifix = round(M/2); %center
-       jfix = round(N/2); %center
-   end
     
+    if nargin < 8
+        lambda = 12; % mm
+        e0 = (1/180*pi); % radians
+        diag_visualAngle = pi/4;
+        
+        if nargin < 2
+           ifix = round(M/2); %center
+           jfix = round(N/2); %center
+        end
+    end
 
     %GET VISUAL FILS AND COLS PIXEL COORDS
     [cols_visual,fils_visual] = meshgrid(1:N,1:M);
@@ -24,7 +29,7 @@ function [ image ] = undistort_cortex( cortex, ifix, jfix, M, N, diag_visualAngl
      
      
     %VISUAL PIXELS TO CORTEX PIXELS
-     [cortex_X,cortex_Y] = visualPixel2cortexPixel(visual_X,visual_Y);
+     [cortex_X,cortex_Y] = visualPixel2cortexPixel(visual_X,visual_Y,lambda,e0);
         
 
     %CORTEX PIXELS TO CORTEX COORDS
@@ -64,7 +69,7 @@ end
 
 
 
-function [cortex_X,cortex_Y] = visualPixel2cortexPixel(visual_X,visual_Y)
+function [cortex_X,cortex_Y] = visualPixel2cortexPixel(visual_X,visual_Y, lambda, e0)
 
 
 i = visual_Y;
@@ -75,9 +80,7 @@ neg_i = find(i<0);
 
 Z = complex(abs(j),abs(i));
 
-lambda = 12; % mm
-e0 = (1/180*pi); % radians
-% e0 = 1;
+
 
 % W = log(Z+1);
 W = lambda*log1p(Z/e0);
