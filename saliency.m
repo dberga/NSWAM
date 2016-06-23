@@ -182,7 +182,10 @@ end
 		    %%%%% wavelet decomposition %%%%%%%
 		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-		    [curv, w, c, Ls] = multires_dispatcher(im_opponent_dynamic, struct.wave.multires,struct.wave.n_scales, struct.zli.n_membr);
+		    %[curv, w, c, Ls] = multires_dispatcher(im_opponent_dynamic, struct.wave.multires,struct.wave.n_scales, struct.zli.n_membr);
+            
+            [curv, w, c, Ls] = multires_dispatcher(im_opponent_dynamic, 'a_trous',struct.wave.n_scales, struct.zli.n_membr);
+            %[curv, w, c, Ls] = multires_dispatcher(im_opponent_dynamic, 'wav',struct.wave.n_scales, struct.zli.n_membr);
             
 		    %[curv] = dyncopy_curv(curv,struct.wave.n_scales,struct.zli.n_membr); %! duplicitat, s'hauria de fer a NCZLd
 
