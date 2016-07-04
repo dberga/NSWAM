@@ -38,9 +38,9 @@ c3_iFactorpath = [ output_folder_mats '/' image_name_noext '_' 'iFactor' '_chann
 c1_residualpath = [ output_folder_mats '/' image_name_noext '_' 'residual' '_channel(' channels{1} ')' '.mat'];
 c2_residualpath = [ output_folder_mats '/' image_name_noext '_' 'residual' '_channel(' channels{2} ')' '.mat'];
 c3_residualpath = [ output_folder_mats '/' image_name_noext '_' 'residual' '_channel(' channels{3} ')' '.mat'];
-c1_Lspath = [ output_folder_mats '/' image_name_noext '_' 'Ls' '_channel(' channels{1} ')' '.mat'];
-c2_Lspath = [ output_folder_mats '/' image_name_noext '_' 'Ls' '_channel(' channels{2} ')' '.mat'];
-c3_Lspath = [ output_folder_mats '/' image_name_noext '_' 'Ls' '_channel(' channels{3} ')' '.mat'];
+c1_curvpath = [ output_folder_mats '/' image_name_noext '_' 'curv' '_channel(' channels{1} ')' '.mat'];
+c2_curvpath = [ output_folder_mats '/' image_name_noext '_' 'curv' '_channel(' channels{2} ')' '.mat'];
+c3_curvpath = [ output_folder_mats '/' image_name_noext '_' 'curv' '_channel(' channels{3} ')' '.mat'];
 
 
 if exist(output_image_path, 'file')
@@ -109,7 +109,7 @@ mkdir(output_folder_imgs);
 mkdir(output_folder_mats);
 mkdir(output_folder_figs);
 
-if exist(image_struct_path, 'file') && exist(c1_iFactorpath, 'file') && exist(c2_iFactorpath, 'file') && exist(c3_iFactorpath, 'file') && exist(c1_residualpath, 'file') && exist(c2_residualpath, 'file') && exist(c3_residualpath, 'file') && exist(c1_Lspath, 'file') && exist(c2_Lspath, 'file') && exist(c3_Lspath, 'file')
+if exist(image_struct_path, 'file') && exist(c1_iFactorpath, 'file') && exist(c2_iFactorpath, 'file') && exist(c3_iFactorpath, 'file') && exist(c1_residualpath, 'file') && exist(c2_residualpath, 'file') && exist(c3_residualpath, 'file')
 	
 	%do nothing, recall afterwards
 	neurocalculate = 0;
@@ -149,19 +149,17 @@ end
 		
 		
 		% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		% %%%%%%%  stimulus (image) to opponent
+		% %%%%%%%  stimulus (image) to opponent, + gamma correction
 		% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 		input_image = get_the_cstimulus(input_image,struct.image.gamma,struct.image.srgb_flag);%! color  to opponent
 
 
-
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		%%%%%%%% in grayscale images, apply only to one opponent %%%%%%%%%%%%%%
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		%%%%%%%% Apply neurodynamical %%%%%%%%%%%%%%
-		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		
-        channels={'chromatic', 'chromatic2', 'intensity'};
+        
         
         if orig_channels < 3
             start_op = 3;
@@ -171,46 +169,42 @@ end
             end_op = 3;
         end
         
+        
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		%%%%%%%% Apply neurodynamical %%%%%%%%%%%%%%
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		
+        channels={'chromatic', 'chromatic2', 'intensity'};
+        
+        
+        
 		for op=start_op:end_op
             
 		    channel = channels{op};
 		    im_opponent = input_image(:,:,op);
 
-		    im_opponent_dynamic = dynrep_channel(im_opponent,struct.zli.n_membr); %if static, replicate frames
+		    %im_opponent_dynamic = dynrep_channel(im_opponent,struct.zli.n_membr); %if static, replicate frames
 
 		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		    %%%%% wavelet decomposition %%%%%%%
 		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-		    %[curv, w, c, Ls] = multires_dispatcher(im_opponent_dynamic, struct.wave.multires,struct.wave.n_scales, struct.zli.n_membr);
+		     [w,c] = multires_dispatcher(im_opponent, struct.wave.multires,struct.wave.n_scales, struct.wave.n_orient);
+            %[w,c] = multires_dispatcher(im_opponent, 'a_trous',struct.wave.n_scales, struct.wave.n_orient);
+            %[w,c] = multires_dispatcher(im_opponent, 'wav',struct.wave.n_scales, struct.wave.n_orient);
             
-            [curv, w, c, Ls] = multires_dispatcher(im_opponent_dynamic, 'a_trous',struct.wave.n_scales, struct.zli.n_membr);
-            %[curv, w, c, Ls] = multires_dispatcher(im_opponent_dynamic, 'wav',struct.wave.n_scales, struct.zli.n_membr);
+            [curv] = multires_decomp2curv(w,c,struct.wave.n_scales,struct.wave.n_orient);
             
-		    %[curv] = dyncopy_curv(curv,struct.wave.n_scales,struct.zli.n_membr); %! duplicitat, s'hauria de fer a NCZLd
-
-
-		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		    %%%%% store dwt (curv) %%%%%%%
 		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-            if orig_channels < 3
-                %store_matrix_givenparams_channel(curv,'omega',channels{1},struct);
-                %store_matrix_givenparams_channel(curv,'omega',channels{2},struct);
-                %store_matrix_givenparams_channel(curv,'omega',channels{3},struct);
-                store_matrix_givenparams_channel(c,'residual',channels{1},struct);
-                store_matrix_givenparams_channel(c,'residual',channels{2},struct);
-                store_matrix_givenparams_channel(c,'residual',channels{3},struct);
-                store_matrix_givenparams_channel(Ls,'Ls',channels{1},struct);
-                store_matrix_givenparams_channel(Ls,'Ls',channels{2},struct);
-                store_matrix_givenparams_channel(Ls,'Ls',channels{3},struct);
-            else
-                %store_matrix_givenparams_channel(curv,'omega',channel,struct);
-                store_matrix_givenparams_channel(c,'residual',channel,struct);
-                store_matrix_givenparams_channel(Ls,'Ls',channel,struct);
-
-            end
-		    
+            
+            store_matrix_givenparams_channel(curv,'curv',channel,struct);
+            store_matrix_givenparams_channel(c,'residual',channel,struct);
+            
+            
 		        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		    %%%%% apply neurodinamic %%%%%%%
 		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -218,8 +212,8 @@ end
 		    disp([image_name_noext ' neurodynamical process on channel: ' channel]);
             
             
-                
-            [iFactor, iFactor_ON, iFactor_OFF] =NCZLd_channel_ON_OFF_v2_1(curv,struct,channel);
+            [dyncurv] = dyncopy_curv(curv,struct.zli.n_membr,struct.wave.n_scales,struct.wave.n_orient);
+            [iFactor, iFactor_ON, iFactor_OFF] =NCZLd_channel_ON_OFF_v2_1(dyncurv,struct,channel);
 
 
 		    toc(t_ini);
@@ -227,20 +221,24 @@ end
 		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		    %%%%% store iFactor %%%%%%%
 		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            if orig_channels < 3
-                store_matrix_givenparams_channel(iFactor,'iFactor',channels{1},struct);
-                store_matrix_givenparams_channel(iFactor,'iFactor',channels{2},struct);
-                store_matrix_givenparams_channel(iFactor,'iFactor',channels{3},struct);
-            else
+            
                 store_matrix_givenparams_channel(iFactor,'iFactor',channel,struct);
-            end
+
 
             	%if struct.image.tmem_rw_res == 1
 		    %    iFactor_meanized = timatrix_to_matrix(iFactor,struct);
 		    %    store_matrix_givenparams_channel(iFactor_meanized,'iFactor',channel,struct);
 		    %end
-		end
-	
+        end
+        
+        if orig_channels < 2 %grayscale image
+                copyfile(c3_curvpath,c1_curvpath);
+                copyfile(c3_curvpath,c2_curvpath);
+                copyfile(c3_residualpath,c1_residualpath);
+                copyfile(c3_residualpath,c2_residualpath);
+                copyfile(c3_iFactorpath,c1_iFactorpath);
+                copyfile(c3_iFactorpath,c2_iFactorpath);
+        end
 	end
     
 
@@ -276,20 +274,14 @@ end
     
     c1_iFactor = load(c1_iFactorpath); c1_iFactor = c1_iFactor.matrix_in; 
     c1_residual = load(c1_residualpath); c1_residual = c1_residual.matrix_in;
-    c1_Ls = load(c1_Lspath); c1_Ls = c1_Ls.matrix_in;
     c2_iFactor = load(c2_iFactorpath); c2_iFactor = c2_iFactor.matrix_in; 
     c2_residual = load(c2_residualpath); c2_residual = c2_residual.matrix_in;
-    c2_Ls = load(c2_Lspath); c2_Ls = c2_Ls.matrix_in;
     c3_iFactor = load(c3_iFactorpath); c3_iFactor = c3_iFactor.matrix_in; 
     c3_residual = load(c3_residualpath); c3_residual = c3_residual.matrix_in;
-    c3_Ls = load(c3_Lspath); c3_Ls = c3_Ls.matrix_in;
     
     c1_iFactor =  c1_iFactor(~cellfun('isempty',c1_iFactor));
     c2_iFactor =  c2_iFactor(~cellfun('isempty',c2_iFactor));
     c3_iFactor =  c3_iFactor(~cellfun('isempty',c3_iFactor));
-    %c1_Ls =  c1_Ls(~cellfun('isempty',c1_Ls));
-    %c2_Ls =  c2_Ls(~cellfun('isempty',c2_Ls));
-    %c3_Ls =  c3_Ls(~cellfun('isempty',c3_Ls));
     c1_residual =  c1_residual(~cellfun('isempty',c1_residual));
     c2_residual =  c2_residual(~cellfun('isempty',c2_residual));
     c3_residual =  c3_residual(~cellfun('isempty',c3_residual));
@@ -305,34 +297,18 @@ end
             c2_residual{s} = zeros(size(c2_residual{s}));
             c3_residual{s} = zeros(size(c3_residual{s}));
         end
-        if image_struct.image.tmem_rw_res == 0
-         for ff=1:image_struct.zli.n_membr
-             for it=1:image_struct.zli.n_iter
-                c1_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c1_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
-                c2_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c2_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
-                c3_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c3_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
-             end
-         end
-        else
-         c1_iFactor{image_struct.wave.n_scales}{1} = zeros(size(c1_iFactor{image_struct.wave.n_scales}{1}));
-         c2_iFactor{image_struct.wave.n_scales}{1} = zeros(size(c2_iFactor{image_struct.wave.n_scales}{1}));
-         c3_iFactor{image_struct.wave.n_scales}{1} = zeros(size(c3_iFactor{image_struct.wave.n_scales}{1}));
-        end
+
+%          for ff=1:image_struct.zli.n_membr
+%              for it=1:image_struct.zli.n_iter
+%                 c1_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c1_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
+%                 c2_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c2_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
+%                 c3_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c3_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
+%              end
+%          end
         
+
     end
     
-    %if Ls has no rows/cols (not correct transform)
-    if size(c1_Ls,1)~= image_struct.wave.n_scales || size(c2_Ls,3)~= image_struct.wave.n_scales || size(c3_Ls,3)~= image_struct.wave.n_scales
-        c1_Ls = c1_residual;
-        c2_Ls = c2_residual;
-        c3_Ls = c3_residual;
-    end
-   
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%saved mats are saved per tmem (ex. from 1 to 10) or already meanized? %%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    if image_struct.image.tmem_rw_res == 0
 	    
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%unified RF cells %%%%%%%
@@ -341,40 +317,119 @@ end
         RF_ti_s_o_c = unify_channels_ti(c1_iFactor,c2_iFactor,c3_iFactor,image_struct);
         
         residual_s_c = unify_channels_norient(c1_residual,c2_residual,c3_residual,image_struct);
-        
-        Ls_s_c = unify_channels_norient(c1_Ls,c2_Ls,c3_Ls,image_struct);
-    
+
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%recons function %%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         RF_s_o_c = timatrix_to_matrix(RF_ti_s_o_c,struct);
-		smap = RF_to_smap_t(RF_s_o_c,residual_s_c,Ls_s_c,image_struct);
+        
+        
+        
+        %compute eCSF
+        if strcmp(struct.compute.output_from_csf,'eCSF') == 1
+            [RF_s_o_c] = apply_eCSF_percanal(RF_s_o_c, struct);
+        end
 
+        %inverse decomposition or max then inverse decomposition
+        switch (struct.compute.smethod)
+            case 'pmax2'
+                [RF_s,residual_s] = get_RF_max_t(RF_s_o_c,residual_s_c,struct);        
+                RF_s_o = repicate_orient(RF_s,struct);
+
+                %despues de maximos solo hay un canal que copiar y reconstruir, que son los maximos
+                [RF_s_o,residual_s] = multires_curv2decomp(RF_s_o,residual_s,struct.wave.n_scales,struct.wave.n_orient);
+                RF_c(:,:,1) = multires_inv_dispatcher(RF_s_o,residual_s,struct.wave.multires,struct.wave.n_scales,struct.wave.n_orient);
+                RF_c(:,:,2) = RF_c(:,:,1);
+                RF_c(:,:,3) = RF_c(:,:,1);
+
+            case 'pmaxc'
+                [RF_s_o,residual_s] = get_RF_max_t_o(RF_s_o_c,residual_s_c,struct);   
+
+                %despues de maximos solo hay un canal, que son los maximos
+                [RF_s_o,residual_s] = mutires_curv2decomp(RF_s_o,residual_s,struct.wave.n_scales,struct.wave.n_orient);
+                RF_c(:,:,1) = multires_inv_dispatcher(RF_s_o,residual_s,struct.wave.multires,struct.wave.n_scales,struct.wave.n_orient);
+                RF_c(:,:,2) = RF_c(:,:,1);
+                RF_c(:,:,3) = RF_c(:,:,1);
+            otherwise
+
+                
+                
+                [c1_RF_s_o,c2_RF_s_o,c3_RF_s_o] = separate_channels(RF_s_o_c,struct);
+                [c1_residual_s,c2_residual_s,c3_residual_s] = separate_channels_norient(residual_s_c,struct);
+                
+                [c1_RF_s_o,c1_residual_s] = mutires_curv2decomp(c1_RF_s_o,c1_residual_s,struct.wave.n_scales,struct.wave.n_orient);
+                [c2_RF_s_o,c2_residual_s] = mutires_curv2decomp(c2_RF_s_o,c2_residual_s,struct.wave.n_scales,struct.wave.n_orient);
+                [c3_RF_s_o,c3_residual_s] = mutires_curv2decomp(c3_RF_s_o,c3_residual_s,struct.wave.n_scales,struct.wave.n_orient);
+                RF_c(:,:,1) = multires_inv_dispatcher(c1_RF_s_o,c1_residual_s,struct.wave.multires,struct.wave.n_scales,struct.wave.n_orient);
+                RF_c(:,:,2) = multires_inv_dispatcher(c2_RF_s_o,c2_residual_s,struct.wave.multires,struct.wave.n_scales,struct.wave.n_orient);
+                RF_c(:,:,3) = multires_inv_dispatcher(c3_RF_s_o,c3_residual_s,struct.wave.multires,struct.wave.n_scales,struct.wave.n_orient);
+
+        end
+
+
+        %from opponent to color (no)
+        if struct.compute.orgb_flag == 1  
+            RF_c = get_the_ostimulus(RF_c,struct.image.gamma,struct.image.srgb_flag);
+        end 
+
+
+        %combine channels
+        switch (struct.compute.smethod)
+            case 'pmax2'
+                smap = RF_c(:,:,1); %max opp i orient, los tres canales lo mismo
+            case 'wta' 
+                smap = channelwta(RF_c); %guanya nomes canal amb mes energia
+            case 'pmax'  
+
+                smap = channelmax(RF_c);	%maxim canals, despres de recons.
+            case 'pmaxc'
+
+                smap = RF_c(:,:,1); %maxim opp, los tres canales lo mismo
+            case 'sqmean'
+                smap = channelsqmean(RF_c);
+            otherwise
+                smap = channelsqmean(RF_c);
+        end
+
+
+
+        %normalize according to a specific type (Z, energy ...)
+        switch(struct.compute.fusion)
+            case 1	
+
+                  smap = normalize_energy(smap);
+
+            case 2
+
+                  smap = normalize_Z(smap);
+            case 3
+
+                smap = normalize_minmax(smap);
+            case 4
+                smap = normalize_energy(smap);
+                smap = normalize_minmax(smap);
+
+            case 5
+                smap = normalize_Z(smap);
+                smap = normalize_minmax(smap);
+            case 6
+                smap = normalize_Zp(smap);
+                smap = normalize_minmax(smap);
+
+            otherwise
+                %do nothing
+        end
     
-    else
+        %undistort
+        if struct.image.foveate == 1
+            smap = foveate(smap,1,struct);
+        end
 
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%unified RF cells %%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        RF_s_o_c = unify_channels(c1_iFactor,c2_iFactor,c3_iFactor,image_struct);
-        
-        residual_s_c = unify_channels_norient(c1_residual,c2_residual,c3_residual,image_struct);
-        
-        
-        Ls_s_c = unify_channels_norient(c1_Ls,c2_Ls,c3_Ls,image_struct);
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%recons function %%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+        %space to uint8
+        smap = smap*255;
+        smap = uint8(smap);
     
-		smap = RF_to_smap_t(RF_s_o_c,residual_s_c,Ls_s_c,image_struct);
-
-		
-
-    end
     
     
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

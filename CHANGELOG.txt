@@ -181,11 +181,17 @@
 -5. fixed problems with time for each fixation on GT (tmem relative to fixation time)
 -6. fixed problems with starting point on GT (tmem relative to fixation time)
 7. eliminar padding en imagenes que tienen padding (muchas sinteticas tienen padding gris por defecto)
--8. no reutilizar mats si el image_struct no tiene los pre-neurodyn parametros iguales a los de la struct.zli y struct.image
+-8. (refactor) no reutilizar mats si el image_struct no tiene los pre-neurodyn parametros iguales a los de la struct.zli y struct.image
 -9. funcion para printar ifactor por canal, tiempo y tambien mean por cada mapa de orientacion y escala (overshooting)
 10. corregit autoreize_nd, proportion with respect to biggest number (of width or height), not for Height
 -11. jugar con e0, vicinity
 -12. cortical magnification con double-sech model
+13. refactor1: poner reconstruccion y otras funciones en una sola funcion (saliency)
+14. included mex files executing NCZLd in c++ (cpp and mex)
+-15. integrate c++ code (neurodynamic) with matlab code to compute saliency
+-16. integrate c++ code (decompositions) with matlab code to compute saliency
+-17. integrate code to use fits instead of .mats in cells
+
 
 -----v18 version 18
 
@@ -195,13 +201,11 @@
 	-output of image with fixation points, with scanpath in order (dibuix)
 -2. parse GT datasets of scanpath
 -3. make code for metrics/evaluation of scanpath
--4. hacer mex para combinar modelo en matlab y C++, tanto en decomposicion como interacciones
 
 
 
 -----v19 version 19
 
--1. use mex as neurodynamic, modify config structure
 -2. dynamic saliency with videos
 -3. multilayer (input other values on other RF)
 	-motion

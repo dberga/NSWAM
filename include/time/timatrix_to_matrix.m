@@ -18,13 +18,13 @@ function [matrix] = timatrix_to_matrix(timatrix,struct)
     
     if strcmp(m_type,'mean') == 1
         matrix = get_timean_matrix(timatrix,tinit,tfinal,iinit,ifinal,sinit,sfinal,oinit,ofinal);
-        matrix{sfinal+1} = timatrix{tinit}{iinit}{sfinal+1};
+        %matrix{sfinal+1} = timatrix{tinit}{iinit}{sfinal+1};
     else if strcmp(m_type,'max') == 1
         matrix = get_timax_matrix(timatrix,tinit,tfinal,iinit,ifinal,sinit,sfinal,oinit,ofinal);
-        matrix{sfinal+1} = timatrix{tinit}{iinit}{sfinal+1};
+        %matrix{sfinal+1} = timatrix{tinit}{iinit}{sfinal+1};
     else
         matrix = get_timean_matrix(timatrix,tinit,tfinal,iinit,ifinal,sinit,sfinal,oinit,ofinal);
-        matrix{sfinal+1} = timatrix{tinit}{iinit}{sfinal+1};
+        %matrix{sfinal+1} = timatrix{tinit}{iinit}{sfinal+1};
     end
     
 end

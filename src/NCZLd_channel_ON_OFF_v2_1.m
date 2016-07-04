@@ -164,7 +164,7 @@ for ff=1:n_membr
             end
         end
         %last scale es la approximada
-        iFactor_out{ff}{it}{n_scales}= curv_in{ff}{n_scales};
+        %iFactor_out{ff}{it}{n_scales}= curv_in{ff}{n_scales};
     end
 end
 

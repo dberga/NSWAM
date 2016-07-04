@@ -10,9 +10,9 @@ function [RF_t_s_o_c] = unify_channels_ti(c1_RF_ti_s_o, c2_RF_ti_s_o, c3_RF_ti_s
                     RF_t_s_o_c{ff}{it}{s}{o}(:,:,3)=c3_RF_ti_s_o{ff}{it}{s}{o};
                 end
             end
-            RF_t_s_o_c{ff}{it}{struct.wave.n_scales}=c1_RF_ti_s_o{ff}{it}{struct.wave.n_scales};
-            RF_t_s_o_c{ff}{it}{struct.wave.n_scales}=c2_RF_ti_s_o{ff}{it}{struct.wave.n_scales};
-            RF_t_s_o_c{ff}{it}{struct.wave.n_scales}=c3_RF_ti_s_o{ff}{it}{struct.wave.n_scales};
+            %RF_t_s_o_c{ff}{it}{struct.wave.n_scales}=c1_RF_ti_s_o{ff}{it}{struct.wave.n_scales};
+            %RF_t_s_o_c{ff}{it}{struct.wave.n_scales}=c2_RF_ti_s_o{ff}{it}{struct.wave.n_scales};
+            %RF_t_s_o_c{ff}{it}{struct.wave.n_scales}=c3_RF_ti_s_o{ff}{it}{struct.wave.n_scales};
         end
     end
     

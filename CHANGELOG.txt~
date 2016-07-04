@@ -184,7 +184,11 @@
 -8. no reutilizar mats si el image_struct no tiene los pre-neurodyn parametros iguales a los de la struct.zli y struct.image
 -9. funcion para printar ifactor por canal, tiempo y tambien mean por cada mapa de orientacion y escala (overshooting)
 10. corregit autoreize_nd, proportion with respect to biggest number (of width or height), not for Height
-
+-11. jugar con e0, vicinity
+-12. cortical magnification con double-sech model
+13. refactor1: poner reconstruccion y otras funciones en una sola funcion (saliency)
+14. included mex files executing NCZLd in c++ (cpp and mex)
+-15. integrate c++ code with matlab code 
 
 -----v18 version 18
 
