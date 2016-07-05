@@ -35,12 +35,12 @@ image_struct_path = [ output_folder_mats '/' image_name_noext '_' 'struct' '.mat
 c1_iFactorpath = [ output_folder_mats '/' image_name_noext '_' 'iFactor' '_channel(' channels{1} ')' '.mat'];
 c2_iFactorpath = [ output_folder_mats '/' image_name_noext '_' 'iFactor' '_channel(' channels{2} ')' '.mat'];
 c3_iFactorpath = [ output_folder_mats '/' image_name_noext '_' 'iFactor' '_channel(' channels{3} ')' '.mat'];
-c1_residualpath = [ output_folder_mats '/' image_name_noext '_' 'residual' '_channel(' channels{1} ')' '.mat'];
-c2_residualpath = [ output_folder_mats '/' image_name_noext '_' 'residual' '_channel(' channels{2} ')' '.mat'];
-c3_residualpath = [ output_folder_mats '/' image_name_noext '_' 'residual' '_channel(' channels{3} ')' '.mat'];
-c1_curvpath = [ output_folder_mats '/' image_name_noext '_' 'curv' '_channel(' channels{1} ')' '.mat'];
-c2_curvpath = [ output_folder_mats '/' image_name_noext '_' 'curv' '_channel(' channels{2} ')' '.mat'];
-c3_curvpath = [ output_folder_mats '/' image_name_noext '_' 'curv' '_channel(' channels{3} ')' '.mat'];
+c1_residualpath = [ output_folder_mats '/' image_name_noext '_' 'c' '_channel(' channels{1} ')' '.mat'];
+c2_residualpath = [ output_folder_mats '/' image_name_noext '_' 'c' '_channel(' channels{2} ')' '.mat'];
+c3_residualpath = [ output_folder_mats '/' image_name_noext '_' 'c' '_channel(' channels{3} ')' '.mat'];
+c1_curvpath = [ output_folder_mats '/' image_name_noext '_' 'w' '_channel(' channels{1} ')' '.mat'];
+c2_curvpath = [ output_folder_mats '/' image_name_noext '_' 'w' '_channel(' channels{2} ')' '.mat'];
+c3_curvpath = [ output_folder_mats '/' image_name_noext '_' 'w' '_channel(' channels{3} ')' '.mat'];
 
 
 if exist(output_image_path, 'file')
@@ -70,7 +70,7 @@ struct.image.fixationY = round(size(input_image,1)/2);
 struct.image.fixationX = round(size(input_image,2)/2);
 struct.image.single = experiment_name;
 [struct.image.name] = experiment_name;
-
+struct.zli.bScaleDelta = 0;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%% Calc scales and orient %%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -193,7 +193,7 @@ end
             %[w,c] = multires_dispatcher(im_opponent, 'a_trous',struct.wave.n_scales, struct.wave.n_orient);
             %[w,c] = multires_dispatcher(im_opponent, 'wav',struct.wave.n_scales, struct.wave.n_orient);
             
-            [curv] = multires_decomp2curv(w,c,struct.wave.n_scales,struct.wave.n_orient);
+            
             
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -201,8 +201,8 @@ end
 		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
             
-            store_matrix_givenparams_channel(curv,'curv',channel,struct);
-            store_matrix_givenparams_channel(c,'residual',channel,struct);
+            store_matrix_givenparams_channel(w,'w',channel,struct);
+            store_matrix_givenparams_channel(c,'c',channel,struct);
             
             
 		        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -212,12 +212,29 @@ end
 		    disp([image_name_noext ' neurodynamical process on channel: ' channel]);
             
             
-            [dyncurv] = dyncopy_curv(curv,struct.zli.n_membr,struct.wave.n_scales,struct.wave.n_orient);
-            [iFactor, iFactor_ON, iFactor_OFF] =NCZLd_channel_ON_OFF_v2_1(dyncurv,struct,channel);
+            
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%% IN MATLAB %%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                
+                %[iFactor, iFactor_ON, iFactor_OFF] =NCZLd_channel_ON_OFF_v2_2(w,struct,channel);
 
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %%%%% IN C++ %%%%%%%
+                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                [iFactor_single,iFactor] = NCZLd_periter_mex(w); %iFactor_single has mean of memtime and iter (scale and orientation dimensions)
+                
+                 
+            
+            toc(t_ini);
 
-		    toc(t_ini);
-
+            %from {ff}{iter}{s}(:,:,o) to {ff}{iter}{s}{o}
+            for ff=1:struct.zli.n_membr
+                     for iter=1:struct.zli.n_iter
+                         [iFactor{ff}{iter},~] = multires_decomp2curv(iFactor{ff}{iter},c,struct.wave.n_scales,struct.wave.n_orient);
+                     end
+            end
+                 
 		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		    %%%%% store iFactor %%%%%%%
 		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

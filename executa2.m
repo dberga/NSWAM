@@ -16,7 +16,7 @@ raddpath('include');
 
 %NCZLd - Xavi/Xim/David
 addpath('src');
-
+addpath('src_mex');
 
 conf_mats= dir(fullfile(conf_dir, ['*.mat']));
 

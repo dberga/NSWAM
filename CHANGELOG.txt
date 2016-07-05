@@ -188,9 +188,9 @@
 -12. cortical magnification con double-sech model
 13. refactor1: poner reconstruccion y otras funciones en una sola funcion (saliency)
 14. included mex files executing NCZLd in c++ (cpp and mex)
--15. integrate c++ code (neurodynamic) with matlab code to compute saliency
+15. integrate c++ code (neurodynamic) with matlab code to compute saliency
 -16. integrate c++ code (decompositions) with matlab code to compute saliency
--17. integrate code to use fits instead of .mats in cells
+-17. integrate code to use .fits instead of .mats in cells
 
 
 -----v18 version 18

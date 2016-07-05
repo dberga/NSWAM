@@ -1,4 +1,7 @@
-function [iFactor_out, iFactor_ON, iFactor_OFF] = NCZLd_channel_ON_OFF_v2_1(curv_in,struct,channel)
+function [iFactor_out, iFactor_ON, iFactor_OFF] = NCZLd_channel_ON_OFF_v2_2(w,struct,channel)
+
+[curv] = multires_decomp2curv(w,[],struct.wave.n_scales,struct.wave.n_orient);
+[curv_in] = dyncopy_curv(curv,struct.zli.n_membr,struct.wave.n_scales,struct.wave.n_orient);
 
 % from NCZLd_channel_ON_OFF_v1_1.m to Rmodelinductiond_v0_3_2.m
 
@@ -17,7 +20,7 @@ fin_scale=struct.wave.fin_scale;
 iFactor = cell(n_membr,n_iter);
 iFactor_ON = cell(n_membr,n_iter);
 iFactor_OFF = cell(n_membr,n_iter);
-iFactor_out = cell(n_membr,n_iter,fin_scale,n_orient);
+iFactor_out = cell(n_membr,n_iter,fin_scale);
 
 %-------------------------------------------------------
 % make the structure explicit/get the parameters
@@ -159,7 +162,7 @@ for ff=1:n_membr
     for it=1:n_iter
         for s=1:fin_scale
             for o=1:n_orient
-                iFactor_out{ff}{it}{s}{o}=iFactor{ff}{it}(:,:,s,o);
+                iFactor_out{ff}{it}{s}(:,:,o)=iFactor{ff}{it}(:,:,s,o);
                 
             end
         end
