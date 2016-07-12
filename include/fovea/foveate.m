@@ -4,7 +4,6 @@
 function [im_out] = foveate(im_in, flag, struct )
 
     im_in = double(im_in);
-    [M,N,~] = size(im_in);
     
     if nargin < 3
         fov_type = 'cortical_xavi';
@@ -12,6 +11,11 @@ function [im_out] = foveate(im_in, flag, struct )
         
         fixationY = round(oM/2);
         fixationX = round(oN/2);
+        
+        cN = 128;
+        vAngle = 35.12;  vAngle = vAngle*(pi/180); %to radians
+        lambda = 12;
+        e0 = 1; e0=e0*(pi/180);  %to radians
         
         if nargin < 2
             flag = 0; 
@@ -25,32 +29,19 @@ function [im_out] = foveate(im_in, flag, struct )
     oM = struct.image.M;
     oN = struct.image.N;
     
-        
-    end
+    cN = struct.image.cortex_width;
+    vAngle = struct.image.vAngle; vAngle = vAngle*(pi/180); %to radians
+    lambda = struct.image.lambda;
+    e0 = struct.image.e0; e0=e0*(pi/180); %to radians
     
-    if oM == 0 || oN == 0
-        oM = size(im_in,1);
-        oN = size(im_in,2);
-    end
-       
-    if fixationX == 0 || fixationY == 0
-        fixationY = round(oM/2);
-        fixationX = round(oN/2);
     end
     
     
-    cN = 128;
-    vAngle = 35.12; vAngle = vAngle*(pi/180); %to radians
 
-% Distance in cm: 61.00
-% Screen width resolution in px: 1024
-% Screen height resolution in px: 768
-% Screen width in cm: 38.61
-% Screen height in cm: 28.96
-% Width of screen subtends 35.12° visual angle
-% 1° of horizontal visual angle: 28.24 pixels
-% Height of screen subtends 26.71° visual angle
-% 1° of vertical visual angle: 28.24 pixels
+    
+    
+
+
 
     switch flag
         case 0 %distort
@@ -65,7 +56,7 @@ function [im_out] = foveate(im_in, flag, struct )
             case 'cortical_xavi'
                 %[im_in,fixationY,fixationX] = pad_image(im_in,fixationY,fixationX);
                 for c=1:size(im_in,3)
-                    im_out(:,:,c) = mapImage2Cortex(im_in(:,:,c),vAngle,cN,fixationX,fixationY);
+                    im_out(:,:,c) = mapImage2Cortex(im_in(:,:,c),vAngle,cN,fixationX,fixationY,lambda,e0);
                 end
             otherwise
                %[im_in,fixationY,fixationX] = pad_image(im_in,fixationY,fixationX);
@@ -79,7 +70,7 @@ function [im_out] = foveate(im_in, flag, struct )
                     %[im_out,~,~] = unpad_image(im_out,fixationY,fixationX,oM,oN);
                 case 'cortical_xavi'
                     for c=1:size(im_in,3)
-                        im_out(:,:,c) = mapCortex2Image(im_in(:,:,c),vAngle,oN,oM,fixationX,fixationY);
+                        im_out(:,:,c) = mapCortex2Image(im_in(:,:,c),vAngle,oN,oM,fixationX,fixationY,lambda,e0);
                     end
                     %[im_out,~,~] = unpad_image(im_out,fixationY,fixationX,oM,oN);
                 otherwise
@@ -93,10 +84,15 @@ function [im_out] = foveate(im_in, flag, struct )
     
     
     
-    
-    
-    
-    
-    
-
 end
+
+
+% Distance in cm: 61.00
+% Screen width resolution in px: 1024
+% Screen height resolution in px: 768
+% Screen width in cm: 38.61
+% Screen height in cm: 28.96
+% Width of screen subtends 35.12° visual angle
+% 1° of horizontal visual angle: 28.24 pixels
+% Height of screen subtends 26.71° visual angle
+% 1° of vertical visual angle: 28.24 pixels

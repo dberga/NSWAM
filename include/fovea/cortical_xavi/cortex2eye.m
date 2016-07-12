@@ -1,4 +1,4 @@
-function [i,j] = cortex2eye(X,Y)
+function [i,j] = cortex2eye(X,Y,lambda,e0)
 % X and Y are in mm
 % i and j are in radians
 
@@ -7,9 +7,6 @@ neg_Y = find(Y<0);
 
 W = complex(abs(X),abs(Y));
 
-lambda = 12; % mm
-e0 = (1/180*pi);
-% e0 = 1;
 
 % Z = exp(W)-1;
 Z = expm1(W/lambda)*e0;

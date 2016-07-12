@@ -1,4 +1,4 @@
-function [img] = mapCortex2Image(cortex,img_diag_angle,img_width, img_height, fov_x, fov_y)
+function [img] = mapCortex2Image(cortex,img_diag_angle,img_width, img_height, fov_x, fov_y,lambda,e0)
 
 size_cortex = [size(cortex,1) size(cortex,2)];
 
@@ -30,7 +30,7 @@ eye_pix2az = img_az_angle/img_height;
 [coord_i_img, coord_j_img] = ind2sub(size(img),[1:numel(img)]);
 coord_img = sub2ind(size_img,coord_i_img, coord_j_img);
 
-[coord_j_cortex,coord_i_cortex] = eye2cortex( (coord_i_img-fov_y)*eye_pix2az, (coord_j_img-fov_x)*eye_pix2elong);
+[coord_j_cortex,coord_i_cortex] = eye2cortex( (coord_i_img-fov_y)*eye_pix2az, (coord_j_img-fov_x)*eye_pix2elong,lambda,e0);
 
 
 j = round((coord_j_cortex*cortex_elong2pix_mm)+cortex_width_2+1);

@@ -66,11 +66,12 @@ struct=load_default_parameters_NCZLd(conf_struct_path);
 
 struct.image.M = size(input_image,1);
 struct.image.N = size(input_image,2);
-struct.image.fixationY = round(size(input_image,1)/2);
-struct.image.fixationX = round(size(input_image,2)/2);
+struct.image.oM = struct.image.M;
+struct.image.oN = struct.image.N;
+struct.image.fixationY = round(struct.image.oM/2);
+struct.image.fixationX = round(struct.image.oN/2);
 struct.image.single = experiment_name;
 [struct.image.name] = experiment_name;
-struct.zli.bScaleDelta = 0;
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%% Calc scales and orient %%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -86,14 +87,14 @@ else
 end
 
 if nd_res ~= 0
-    input_image = autoresize_nd(input_image,conf_struct,nd_res);
+    input_image = autoresize_nd(input_image,struct,nd_res);
 end
 
 
 
 %foveate function
 if fovear == 1
-    input_image = foveate(input_image,0,conf_struct);
+    input_image = foveate(input_image,0,struct);
 end
     
 
@@ -222,7 +223,7 @@ end
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%% IN C++ %%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                [iFactor_single,iFactor] = NCZLd_periter_mex(w); %iFactor_single has mean of memtime and iter (scale and orientation dimensions)
+                [iFactor_single,iFactor] = NCZLd_periter_mex(w,struct); %iFactor_single has mean of memtime and iter (scale and orientation dimensions)
                 
                  
             
@@ -481,4 +482,19 @@ end
 end
 
 end
-
+% 
+% function [cstruct] = mstruct2cstruct(mstruct)
+%     strParam.strParamZLiNetwork.pMultires=&ATrousOrient;
+%     strParam.strParamZLiNetwork.strParamZLiExcInh.tDist = MANH_DIST;
+% 	strParam.strParamZLiNetwork.strParamZLiExcInh.tNormalization = SCALE_NORM;
+% 	strParam.strParamZLiNetwork.strParamZLiExcInh.min_shift = 0.;
+% 
+% 	strParam.strParamZLiNetwork.strParamZLiExcInh.input_inh_factor = 0.01;
+% 	strParam.output_normalization_value = 1.0;
+% 
+% 	strParam.strParamZLiNetwork.strParamZLiExcInh.noise_stddev =0.01;
+% 	strParam.strParamZLiNetwork.strParamZLiExcInh.bScaleDelta = true;
+% 	strParam.strParamZLiNetwork.strParamZLiExcInh.bScaleInteraction = false;
+% 	strParam.strParamZLiNetwork.strParamComputation.bSaveIterResults = false;
+% 	strParam.strParamZLiNetwork.strParamComputation.tODESolvingMethod = ODE_EULER;
+% end
