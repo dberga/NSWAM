@@ -195,9 +195,9 @@
 
 -----v18 version 18
 
--1. implement scanpath (several fixations)
-	-output coords of fixations
-	-output of smaps
+1. implement scanpath (several fixations)
+	output coords of fixations
+	output of smaps
 	-output of image with fixation points, with scanpath in order (dibuix)
 -2. parse GT datasets of scanpath
 -3. make code for metrics/evaluation of scanpath

@@ -110,21 +110,11 @@ if(orig_channels<3)
         input_image(:,:,2) = input_image(:,:,1);
         input_image(:,:,3) = input_image(:,:,1);
         
+    
 end
-if orig_channels < 3
-    start_op = 3;
-    end_op = 3;
-else
-    start_op=1;
-    end_op = 3;
-end
-channels={'chromatic', 'chromatic2', 'intensity'};
-
-aux_input_image = input_image;
 
 for k=1:nscans
     
-    input_image = aux_input_image;
     
     %resize if necessary
     if ds_res ~= -1    
@@ -136,12 +126,12 @@ for k=1:nscans
     if nd_res ~= 0
         input_image = autoresize_nd(input_image,struct,nd_res);
     end
-    
+
     %foveate function
     if fovear == 1
         input_image = foveate(input_image,0,struct);
     end
-    
+
     %if n_scales = 0
     [struct.wave.n_scales, struct.wave.ini_scale, struct.wave.fin_scale]= calc_scales(input_image, struct.wave.ini_scale, struct.wave.fin_scale_offset, struct.wave.mida_min, struct.wave.multires); % calculate number of scales (n_scales) automatically
 
@@ -174,14 +164,25 @@ for k=1:nscans
 		input_image = get_the_cstimulus(input_image,struct.image.gamma,struct.image.srgb_flag);%! color  to opponent
 
 
-
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+		%%%%%%%% in grayscale images, apply only to one opponent %%%%%%%%%%%%%%
+		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        
+        if orig_channels < 3
+            start_op = 3;
+            end_op = 3;
+        else
+            start_op=1;
+            end_op = 3;
+        end
         
         
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		%%%%%%%% Apply neurodynamical %%%%%%%%%%%%%%
 		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		
-        
+        channels={'chromatic', 'chromatic2', 'intensity'};
         
         
         
@@ -462,7 +463,7 @@ for k=1:nscans
         [scanpath(k,1), scanpath(k,2)] = ind2sub(size(smap),maxidx); %x,y
         
         struct.image.fixationY = scanpath(k,2);
-        struct.image.fixationX = scanpath(k,1);
+        struct.image.fixationY = scanpath(k,1);
         
         imwrite(smap, [ output_folder_imgs '/' num2str(k) '_' scanpath_prefix_img output_image output_extension]);
 end
@@ -501,4 +502,20 @@ end
 	end
 end
 
-
+end
+% 
+% function [cstruct] = mstruct2cstruct(mstruct)
+%     strParam.strParamZLiNetwork.pMultires=&ATrousOrient;
+%     strParam.strParamZLiNetwork.strParamZLiExcInh.tDist = MANH_DIST;
+% 	strParam.strParamZLiNetwork.strParamZLiExcInh.tNormalization = SCALE_NORM;
+% 	strParam.strParamZLiNetwork.strParamZLiExcInh.min_shift = 0.;
+% 
+% 	strParam.strParamZLiNetwork.strParamZLiExcInh.input_inh_factor = 0.01;
+% 	strParam.output_normalization_value = 1.0;
+% 
+% 	strParam.strParamZLiNetwork.strParamZLiExcInh.noise_stddev =0.01;
+% 	strParam.strParamZLiNetwork.strParamZLiExcInh.bScaleDelta = true;
+% 	strParam.strParamZLiNetwork.strParamZLiExcInh.bScaleInteraction = false;
+% 	strParam.strParamZLiNetwork.strParamComputation.bSaveIterResults = false;
+% 	strParam.strParamZLiNetwork.strParamComputation.tODESolvingMethod = ODE_EULER;
+% end
