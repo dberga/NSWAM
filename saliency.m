@@ -224,12 +224,12 @@ for k=1:nscans
                 %%%%% IN MATLAB %%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 
-                %[iFactor, iFactor_ON, iFactor_OFF] =NCZLd_channel_ON_OFF_v2_2(w,struct,channel);
+                [iFactor, iFactor_ON, iFactor_OFF] =NCZLd_channel_ON_OFF(w,struct,channel);
 
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                 %%%%% IN C++ %%%%%%%
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                [iFactor_single,iFactor] = NCZLd_periter_mex(w,struct); %iFactor_single has mean of memtime and iter (scale and orientation dimensions)
+                %[iFactor_single,iFactor] = NCZLd_periter_mex(w,struct); %iFactor_single has mean of memtime and iter (scale and orientation dimensions)
                 
                  
             
@@ -465,6 +465,8 @@ for k=1:nscans
         struct.image.fixationX = scanpath(k,1);
         
         imwrite(smap, [ output_folder_imgs '/' num2str(k) '_' scanpath_prefix_img output_image output_extension]);
+        
+        scanpath_mean(:,:,k) = smap;
 end
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%write image %%%%%%%
@@ -472,8 +474,9 @@ end
         
         
         %make mean of all smaps per N fixations
-        
-    imwrite(smap,[output_image_path]);
+    final_smap = normalize_minmax(mean(scanpath_mean,3));
+    imwrite(final_smap,[output_image_path]);
+    
     save(output_scanpath_path,'scanpath');
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

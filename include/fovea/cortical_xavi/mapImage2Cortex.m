@@ -78,6 +78,7 @@ function [map] = map_coords(map,coord_map,idx_inside,idx_outside,img,coord_img)
     coords_inside = sub2ind(size_img,coords_i_inside,coords_j_inside);
     map(coord_map(idx_inside))=img(coords_inside);
     
+    %mirroring here
     coords_i_outside = i(idx_outside');
         coords_i_outside = inmod(coords_i_outside,1,size_img(1));
     coords_j_outside = j(idx_outside');

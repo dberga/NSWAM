@@ -1,9 +1,9 @@
-function [iFactor_out, iFactor_ON, iFactor_OFF] = NCZLd_channel_ON_OFF_v2_2(w,struct,channel)
+function [iFactor_out, iFactor_ON, iFactor_OFF] = NCZLd_channel_ON_OFF(w,struct,channel)
 
 [curv] = multires_decomp2curv(w,[],struct.wave.n_scales,struct.wave.n_orient);
 [curv_in] = dyncopy_curv(curv,struct.zli.n_membr,struct.wave.n_scales,struct.wave.n_orient);
 
-% from NCZLd_channel_ON_OFF_v1_1.m to Rmodelinductiond_v0_3_2.m
+% from NCZLd_channel_ON_OFF.m to Rmodelinductiond.m
 
 % separate ON and OFF channels
 % start the recovering at the level of the wavelet/Gabor responses
@@ -96,12 +96,12 @@ switch(struct.zli.ON_OFF)
         
             % positius +++++++++++++++++++++++++++++++++++++++++++++++++++
             %%% MAIN PROCESS %%%
-            [xFactor_ON_t_fi,yFactor_ON_t_fi,xFactor_ON_t_i,yFactor_ON_t_i]=Rmodelinductiond_v0_5_1(curv_ON, struct, 'ON', channel); % note: iFactor is called "gx_final" at the core of the process
+            [xFactor_ON_t_fi,yFactor_ON_t_fi,xFactor_ON_t_i,yFactor_ON_t_i]=Rmodelinductiond(curv_ON, struct, 'ON', channel); % note: iFactor is called "gx_final" at the core of the process
             %%% END MAIN PROCESS %%%
             
             % negatius ----------------------------------------------------
             %%% MAIN PROCESS %%%
-            [xFactor_OFF_t_fi,yFactor_OFF_t_fi,xFactor_OFF_t_i,yFactor_OFF_t_i]=Rmodelinductiond_v0_5_1(curv_OFF, struct,  'OFF', channel); % note: iFactor is called "gx_final" at the core of the process
+            [xFactor_OFF_t_fi,yFactor_OFF_t_fi,xFactor_OFF_t_i,yFactor_OFF_t_i]=Rmodelinductiond(curv_OFF, struct,  'OFF', channel); % note: iFactor is called "gx_final" at the core of the process
 
             for t_membr=1:n_membr
                 for it=1:n_iter
@@ -134,7 +134,7 @@ switch(struct.zli.ON_OFF)
             dades{t_membr}=abs(curv{t_membr});
         end
         
-        [xFactor_t_fi,yFactor_t_fi,xFactor_t_i,yFactor_t_i]=Rmodelinductiond_v0_5_1(dades, struct);
+        [xFactor_t_fi,yFactor_t_fi,xFactor_t_i,yFactor_t_i]=Rmodelinductiond(dades, struct);
         
         for t_membr=1:n_membr
             for it=1:n_iter
@@ -148,7 +148,7 @@ switch(struct.zli.ON_OFF)
             dades{t_membr}=curv{t_membr}.*curv{t_membr};
         end
         
-        [xFactor_t_fi,yFactor_t_fi,xFactor_t_i,yFactor_t_i]=Rmodelinductiond_v0_5_1(dades, struct);
+        [xFactor_t_fi,yFactor_t_fi,xFactor_t_i,yFactor_t_i]=Rmodelinductiond(dades, struct);
         
         for t_membr=1:n_membr
             for it=1:n_iter

@@ -683,6 +683,16 @@ for t_membr=1:n_membr  % membrane time
 				+0.85...             % spontaneous firing rate
                 +var_noise*(rand(M,N,n_scales,K))-0.5);   % neural noise (comment for speed)
 
+    if struct.image.foveate == 1        
+        struct
+        for s=1:struct.wave.fin_scale
+            for o=1:struct.wave.n_orient
+            x(:,:,s,o) = foveate(x(:,:,s,o),1,struct);
+            x(:,:,s,o) = foveate(x(:,:,s,o),0,struct);
+            
+            end
+        end
+    end
         % store I_norm
         vector_I_norm(:,(t_membr-1)*n_iter+t_iter)=[min(I_norm(:));max(I_norm(:));mean(I_norm(:))];
 
@@ -701,6 +711,7 @@ for t_membr=1:n_membr  % membrane time
 		gx_final_per_iter{t_membr}{t_iter}=gx_final{t_membr};
         gy_final_per_iter{t_membr}{t_iter}=gy_final{t_membr};
 % 		disp('questions: verify that the newgy(y) newgx(x) are not in the expressions y_ei,x_ei,x_ee ')
+        
 	end % end t_iter=1:n_iter	
 % 	ginput(1);
 toc

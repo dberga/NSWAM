@@ -1,4 +1,4 @@
-function [gx_final,gy_final] = Rmodelinductiond_v0_3_2(Iitheta,struct, type, channel)
+function [gx_final,gy_final,gx_final_per_iter,gy_final_per_iter] = Rmodelinductiond(Iitheta,struct,type, channel)
 
 % from NCZLd_channel_ON_OFF_v1_1.m to all the functions for implementing Li
 % 1999
@@ -9,7 +9,7 @@ function [gx_final,gy_final] = Rmodelinductiond_v0_3_2(Iitheta,struct, type, cha
 % orient=wav.orient;
 wave=struct.wave;
 use_fft=struct.compute.use_fft;
-n_scales=wave.n_scales;
+n_scales=wave.fin_scale;
 % make the structure explicit
 zli=struct.zli;
 compute=struct.compute;
@@ -138,6 +138,7 @@ gx_final=cell(n_membr,1);
 gy_final=cell(n_membr,1);
 
 gx_final_per_iter=cell(n_membr,n_iter);
+gy_final_per_iter=cell(n_membr,n_iter);
 
 % iFactor=gx_final;
 
@@ -148,6 +149,7 @@ for i=1:n_membr
 % 	 iFactor{i}=gx_final;
     for j=1:n_iter
         gx_final_per_iter{i}{j}=zeros(M,N,n_scales,K);
+        gy_final_per_iter{i}{j}=zeros(M,N,n_scales,K);
     end
 end
     
@@ -681,6 +683,14 @@ for t_membr=1:n_membr  % membrane time
 				+0.85...             % spontaneous firing rate
                 +var_noise*(rand(M,N,n_scales,K))-0.5);   % neural noise (comment for speed)
 
+    if struct.image.foveate == 1        
+        for s=1:struct.wave.fin_scale
+            for o=1:struct.wave.n_orient
+                x_und = foveate(x(:,:,s,o),1,struct);
+                x(:,:,s,o) = foveate(x_und,0,struct);
+            end
+        end
+    end
         % store I_norm
         vector_I_norm(:,(t_membr-1)*n_iter+t_iter)=[min(I_norm(:));max(I_norm(:));mean(I_norm(:))];
 
@@ -697,7 +707,9 @@ for t_membr=1:n_membr  % membrane time
 		gy_final{t_membr}=newgy(y);
 			
 		gx_final_per_iter{t_membr}{t_iter}=gx_final{t_membr};
+        gy_final_per_iter{t_membr}{t_iter}=gy_final{t_membr};
 % 		disp('questions: verify that the newgy(y) newgx(x) are not in the expressions y_ei,x_ei,x_ee ')
+        
 	end % end t_iter=1:n_iter	
 % 	ginput(1);
 toc
@@ -726,29 +738,27 @@ for i=1:n_membr   % change format
         gx_final_per_iter{i}{j}(:,:,:,2)=gx_final_per_iter{i}{j}(:,:,:,3);
         gx_final_per_iter{i}{j}(:,:,:,3)=gx_final_per_iter_2;
     end
-end
-
-
-
-
-
-
-
-
-if struct.display_plot.store == 1
-    %save([struct.compute.outputstr_mats '' image.name 'gx_final_per_iter_' type '_' channel '.mat'], 'gx_final_per_iter', '-v7.3');
-
-    gx_final_per_membr = cell(n_iter);
-    for i=1:n_iter
-        gx_final_per_membr{i}=zeros(M,N,n_scales,K);
-    end
-    for i=1:n_membr
-        gx_final_per_membr = gx_final_per_iter{i};
-        %save([struct.compute.outputstr_mats '' image.name 'gx_final_per_membr_' type '_' channel '_Tmem' num2str(i) '.mat'], 'gx_final_per_membr');
+    
+    for j=1:n_iter
+        gy_final_per_iter_2=gy_final_per_iter{i}{j}(:,:,:,2);
+        gy_final_per_iter{i}{j}(:,:,:,2)=gy_final_per_iter{i}{j}(:,:,:,3);
+        gy_final_per_iter{i}{j}(:,:,:,3)=gy_final_per_iter_2;
     end
 end
 
+%save([image.name 'gx_final_per_iter_' type '_' channel '.mat'], 'gx_final_per_iter', '-v7.3');
 
+
+% store_matrix_givenparams_channel(all_J,'all_J',channel,struct);
+% store_matrix_givenparams_channel(all_J,'all_J_fft',channel,struct);
+% store_matrix_givenparams_channel(all_J,'all_W',channel,struct);
+% store_matrix_givenparams_channel(all_J,'all_J',channel,struct);
+% store_matrix_givenparams_channel(all_J,'all_W_fft',channel,struct);
+
+
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%DATA STRUCTURES 
 %Delta=zli.Delta*ones(1,n_scales);
 %diam=2*Delta+1;
 %M=size(Iitheta{1},1);
@@ -761,15 +771,3 @@ end
 %gx_final =  {t}(fil,col,s,o)
 %gx_final_per_iter =  {t}{iter}(fil,col,s,o)
 %gy_final =  {t}(fil,col,s,o)
-
-if struct.display_plot.store_irrelevant==1
-store_matrix_givenparams_channel(all_J,'all_J',channel,struct);
-store_matrix_givenparams_channel(all_J,'all_J_fft',channel,struct);
-store_matrix_givenparams_channel(all_J,'all_W',channel,struct);
-store_matrix_givenparams_channel(all_J,'all_J',channel,struct);
-store_matrix_givenparams_channel(all_J,'all_W_fft',channel,struct);
-end
-
-end
-
-
