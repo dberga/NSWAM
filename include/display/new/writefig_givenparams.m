@@ -3,7 +3,7 @@ function [] = writefig_givenparams(figures_in,matrix_name,struct)
     
     
     output_folder = struct.compute.outputstr_figs;
-    output_prefix = struct.image.single;
+    output_prefix = struct.image.name;
     output_suffix = '';
     format = 'jpg';
    

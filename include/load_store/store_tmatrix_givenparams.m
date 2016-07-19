@@ -2,7 +2,7 @@
 function [] = store_tmatrix_givenparams(tmatrix_in,matrix_name,struct)
     if struct.display_plot.store == 1
     output_folder = struct.compute.outputstr_mats;
-    output_prefix = struct.image.single;
+    output_prefix = struct.image.name;
     format = 'mat';
         time_ini = 1;
         time_fin = struct.zli.n_membr;

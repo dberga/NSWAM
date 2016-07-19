@@ -36,13 +36,6 @@ function [im_out] = foveate(im_in, flag, struct )
     
     end
     
-    
-
-    
-    
-
-
-
     switch flag
         case 0 %distort
             switch fov_type 
@@ -58,9 +51,13 @@ function [im_out] = foveate(im_in, flag, struct )
                 for c=1:size(im_in,3)
                     im_out(:,:,c) = mapImage2Cortex(im_in(:,:,c),vAngle,cN,fixationX,fixationY,lambda,e0);
                 end
+            case 'cortical_xavi_mirrored'
+                %[im_in,fixationY,fixationX] = pad_image(im_in,fixationY,fixationX);
+                for c=1:size(im_in,3)
+                    im_out(:,:,c) = mapImage2Cortex_mirrored(im_in(:,:,c),vAngle,cN,fixationX,fixationY,lambda,e0);
+                end
             otherwise
-               %[im_in,fixationY,fixationX] = pad_image(im_in,fixationY,fixationX);
-               im_out = distort_cortex(im_in,fixationY,fixationX); 
+                %nada
             end
         case 1 %undistort
             switch fov_type
@@ -73,9 +70,13 @@ function [im_out] = foveate(im_in, flag, struct )
                         im_out(:,:,c) = mapCortex2Image(im_in(:,:,c),vAngle,oN,oM,fixationX,fixationY,lambda,e0);
                     end
                     %[im_out,~,~] = unpad_image(im_out,fixationY,fixationX,oM,oN);
-                otherwise
-                    %im_out = undistort_cortex(im_in,fixationY,fixationX); 
+                case 'cortical_xavi_mirrored'
+                    for c=1:size(im_in,3)
+                        im_out(:,:,c) = mapCortex2Image(im_in(:,:,c),vAngle,oN,oM,fixationX,fixationY,lambda,e0);
+                    end
                     %[im_out,~,~] = unpad_image(im_out,fixationY,fixationX,oM,oN);
+                otherwise
+                   %nada
             end
         otherwise
             %do nothing

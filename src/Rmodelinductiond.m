@@ -683,7 +683,7 @@ for t_membr=1:n_membr  % membrane time
 				+0.85...             % spontaneous firing rate
                 +var_noise*(rand(M,N,n_scales,K))-0.5);   % neural noise (comment for speed)
 
-    if struct.image.foveate == 1        
+    if struct.image.foveate == 1 && struct.image.redistort_periter == 1
         for s=1:struct.wave.fin_scale
             for o=1:struct.wave.n_orient
                 x_und = foveate(x(:,:,s,o),1,struct);

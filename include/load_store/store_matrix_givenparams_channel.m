@@ -4,7 +4,7 @@ function [] = store_matrix_givenparams_channel(matrix_in,matrix_name,channel,str
     
     
     output_folder = struct.compute.outputstr_mats;
-    output_prefix = struct.image.single;
+    output_prefix = struct.image.name;
     output_suffix = ['_channel(' channel ')'];
     format = 'mat';
     if struct.display_plot.store == 1

@@ -8,7 +8,7 @@ function [] = writefig_tgivenparams_channel(figures_in,matrix_name,channel,struc
     
     
     output_folder = struct.compute.outputstr_figs;
-    output_prefix = struct.image.single;
+    output_prefix = struct.image.name;
     output_suffix = ['channel(' channel ')'];
     format = 'jpg';
     time_ini = 1;

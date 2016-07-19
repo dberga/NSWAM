@@ -229,7 +229,7 @@ end
 function [superstruct_n] = combine_all_parameters(wave_n, zli_n, compute_n, image_n, csfparams_n, display_plot_n)
 
 
-superstruct_n = cell(numel(wave_n)+numel(zli_n)+numel(compute_n)+numel(image_n)+numel(csfparams_n)+numel(display_plot_n),1);
+superstruct_n = cell(numel(wave_n)*numel(zli_n)*numel(compute_n)*numel(image_n)*numel(csfparams_n)*numel(display_plot_n),1);
 
 fcount = 0;
 for w=1:numel(wave_n)
@@ -279,7 +279,8 @@ end
 
 function [csfparams] = get_all_parameters_csf_NCZLd()
     %csfparams.nu_0 = num2cell(0.5:0.5:6);
-    csfparams.nu_0 ={2,2.357,3,4,5};
+    %csfparams.nu_0 ={2,2.357,3,4,5};
+    csfparams.nu_0 ={4};
     
     
     profile1.params_intensity.fOffsetMax=0.;
@@ -329,8 +330,11 @@ function [csfparams] = get_all_parameters_csf_NCZLd()
     profile2.params_chromatic.fOffsetMin=1.059210;
     
     
-    csfparams.params_intensity = {profile1.params_intensity, profile2.params_intensity};
-    csfparams.params_chromatic = {profile1.params_chromatic, profile2.params_chromatic};
+    %csfparams.params_intensity = {profile1.params_intensity, profile2.params_intensity};
+    %csfparams.params_chromatic = {profile1.params_chromatic, profile2.params_chromatic};
+
+    csfparams.params_intensity = {profile2.params_intensity};
+    csfparams.params_chromatic = {profile2.params_chromatic};
     
     
     
@@ -346,7 +350,8 @@ function [zli] = get_all_parameters_zli_NCZLd()
     zli.n_iter={10};
     zli.prec = {0.1};
     
-    zli.n_frames_promig={5,6,7,8,9,10};
+    %zli.n_frames_promig={5,6,7,8,9,10};
+    zli.n_frames_promig={10};
     
     %zli.dist_type={'eucl', 'manh'}; 
     zli.dist_type={'eucl'};
@@ -355,8 +360,8 @@ function [zli] = get_all_parameters_zli_NCZLd()
     zli.scale2size_type={1};
     zli.scale2size_epsilon = {1.3}; zli.nepsilon={num2str(zli.scale2size_epsilon{1})};
     
-    %zli.bScaleDelta=true,false;
-    zli.bScaleDelta={true};
+    %zli.bScaleDelta=0,1;
+    zli.bScaleDelta={1};
     
     %zli.reduccio_JW=num2cell(0:0.25:4);
     zli.reduccio_JW={1};
@@ -471,13 +476,13 @@ function [compute] = get_all_parameters_compute_NCZLd()
     % compute.output_type='saliency';
 
     %compute.output_from_csf= {'iFactor','eCSF'};
-    compute.output_from_csf= {'iFactor','eCSF'};
+    compute.output_from_csf= {'iFactor'};
     
     %compute.output_from_residu= {0,1};
     compute.output_from_residu= {0};
 
     %compute.smethod= {'sqmean','pmax','pmaxc','pmax2','wta'};
-    compute.smethod= {'sqmean','pmax','pmaxc','pmax2','wta'};
+    compute.smethod= {'pmax2'};
     
     %compute.delete_mats= {0,1};
     compute.delete_mats= {0};
@@ -486,7 +491,7 @@ function [compute] = get_all_parameters_compute_NCZLd()
     compute.orgb_flag= {0};
     
     %compute.fusion= {1,2,3,4,5,6};
-    compute.fusion= {1,2,3,4,5,6};
+    compute.fusion= {6};
 
 end
 
@@ -522,9 +527,9 @@ function [image] = get_all_parameters_image_NCZLd()
     image.nstripes = {0};
 
     %image.foveate = {0,1};
-    image.foveate = {0};
-    %image.fov_type = {'cortical_xavi','cortical', 'gaussian', 'fisheye'};
-    image.fov_type = {'cortical_xavi'};
+    image.foveate = {1};
+    %image.fov_type = {'cortical_xavi','cortical_xavi_mirrored','cortical', 'gaussian', 'fisheye'};
+    image.fov_type = {'cortical_xavi_mirrored'};
  
     %image.output_from_model={'M&w','M'};
      image.output_from_model='M';
@@ -533,7 +538,7 @@ function [image] = get_all_parameters_image_NCZLd()
     image.autoresize_ds = {0};
 
     %image.autoresize_nd = {0,10}; %proportion between image size and window size
-    image.autoresize_nd = {10};
+    image.autoresize_nd = {0};
 
     %image.tmem_res = {'mean','max'}; %temporal mean of iFactor or temporal max?
     image.tmem_res = {'mean'}; 
@@ -544,6 +549,16 @@ function [image] = get_all_parameters_image_NCZLd()
 
     image.M = {0}; %auto
     image.N = {0}; %auto
+
+    image.e0 = {1.5};
+
+    image.lambda = {12};
+
+    image.cortex_width = {128};
+
+    image.vAngle = {35.12};
+
+    image.redistort_periter = {0};
 
 
 end
