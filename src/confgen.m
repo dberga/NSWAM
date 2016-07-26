@@ -1,7 +1,7 @@
 function [  ] = confgen( folder)
 
 if nargin < 1
-    folder = 'conf3';
+    folder = 'conf_test';
 end
 
 [wave] = get_all_parameters_wave_NCZLd();
@@ -279,8 +279,8 @@ end
 
 function [csfparams] = get_all_parameters_csf_NCZLd()
     %csfparams.nu_0 = num2cell(0.5:0.5:6);
-    %csfparams.nu_0 ={2,2.357,3,4,5};
-    csfparams.nu_0 ={4};
+    csfparams.nu_0 ={2.357,4};
+    %csfparams.nu_0 ={4};
     
     
     profile1.params_intensity.fOffsetMax=0.;
@@ -330,11 +330,11 @@ function [csfparams] = get_all_parameters_csf_NCZLd()
     profile2.params_chromatic.fOffsetMin=1.059210;
     
     
-    %csfparams.params_intensity = {profile1.params_intensity, profile2.params_intensity};
-    %csfparams.params_chromatic = {profile1.params_chromatic, profile2.params_chromatic};
+    csfparams.params_intensity = {profile1.params_intensity, profile2.params_intensity};
+    csfparams.params_chromatic = {profile1.params_chromatic, profile2.params_chromatic};
 
-    csfparams.params_intensity = {profile2.params_intensity};
-    csfparams.params_chromatic = {profile2.params_chromatic};
+    %csfparams.params_intensity = {profile2.params_intensity};
+    %csfparams.params_chromatic = {profile2.params_chromatic};
     
     
     
@@ -350,8 +350,9 @@ function [zli] = get_all_parameters_zli_NCZLd()
     zli.n_iter={10};
     zli.prec = {0.1};
     
-    %zli.n_frames_promig={5,6,7,8,9,10};
-    zli.n_frames_promig={10};
+    %zli.n_frames.promig=num2cell(1:1:10);
+    zli.n_frames_promig={3,5,8,10};
+    %zli.n_frames_promig={10};
     
     %zli.dist_type={'eucl', 'manh'}; 
     zli.dist_type={'eucl'};
@@ -472,14 +473,12 @@ function [compute] = get_all_parameters_compute_NCZLd()
 
     %%%%%model output, ecsf
 
-    % compute.output_type='image';
-    % compute.output_type='saliency';
-
-    %compute.output_from_csf= {'iFactor','eCSF'};
-    compute.output_from_csf= {'iFactor'};
     
-    %compute.output_from_residu= {0,1};
-    compute.output_from_residu= {0};
+    compute.output_from_csf= {'iFactor','eCSF'};
+    %compute.output_from_csf= {'iFactor'};
+    
+    compute.output_from_residu= {0,1};
+    %compute.output_from_residu= {0};
 
     %compute.smethod= {'sqmean','pmax','pmaxc','pmax2','wta'};
     compute.smethod= {'pmax2'};

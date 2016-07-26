@@ -92,14 +92,14 @@ struct.compute.dir{2} = [pwd '/src'];
 struct.compute.dir{3} = [pwd '/include'];
 struct.compute.dir{4} = genpath([pwd '/include']);
 
-nscans = 1;
+nscans = 10;
 scanpath = zeros(nscans,2);
 
 mkdir(output_folder_imgs);
 mkdir(output_folder_mats);
 mkdir(output_folder_figs);
 
-if exist(image_struct_path, 'file') && exist(c1_iFactorpath, 'file') && exist(c2_iFactorpath, 'file') && exist(c3_iFactorpath, 'file') && exist(c1_residualpath, 'file') && exist(c2_residualpath, 'file') && exist(c3_residualpath, 'file')
+if nscans < 2 && exist(image_struct_path, 'file') && exist(c1_iFactorpath, 'file') && exist(c2_iFactorpath, 'file') && exist(c3_iFactorpath, 'file') && exist(c1_residualpath, 'file') && exist(c2_residualpath, 'file') && exist(c3_residualpath, 'file')
 	
     image_struct = load(image_struct_path); image_struct = image_struct.matrix_in;
     if image_struct.image.foveate == struct.image.foveate  ... 
@@ -525,7 +525,7 @@ for k=1:nscans
                   smap = normalize_Z(smap);
             case 3
 
-                smap = normalize_minmax(smap);
+                smap = normalize_Zp(smap);
             case 4
                 smap = normalize_energy(smap);
                 smap = normalize_minmax(smap);

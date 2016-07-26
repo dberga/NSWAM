@@ -2,8 +2,8 @@ function [] = executa2(input_dir, conf_dir, fileformat, funcio)
 
 if nargin < 1
 
-input_dir = 'input';
-conf_dir = 'conf';
+input_dir = 'input_test';
+conf_dir = 'conf_test';
 fileformat = 'jpg';
 funcio = 'saliency2';
 
