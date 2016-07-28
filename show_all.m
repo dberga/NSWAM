@@ -53,30 +53,62 @@ function [  ] = show_all( image_name )
     %FOVEATED RGB IMAGE(illustration)
         %gaze on middle
         image_struct.image.cortex_width = 512;
+        image_struct.image.e0 = 1;
+        image_struct.image.vAngle = 180;
         image_struct.image.fixationX = round(size(image,2)/2);
         image_struct.image.fixationY = round(size(image,1)/2);
         image_foveated = foveate(image,0,image_struct);
         figure; [fig] = imshow(image_foveated/255);
         fig_image = getimage(fig);
-        imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_' image_name_noext '.png']);
-        image_struct.image.cortex_width = 128;
+        imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_gaze1_' image_name_noext '.png']);
+
         %gaze on first corner
         image_struct.image.cortex_width = 512;
+        image_struct.image.e0 = 1;
+        image_struct.image.vAngle = 180;
         image_struct.image.fixationX = round(size(image,2)/3);
         image_struct.image.fixationY = round(size(image,1)/3);
         image_foveated = foveate(image,0,image_struct);
         figure; [fig] = imshow(image_foveated/255);
         fig_image = getimage(fig);
-        imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_' image_name_noext '.png']);
-        image_struct.image.cortex_width = 128;
+        imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_gaze2_' image_name_noext '.png']);
+
+        %gaze on pepper1
+        image_struct.image.cortex_width = 512;
+        image_struct.image.e0 = 1;
+        image_struct.image.vAngle = 180;
+        image_struct.image.fixationX = 460; %469
+        image_struct.image.fixationY = 196; %190
+        image_foveated = foveate(image,0,image_struct);
+        figure; [fig] = imshow(image_foveated/255);
+        fig_image = getimage(fig);
+        imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_gaze3_' image_name_noext '.png']);
+
+        %gaze on pepper2
+        image_struct.image.cortex_width = 512;
+        image_struct.image.e0 = 1;
+        image_struct.image.vAngle = 180;
+        image_struct.image.fixationX = 194;
+        image_struct.image.fixationY = 288;
+        image_foveated = foveate(image,0,image_struct);
+        figure; [fig] = imshow(image_foveated/255);
+        fig_image = getimage(fig);
+        imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_gaze4_' image_name_noext '.png']);
+
+        
     
     %FOVEATED OPPONENT CHANNELS
+    image_struct.image.cortex_width = 512;
+    image_struct.image.e0 = 1;
+    image_struct.image.vAngle = 35.12;
+    image_struct.image.fixationX = 0;
+    image_struct.image.fixationY = 0;
     image_foveated = foveate(image_opponents,0,image_struct);
     mosaic = zeros(size(image_foveated,1),size(image_foveated,2),1,size(image_foveated,3)); mosaic(:,:,1,:) = image_foveated(:,:,:);
     figure; [fig] = montage(mosaic, 'Size',[1 3]);
     fig_image = getimage(fig);
     imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_opponents_' image_name_noext '.png']);
-
+    close all;
     
         
     
