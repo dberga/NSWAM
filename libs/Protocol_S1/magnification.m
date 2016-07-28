@@ -6,7 +6,7 @@
 %**************************************************************************
 %
 %Purpose: estimating magnification
-clear all; %close all;
+%clear all; %close all;
 
 modelToDemonstrate=2; %1 = 2D-Parametric-Shear Model, 2 = Divisory Model, 3 = Schwartz Dipole Model
 switch modelToDemonstrate
@@ -84,6 +84,5 @@ plot(rings(2:end),sqrt(surfacesV2'./bandAreas),'g');
 plot(rings(2:end),sqrt(surfacesV3'./bandAreas),'b');
 
 set(gca,'YScale','log','XScale','log','YTick',[2 4 8 16 32],'Ylim',[0.5 48],'XTick',logspace(log10(0.125),log10(16),8),'Xlim',[0.1 17]);
-
 
 

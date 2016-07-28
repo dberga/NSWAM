@@ -46,29 +46,24 @@ function [  ] = show_all( image_name )
     mosaic = zeros(size(image_opponents,1),size(image_opponents,2),1,size(image_opponents,3)); mosaic(:,:,1,:) = image_opponents(:,:,:);
     figure; [fig] = montage(mosaic, 'Size',[1 3]);
     fig_image = getimage(fig);
-    imwrite(im2uint8(fig_image),[figs_folder '/' 'opponents_' image_name_noext '.png']);
+    imwrite(im2uint8(mat2gray(fig_image)),[figs_folder '/' 'opponents_' image_name_noext '.png']);
     
     
     
     %FOVEATED RGB IMAGE(illustration)
-        %gaze on middle
-        image_struct.image.cortex_width = 512;
-        image_struct.image.fixationX = round(size(image,2)/2);
-        image_struct.image.fixationY = round(size(image,1)/2);
-        image_foveated = foveate(image,0,image_struct);
-        figure; [fig] = imshow(image_foveated/255);
-        fig_image = getimage(fig);
-        imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_' image_name_noext '.png']);
-        image_struct.image.cortex_width = 128;
-        %gaze on first corner
-        image_struct.image.cortex_width = 512;
-        image_struct.image.fixationX = round(size(image,2)/3);
-        image_struct.image.fixationY = round(size(image,1)/3);
-        image_foveated = foveate(image,0,image_struct);
-        figure; [fig] = imshow(image_foveated/255);
-        fig_image = getimage(fig);
-        imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_' image_name_noext '.png']);
-        image_struct.image.cortex_width = 128;
+    image_struct.image.cortex_width = 512;
+    image_foveated = foveate(image,0,image_struct);
+    figure; [fig] = imshow(image_foveated/255);
+    fig_image = getimage(fig);
+    imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_' image_name_noext '.png']);
+    image_struct.image.cortex_width = 128;
+    
+    image_struct.image.cortex_width = 512;
+    image_foveated = foveate(image,0,image_struct);
+    figure; [fig] = imshow(image_foveated/255);
+    fig_image = getimage(fig);
+    imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_' image_name_noext '.png']);
+    image_struct.image.cortex_width = 128;
     
     %FOVEATED OPPONENT CHANNELS
     image_foveated = foveate(image_opponents,0,image_struct);

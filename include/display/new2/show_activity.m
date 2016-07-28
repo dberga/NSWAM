@@ -1,5 +1,5 @@
 
-function [ RFmean , RFmeanmean ] = show_activity( matrix, tinit, tfinal, iterinit, iterfinal, sinit, sfinal, oinit, ofinal )
+function [ RFmean , RFmeanmean, RFmax, RFmaxmax, RFsum,RFsumsum ] = show_activity( matrix, tinit, tfinal, iterinit, iterfinal, sinit, sfinal, oinit, ofinal )
             
             total_t = tfinal-tinit+1;
             total_iter = iterfinal-iterinit+1;
@@ -9,6 +9,10 @@ function [ RFmean , RFmeanmean ] = show_activity( matrix, tinit, tfinal, iterini
             count = 1;
             RFmean = zeros(total_s,total_o,total_t*total_iter);
             RFmeanmean = zeros(total_t*total_iter);
+            RFmax = zeros(total_s,total_o,total_t*total_iter);
+            RFmaxmax = zeros(total_t*total_iter);
+            RFsum = zeros(total_s,total_o,total_t*total_iter);
+            RFsumsum = zeros(total_t*total_iter);
             for t=tinit:tfinal
                 for iter=iterinit:iterfinal
                     %set(gcf, 'Position', get(0,'Screensize'));
@@ -19,6 +23,10 @@ function [ RFmean , RFmeanmean ] = show_activity( matrix, tinit, tfinal, iterini
 
                     RFmean(:,:,count) = mean_RF( matrix, t, iter, sinit, sfinal, oinit, ofinal );
                     RFmeanmean(count) = mean(mean(RFmean(:,:,count)));
+                    RFmax(:,:,count) = max_RF( matrix, t, iter, sinit, sfinal, oinit, ofinal );
+                    RFmaxmax(count) = max(max(RFmax(:,:,count)));
+                    RFsum(:,:,count) = sum_RF( matrix, t, iter, sinit, sfinal, oinit, ofinal );
+                    RFsumsum(count) = sum(sum(RFsum(:,:,count)));
                     count = count+1;
                 end
             end
