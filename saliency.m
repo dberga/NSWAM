@@ -92,7 +92,7 @@ struct.compute.dir{2} = [pwd '/src'];
 struct.compute.dir{3} = [pwd '/include'];
 struct.compute.dir{4} = genpath([pwd '/include']);
 
-nscans = 10;
+nscans = 1;
 scanpath = zeros(nscans,2);
 
 mkdir(output_folder_imgs);
@@ -110,6 +110,7 @@ if nscans < 2 && exist(image_struct_path, 'file') && exist(c1_iFactorpath, 'file
        && image_struct.image.srgb_flag == struct.image.srgb_flag  ... 
        && image_struct.image.autoresize_ds == struct.image.autoresize_ds  ... 
        && image_struct.image.autoresize_nd == struct.image.autoresize_nd  ...  
+       && image_struct.image.model == struct.image.model  ...  
        && image_struct.image.e0 == struct.image.e0 ... 
        && image_struct.image.lambda == struct.image.lambda  ... 
        && image_struct.image.vAngle == struct.image.vAngle  ... 
@@ -174,6 +175,9 @@ channels={'chromatic', 'chromatic2', 'intensity'};
 
 aux_input_image = input_image;
 
+if struct.image.foveate == 0
+    nscans = 1;
+end
 for k=1:nscans
     
     input_image = aux_input_image;
@@ -287,24 +291,42 @@ for k=1:nscans
 		    disp([image_name_noext ' neurodynamical process on channel: ' channels{op}]);
             
             
+            switch struct.image.model
+                case 0
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    %%%%% NOTHING (only curv from DWT) %%%%%%%
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    
+                    iFactor = multires_decomp2dyndecomp(w,c,struct.zli.n_membr,struct.zli.n_iter,struct.wave.n_scales);
+                    
+                    
+                case 1
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    %%%%% NEURODYNAMIC IN MATLAB %%%%%%%
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    if(struct.compute.parallel_channel==1)
+                        t=createTask(job, @NCZLd_channel_ON_OFF, 1, {w,struct,channels{op}});
+                    else
+                        [iFactor, iFactor_ON, iFactor_OFF] =NCZLd_channel_ON_OFF(w,struct,channels{op});
+                        
+                    end
+                case 2
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    %%%%% NEURODYNAMIC IN C++ %%%%%%%
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    [iFactor_single,iFactor] = NCZLd_periter_mex(w,struct); %iFactor_single has mean of memtime and iter (scale and orientation dimensions)
+
+                   
+                case 3
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    %%%%% Relative Contrast (murray's zctr) %%%%%%%
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    zctr = calc_zctr(w,struct);
+                    iFactor = multires_decomp2dyndecomp(zctr,c,struct.zli.n_membr,struct.zli.n_iter,struct.wave.n_scales);
+            end
+            toc(t_ini);
             
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                %%%%% IN MATLAB %%%%%%%
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                if(struct.compute.parallel_channel==1)
-                    t=createTask(job, @NCZLd_channel_ON_OFF, 1, {w,struct,channels{op}});
-                else
-                    [iFactor, iFactor_ON, iFactor_OFF] =NCZLd_channel_ON_OFF(w,struct,channels{op});
-                    iFactors{op} = iFactor;
-                end
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                %%%%% IN C++ %%%%%%%
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                %[iFactor_single,iFactor] = NCZLd_periter_mex(w,struct); %iFactor_single has mean of memtime and iter (scale and orientation dimensions)
-                
-                toc(t_ini);
-                
-                
+            iFactors{op} = iFactor;
             
         end
         
@@ -334,18 +356,18 @@ for k=1:nscans
                              [iFactor{ff}{iter},~] = multires_decomp2curv(iFactor{ff}{iter},c,struct.wave.n_scales,struct.wave.n_orient);
                          end
                 end
-
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                %%%%% store iFactor %%%%%%%
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%% store iFactor %%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-                    store_matrix_givenparams_channel(iFactor,'iFactor',channels{op},struct);
+                store_matrix_givenparams_channel(iFactor,'iFactor',channels{op},struct);
 
 
-                    %if struct.image.tmem_rw_res == 1
+                %if struct.image.tmem_rw_res == 1
                 %    iFactor_meanized = timatrix_to_matrix(iFactor,struct);
                 %    store_matrix_givenparams_channel(iFactor_meanized,'iFactor',channel,struct);
                 %end
+                
         end
         
         
@@ -411,23 +433,33 @@ for k=1:nscans
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     
-    if image_struct.compute.output_from_residu == 0
-        for s=1:image_struct.wave.n_scales-1
-            c1_residual{s} = zeros(size(c1_residual{s}));
-            c2_residual{s} = zeros(size(c2_residual{s}));
-            c3_residual{s} = zeros(size(c3_residual{s}));
-        end
+    switch image_struct.compute.output_from_residu
+        case 0
+            for s=1:image_struct.wave.n_scales-1
+                c1_residual{s} = zeros(size(c1_residual{s}));
+                c2_residual{s} = zeros(size(c2_residual{s}));
+                c3_residual{s} = zeros(size(c3_residual{s}));
+            end
 
-%          for ff=1:image_struct.zli.n_membr
-%              for it=1:image_struct.zli.n_iter
-%                 c1_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c1_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
-%                 c2_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c2_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
-%                 c3_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c3_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
-%              end
-%          end
-        
+    %          for ff=1:image_struct.zli.n_membr
+    %              for it=1:image_struct.zli.n_iter
+    %                 c1_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c1_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
+    %                 c2_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c2_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
+    %                 c3_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c3_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
+    %              end
+    %          end
+        case 1
+            for s=1:image_struct.wave.n_scales-1
+                c1_residual{s} = zeros(size(c1_residual{s})) +1;
+                c2_residual{s} = zeros(size(c2_residual{s})) +1;
+                c3_residual{s} = zeros(size(c3_residual{s})) +1;
+            end
 
+        otherwise
+            %keep it as it is
     end
+        
+        
     
 	    
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -478,9 +510,9 @@ for k=1:nscans
                 [c1_RF_s_o,c2_RF_s_o,c3_RF_s_o] = separate_channels(RF_s_o_c,image_struct);
                 [c1_residual_s,c2_residual_s,c3_residual_s] = separate_channels_norient(residual_s_c,image_struct);
                 
-                [c1_RF_s_o,c1_residual_s] = mutires_curv2decomp(c1_RF_s_o,c1_residual_s,image_struct.wave.n_scales,image_struct.wave.n_orient);
-                [c2_RF_s_o,c2_residual_s] = mutires_curv2decomp(c2_RF_s_o,c2_residual_s,image_struct.wave.n_scales,image_struct.wave.n_orient);
-                [c3_RF_s_o,c3_residual_s] = mutires_curv2decomp(c3_RF_s_o,c3_residual_s,image_struct.wave.n_scales,image_struct.wave.n_orient);
+                [c1_RF_s_o,c1_residual_s] = multires_curv2decomp(c1_RF_s_o,c1_residual_s,image_struct.wave.n_scales,image_struct.wave.n_orient);
+                [c2_RF_s_o,c2_residual_s] = multires_curv2decomp(c2_RF_s_o,c2_residual_s,image_struct.wave.n_scales,image_struct.wave.n_orient);
+                [c3_RF_s_o,c3_residual_s] = multires_curv2decomp(c3_RF_s_o,c3_residual_s,image_struct.wave.n_scales,image_struct.wave.n_orient);
                 RF_c(:,:,1) = multires_inv_dispatcher(c1_RF_s_o,c1_residual_s,image_struct.wave.multires,image_struct.wave.n_scales,image_struct.wave.n_orient);
                 RF_c(:,:,2) = multires_inv_dispatcher(c2_RF_s_o,c2_residual_s,image_struct.wave.multires,image_struct.wave.n_scales,image_struct.wave.n_orient);
                 RF_c(:,:,3) = multires_inv_dispatcher(c3_RF_s_o,c3_residual_s,image_struct.wave.multires,image_struct.wave.n_scales,image_struct.wave.n_orient);
