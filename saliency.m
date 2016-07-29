@@ -32,7 +32,15 @@ image_name_noext = remove_extension(image_name);
 output_image = [output_prefix image_name_noext];
 experiment_name =  image_name_noext;
 output_image_path= [output_folder_imgs '/' output_image output_extension];
-output_scanpath_path= [ output_folder_imgs '/' scanpath_prefix_mat output_image];
+output_folder_scanpath = [ output_folder_imgs '/scanpath/'];
+output_scanpath_path= [ output_folder_scanpath '/' scanpath_prefix_mat output_image];
+output_scanpath_path_gaussian_path= [ output_folder_imgs '_scansgaussian' '/'  output_image output_extension];
+output_scanpath_path_mean1_path= [ output_folder_imgs '_scansmean1' '/'  output_image output_extension];
+output_scanpath_path_mean2_path= [ output_folder_imgs '_scansmean2' '/'  output_image output_extension];
+output_scanpath_path_mean0_path= [ output_folder_imgs '_scansmean0' '/'  output_image output_extension];
+output_scanpath_path_max1_path= [ output_folder_imgs '_scansmax1' '/'  output_image output_extension];
+output_scanpath_path_max2_path= [ output_folder_imgs '_scansmax2' '/'  output_image output_extension];
+output_scanpath_path_max0_path= [ output_folder_imgs '_scansmax0' '/'  output_image output_extension];
 
 
 
@@ -92,7 +100,7 @@ struct.compute.dir{2} = [pwd '/src'];
 struct.compute.dir{3} = [pwd '/include'];
 struct.compute.dir{4} = genpath([pwd '/include']);
 
-nscans = 1;
+nscans = 10;
 scanpath = zeros(nscans,2);
 
 mkdir(output_folder_imgs);
@@ -177,6 +185,7 @@ aux_input_image = input_image;
 
 if struct.image.foveate == 0
     nscans = 1;
+    scanpath = zeros(nscans,2);
 end
 for k=1:nscans
     
@@ -598,20 +607,55 @@ for k=1:nscans
         struct.image.fixationY = scanpath(k,2);
         struct.image.fixationX = scanpath(k,1);
         
-        imwrite(smap, [ output_folder_imgs '/' num2str(k) '_' scanpath_prefix_img output_image output_extension]);
+        imwrite(smap, [ output_folder_scanpath '/' num2str(k) '_' scanpath_prefix_img output_image output_extension]);
         
-        scanpath_mean(:,:,k) = smap;
+        smaps(:,:,k) = smap;
 end
+
+
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%write scanpath %%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+   save(output_scanpath_path,'scanpath');
+
+   bmap = scanpath2bmap(scanpath, [struct.image.oM struct.image.oN]);
+   gaussian_smap = bmap2gaussian(bmap);
+   %gaussian_smap = normalize_minmax(gaussian_smap);  
+   imwrite(gaussian_smap,[output_scanpath_path_gaussian_path]);
+
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%write image %%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
         
         %make mean of all smaps per N fixations
-    final_smap = normalize_minmax(mean(scanpath_mean,3));
-    imwrite(final_smap,[output_image_path]);
+	mean_smap = normalize_minmax(mean(smaps,3));    
+
+	imwrite(mean_smap,[output_scanpath_path_mean0_path]);
+
+	max_smap = normalize_minmax(max(smaps,3));
+	imwrite(max_smap,[output_scanpath_path_max0_path]);
+	
+
+	smaps1 = smaps(:,:,1:round(nscans/2));
+	smaps2 = smaps(:,:,round(nscans/2):nscans);        
+
+	mean1_smap = normalize_minmax(mean(smaps1,3));
+	imwrite(mean1_smap,[output_scanpath_path_mean1_path]);
+
+	mean2_smap = normalize_minmax(mean(smaps2,3));
+	imwrite(mean2_smap,[output_scanpath_path_mean2_path]);
+
+	max1_smap = normalize_minmax(max(smaps1,3));
+	imwrite(max1_smap,[output_scanpath_path_max1_path]);
+
+	max2_smap = normalize_minmax(max(smaps2,3));
+	imwrite(max2_smap,[output_scanpath_path_max2_path]);
+
+
+	imwrite(mean_smap,[output_image_path]);
     
-    save(output_scanpath_path,'scanpath');
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%delete mats or not? %%%%%%%

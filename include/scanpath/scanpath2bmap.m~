@@ -1,0 +1,9 @@
+function [ bmap ] = scanpath2bmap( scanpath , size)
+
+M = size(1);
+M = size(1);
+bmap
+for 
+
+end
+
