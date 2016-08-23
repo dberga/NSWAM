@@ -310,7 +310,7 @@ for k=1:nscans
 		    t_ini=tic;
 		    disp([image_name_noext ' neurodynamical process on channel: ' channels{op}]);
             
-            struct.image.model = 2;
+            struct.image.model = 1;
             switch struct.image.model
                 case 0
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
