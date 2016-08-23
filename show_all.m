@@ -38,15 +38,18 @@ function [  ] = show_all( image_name )
     c2_residual = cleanWAV(c2_residual);
     c3_residual = cleanWAV(c3_residual);
     
+    
+    
     image = imread([input_folder '/' image_name]);
     image_struct = load(image_struct_path); image_struct = image_struct.matrix_in;
     
-    %OPPONENTS
+        %OPPONENTS
     image_opponents = get_the_cstimulus(image,image_struct.image.gamma,image_struct.image.srgb_flag);%! color  to opponent
     mosaic = zeros(size(image_opponents,1),size(image_opponents,2),1,size(image_opponents,3)); mosaic(:,:,1,:) = image_opponents(:,:,:);
     figure; [fig] = montage(mosaic, 'Size',[1 3]);
     fig_image = getimage(fig);
     imwrite(im2uint8(fig_image),[figs_folder '/' 'opponents_' image_name_noext '.png']);
+    
     
     
     
@@ -61,6 +64,11 @@ function [  ] = show_all( image_name )
         figure; [fig] = imshow(image_foveated/255);
         fig_image = getimage(fig);
         imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_gaze1_' image_name_noext '.png']);
+        image_opponents = get_the_cstimulus(image_foveated,image_struct.image.gamma,image_struct.image.srgb_flag);%! color  to opponent
+        mosaic = zeros(size(image_opponents,1),size(image_opponents,2),1,size(image_opponents,3)); mosaic(:,:,1,:) = image_opponents(:,:,:);
+        figure; [fig] = montage(mosaic, 'Size',[1 3]);
+        fig_image = getimage(fig);
+        imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_opp_gaze1_' image_name_noext '.png']);
 
         %gaze on first corner
         image_struct.image.cortex_width = 512;
@@ -72,7 +80,12 @@ function [  ] = show_all( image_name )
         figure; [fig] = imshow(image_foveated/255);
         fig_image = getimage(fig);
         imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_gaze2_' image_name_noext '.png']);
-
+        image_opponents = get_the_cstimulus(image_foveated,image_struct.image.gamma,image_struct.image.srgb_flag);%! color  to opponent
+        mosaic = zeros(size(image_opponents,1),size(image_opponents,2),1,size(image_opponents,3)); mosaic(:,:,1,:) = image_opponents(:,:,:);
+        figure; [fig] = montage(mosaic, 'Size',[1 3]);
+        fig_image = getimage(fig);
+        imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_opp_gaze2_' image_name_noext '.png']);
+        
         %gaze on pepper1
         image_struct.image.cortex_width = 512;
         image_struct.image.e0 = 1;
@@ -83,6 +96,11 @@ function [  ] = show_all( image_name )
         figure; [fig] = imshow(image_foveated/255);
         fig_image = getimage(fig);
         imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_gaze3_' image_name_noext '.png']);
+        image_opponents = get_the_cstimulus(image_foveated,image_struct.image.gamma,image_struct.image.srgb_flag);%! color  to opponent
+        mosaic = zeros(size(image_opponents,1),size(image_opponents,2),1,size(image_opponents,3)); mosaic(:,:,1,:) = image_opponents(:,:,:);
+        figure; [fig] = montage(mosaic, 'Size',[1 3]);
+        fig_image = getimage(fig);
+        imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_opp_gaze3_' image_name_noext '.png']);
 
         %gaze on pepper2
         image_struct.image.cortex_width = 512;
@@ -94,6 +112,11 @@ function [  ] = show_all( image_name )
         figure; [fig] = imshow(image_foveated/255);
         fig_image = getimage(fig);
         imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_gaze4_' image_name_noext '.png']);
+        image_opponents = get_the_cstimulus(image_foveated,image_struct.image.gamma,image_struct.image.srgb_flag);%! color  to opponent
+        mosaic = zeros(size(image_opponents,1),size(image_opponents,2),1,size(image_opponents,3)); mosaic(:,:,1,:) = image_opponents(:,:,:);
+        figure; [fig] = montage(mosaic, 'Size',[1 3]);
+        fig_image = getimage(fig);
+        imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_opp_gaze4_' image_name_noext '.png']);
 
         
     

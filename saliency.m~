@@ -310,7 +310,7 @@ for k=1:nscans
 		    t_ini=tic;
 		    disp([image_name_noext ' neurodynamical process on channel: ' channels{op}]);
             
-            struct.image.model = 2;
+
             switch struct.image.model
                 case 0
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -632,7 +632,7 @@ if scan_done == 1
 
    save(output_scanpath_path,'scanpath');
 
-   bmap = scanpath2bmap(scanpath, nscans,[struct.image.oM struct.image.oN]);
+   bmap = scanpath2bmap(scanpath, [struct.image.oM struct.image.oN]);
    gaussian_smap = bmap2gaussian(bmap);
    gaussian_smap = normalize_minmax(gaussian_smap);  
    imwrite(gaussian_smap,[output_scanpath_path_gaussian_path]);

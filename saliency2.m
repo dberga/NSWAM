@@ -5,7 +5,7 @@ clear struct wave zli display_plot compute matrix_in conf_struct image_struct
 
 if nargin < 7
 output_folder = 'output';
-output_folder_mats = 'mats_test'; %output_folder_mats = [output_path 'output_mats'];
+output_folder_mats = 'mats'; %output_folder_mats = [output_path 'output_mats'];
 output_folder_figs = 'figs'; %output_folder_figs = [output_path 'output_figs'];
 output_extension = '.png';
 
@@ -26,13 +26,31 @@ scanpath_prefix_img = 'scanpath_';
 
 
 output_subfolder = conf_struct_path_name ;
-output_path = [output_folder '/' output_subfolder '/'];
+output_path = [output_folder '/' output_subfolder];
 output_folder_imgs = output_path; %output_folder_imgs = [output_path 'output_imgs'];
+output_folder_scanpath = [ output_folder_imgs '/' 'scanpath'];
 image_name_noext = remove_extension(image_name);
 output_image = [output_prefix image_name_noext];
 experiment_name =  image_name_noext;
 output_image_path= [output_folder_imgs '/' output_image output_extension];
-output_scanpath_path= [ output_folder_imgs '/' scanpath_prefix_mat output_image];
+output_scanpath_path= [ output_folder_scanpath '/' scanpath_prefix_mat output_image];
+output_scanpath_path_gaussian_path= [ output_folder_scanpath '/' 'scansgaussian' '/'  output_image output_extension];
+output_scanpath_path_mean1_path= [ output_folder_scanpath '/' 'scansmean1' '/'  output_image output_extension];
+output_scanpath_path_mean2_path= [ output_folder_scanpath '/' 'scansmean2' '/'  output_image output_extension];
+output_scanpath_path_mean0_path= [ output_folder_scanpath '/' 'scansmean0' '/'  output_image output_extension];
+output_scanpath_path_max1_path= [ output_folder_scanpath '/' 'scansmax1' '/'  output_image output_extension];
+output_scanpath_path_max2_path= [ output_folder_scanpath '/' 'scansmax2' '/'  output_image output_extension];
+output_scanpath_path_max0_path= [ output_folder_scanpath '/' 'scansmax0' '/'  output_image output_extension];
+
+mkdir(output_folder_imgs);
+mkdir(output_folder_scanpath);
+mkdir([output_folder_scanpath '/' 'scansmean0']);
+mkdir([output_folder_scanpath '/' 'scansmean1']);
+mkdir([output_folder_scanpath '/' 'scansmean2']);
+mkdir([output_folder_scanpath '/' 'scansmax0']);
+mkdir([output_folder_scanpath '/' 'scansmax1']);
+mkdir([output_folder_scanpath '/' 'scansmax2']);
+mkdir([output_folder_scanpath '/' 'scansgaussian']);
 
 
 
@@ -41,12 +59,9 @@ image_struct_path = [ output_folder_mats '/' image_name_noext '_' 'struct' '.mat
 c1_iFactorpath = [ output_folder_mats '/' image_name_noext '_' 'iFactor' '_channel(' channels{1} ')' '.mat'];
 c2_iFactorpath = [ output_folder_mats '/' image_name_noext '_' 'iFactor' '_channel(' channels{2} ')' '.mat'];
 c3_iFactorpath = [ output_folder_mats '/' image_name_noext '_' 'iFactor' '_channel(' channels{3} ')' '.mat'];
-%c1_residualpath = [ output_folder_mats '/' image_name_noext '_' 'c' '_channel(' channels{1} ')' '.mat'];
-%c2_residualpath = [ output_folder_mats '/' image_name_noext '_' 'c' '_channel(' channels{2} ')' '.mat'];
-%c3_residualpath = [ output_folder_mats '/' image_name_noext '_' 'c' '_channel(' channels{3} ')' '.mat'];
-c1_residualpath = [ output_folder_mats '/' image_name_noext '_' 'residual' '_channel(' channels{1} ')' '.mat'];
-c2_residualpath = [ output_folder_mats '/' image_name_noext '_' 'residual' '_channel(' channels{2} ')' '.mat'];
-c3_residualpath = [ output_folder_mats '/' image_name_noext '_' 'residual' '_channel(' channels{3} ')' '.mat'];
+c1_residualpath = [ output_folder_mats '/' image_name_noext '_' 'c' '_channel(' channels{1} ')' '.mat'];
+c2_residualpath = [ output_folder_mats '/' image_name_noext '_' 'c' '_channel(' channels{2} ')' '.mat'];
+c3_residualpath = [ output_folder_mats '/' image_name_noext '_' 'c' '_channel(' channels{3} ')' '.mat'];
 c1_curvpath = [ output_folder_mats '/' image_name_noext '_' 'w' '_channel(' channels{1} ')' '.mat'];
 c2_curvpath = [ output_folder_mats '/' image_name_noext '_' 'w' '_channel(' channels{2} ')' '.mat'];
 c3_curvpath = [ output_folder_mats '/' image_name_noext '_' 'w' '_channel(' channels{3} ')' '.mat'];
@@ -95,17 +110,69 @@ struct.compute.dir{2} = [pwd '/src'];
 struct.compute.dir{3} = [pwd '/include'];
 struct.compute.dir{4} = genpath([pwd '/include']);
 
-nscans = 1;
+nscans = 10;
 scanpath = zeros(nscans,2);
+scan_done = 0;
 
 mkdir(output_folder_imgs);
 mkdir(output_folder_mats);
 mkdir(output_folder_figs);
 
-
+if nscans < 2 && exist(image_struct_path, 'file') && exist(c1_iFactorpath, 'file') && exist(c2_iFactorpath, 'file') && exist(c3_iFactorpath, 'file') && exist(c1_residualpath, 'file') && exist(c2_residualpath, 'file') && exist(c3_residualpath, 'file')
+	
+    image_struct = load(image_struct_path); image_struct = image_struct.matrix_in;
+    if  image_struct.image.foveate == struct.image.foveate  ... 
+       && strcmp(image_struct.image.fov_type,struct.image.fov_type)  ... 
+       && strcmp(image_struct.image.output_from_model,struct.image.output_from_model)  ... 
+       && image_struct.image.gamma == struct.image.gamma  ... 
+       && image_struct.image.redistort_periter == struct.image.redistort_periter  ... 
+       && image_struct.image.srgb_flag == struct.image.srgb_flag  ... 
+       && image_struct.image.autoresize_ds == struct.image.autoresize_ds  ... 
+       && image_struct.image.autoresize_nd == struct.image.autoresize_nd  ...  
+       && image_struct.image.model == struct.image.model  ...  
+       && image_struct.image.e0 == struct.image.e0 ... 
+       && image_struct.image.lambda == struct.image.lambda  ... 
+       && image_struct.image.vAngle == struct.image.vAngle  ... 
+       && image_struct.image.cortex_width == struct.image.cortex_width  ... 
+       && image_struct.zli.n_membr == struct.zli.n_membr  ... 
+       && image_struct.zli.n_iter == struct.zli.n_iter  ... 
+       && strcmp(image_struct.zli.dist_type, struct.zli.dist_type)  ... 
+       && image_struct.zli.scalesize_type == struct.zli.scalesize_type  ... 
+       && image_struct.zli.scale2size_type == struct.zli.scale2size_type  ... 
+       && image_struct.zli.scale2size_epsilon == struct.zli.scale2size_epsilon  ... 
+       && image_struct.zli.bScaleDelta == struct.zli.bScaleDelta  ... 
+       && image_struct.zli.reduccio_JW == struct.zli.reduccio_JW  ... 
+       && strcmp(image_struct.zli.normal_type, struct.zli.normal_type)  ... 
+       && image_struct.zli.alphax == struct.zli.alphax ...
+       && image_struct.zli.alphay == struct.zli.alphay ...
+       && image_struct.zli.nb_periods == struct.zli.nb_periods ...
+       && image_struct.zli.normal_input == struct.zli.normal_input ...
+       && image_struct.zli.normal_output == struct.zli.normal_output ...
+       && image_struct.zli.normal_min_absolute == struct.zli.normal_min_absolute ...
+       && image_struct.zli.normal_max_absolute == struct.zli.normal_max_absolute ...
+       && image_struct.zli.Delta == struct.zli.Delta ...
+       && image_struct.zli.ON_OFF == struct.zli.ON_OFF ...
+       && strcmp(image_struct.zli.boundary,struct.zli.boundary) ...
+       && image_struct.zli.normalization_power == struct.zli.normalization_power ...
+       && image_struct.zli.kappax == struct.zli.kappax ...
+       && image_struct.zli.kappay == struct.zli.kappay ...
+       && image_struct.zli.shift == struct.zli.shift ...
+       && image_struct.zli.scale_interaction == struct.zli.scale_interaction ...
+       && image_struct.zli.orient_interaction == struct.zli.orient_interaction 
+        %&& image_struct.image.fixationX == struct.image.fixationX  ... 
+       %&& image_struct.image.fixationY == struct.image.fixationY  ...
+       
+        neurocalculate = 0;
+    else 
+        neurocalculate = 0;
+    end
+    
+	%do nothing, recall afterwards
+	neurorecons = 1;
+else
 	neurocalculate = 0;
 	neurorecons = 1;
-
+end
 
 
 orig_channels = size(input_image,3);
@@ -127,6 +194,10 @@ channels={'chromatic', 'chromatic2', 'intensity'};
 
 aux_input_image = input_image;
 
+if struct.image.foveate == 0
+    nscans = 1;
+    scanpath = zeros(nscans,2);
+end
 for k=1:nscans
     
     input_image = aux_input_image;
@@ -239,25 +310,43 @@ for k=1:nscans
 		    t_ini=tic;
 		    disp([image_name_noext ' neurodynamical process on channel: ' channels{op}]);
             
+            struct.image.model = 2;
+            switch struct.image.model
+                case 0
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    %%%%% NOTHING (only curv from DWT) %%%%%%%
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    
+                    iFactor = multires_decomp2dyndecomp(w,c,struct.zli.n_membr,struct.zli.n_iter,struct.wave.n_scales);
+                    
+                    
+                case 1
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    %%%%% NEURODYNAMIC IN MATLAB %%%%%%%
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    if(struct.compute.parallel_channel==1)
+                        t=createTask(job, @NCZLd_channel_ON_OFF, 1, {w,struct,channels{op}});
+                    else
+                        [iFactor, iFactor_ON, iFactor_OFF] =NCZLd_channel_ON_OFF(w,struct,channels{op});
+                        
+                    end
+                case 2
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    %%%%% NEURODYNAMIC IN C++ %%%%%%%
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    [iFactor_single,iFactor] = NCZLd_periter_mex(w,struct); %iFactor_single has mean of memtime and iter (scale and orientation dimensions)
+
+                   
+                case 3
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    %%%%% Relative Contrast (murray's zctr) %%%%%%%
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    zctr = calc_zctr(w,struct);
+                    iFactor = multires_decomp2dyndecomp(zctr,c,struct.zli.n_membr,struct.zli.n_iter,struct.wave.n_scales);
+            end
+            toc(t_ini);
             
-            
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                %%%%% IN MATLAB %%%%%%%
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                if(struct.compute.parallel_channel==1)
-                    t=createTask(job, @NCZLd_channel_ON_OFF, 1, {w,struct,channels{op}});
-                else
-                    [iFactor, iFactor_ON, iFactor_OFF] =NCZLd_channel_ON_OFF(w,struct,channels{op});
-                    iFactors{op} = iFactor;
-                end
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                %%%%% IN C++ %%%%%%%
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                %[iFactor_single,iFactor] = NCZLd_periter_mex(w,struct); %iFactor_single has mean of memtime and iter (scale and orientation dimensions)
-                
-                toc(t_ini);
-                
-                
+            iFactors{op} = iFactor;
             
         end
         
@@ -287,18 +376,18 @@ for k=1:nscans
                              [iFactor{ff}{iter},~] = multires_decomp2curv(iFactor{ff}{iter},c,struct.wave.n_scales,struct.wave.n_orient);
                          end
                 end
-
                 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                %%%%% store iFactor %%%%%%%
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %%%%% store iFactor %%%%%%%
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-                    store_matrix_givenparams_channel(iFactor,'iFactor',channels{op},struct);
+                store_matrix_givenparams_channel(iFactor,'iFactor',channels{op},struct);
 
 
-                    %if struct.image.tmem_rw_res == 1
+                %if struct.image.tmem_rw_res == 1
                 %    iFactor_meanized = timatrix_to_matrix(iFactor,struct);
                 %    store_matrix_givenparams_channel(iFactor_meanized,'iFactor',channel,struct);
                 %end
+                
         end
         
         
@@ -335,7 +424,7 @@ for k=1:nscans
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
     image_struct.compute = struct.compute;
-    image_struct.image = struct.image;
+    
 	
     
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -364,23 +453,33 @@ for k=1:nscans
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     
-    if image_struct.compute.output_from_residu == 0
-        for s=1:image_struct.wave.n_scales-1
-            c1_residual{s} = zeros(size(c1_residual{s}));
-            c2_residual{s} = zeros(size(c2_residual{s}));
-            c3_residual{s} = zeros(size(c3_residual{s}));
-        end
+    switch image_struct.compute.output_from_residu
+        case 0
+            for s=1:image_struct.wave.n_scales-1
+                c1_residual{s} = zeros(size(c1_residual{s}));
+                c2_residual{s} = zeros(size(c2_residual{s}));
+                c3_residual{s} = zeros(size(c3_residual{s}));
+            end
 
-%          for ff=1:image_struct.zli.n_membr
-%              for it=1:image_struct.zli.n_iter
-%                 c1_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c1_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
-%                 c2_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c2_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
-%                 c3_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c3_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
-%              end
-%          end
-        
+    %          for ff=1:image_struct.zli.n_membr
+    %              for it=1:image_struct.zli.n_iter
+    %                 c1_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c1_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
+    %                 c2_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c2_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
+    %                 c3_iFactor{ff}{it}{image_struct.wave.n_scales}{1} = zeros(size(c3_iFactor{ff}{it}{image_struct.wave.n_scales}{1}));
+    %              end
+    %          end
+        case 1
+            for s=1:image_struct.wave.n_scales-1
+                c1_residual{s} = zeros(size(c1_residual{s})) +1;
+                c2_residual{s} = zeros(size(c2_residual{s})) +1;
+                c3_residual{s} = zeros(size(c3_residual{s})) +1;
+            end
 
+        otherwise
+            %keep it as it is
     end
+        
+        
     
 	    
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -471,21 +570,24 @@ for k=1:nscans
         switch(image_struct.compute.fusion)
             case 1	
 
-                  %smap = normalize_energy(smap);
+                  smap = normalize_energy(smap);
 
             case 2
 
-                  %smap = normalize_Z(smap);
+                  smap = normalize_Z(smap);
             case 3
 
-                smap = normalize_minmax(smap);
+                smap = normalize_Zp(smap);
             case 4
                 smap = normalize_energy(smap);
+                smap = normalize_minmax(smap);
 
             case 5
                 smap = normalize_Z(smap);
+                smap = normalize_minmax(smap);
             case 6
                 smap = normalize_Zp(smap);
+                smap = normalize_minmax(smap);
 
             otherwise
                 %do nothing
@@ -505,31 +607,69 @@ for k=1:nscans
         %space to uint8
         smap = smap*255;
         smap = uint8(smap);
-    end
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%calculate scanpath and refixate %%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            [maxval, maxidx] = max(smap(:));
+            [scanpath(k,2), scanpath(k,1)] = ind2sub(size(smap),maxidx); %x,y
+
+            struct.image.fixationY = scanpath(k,1);
+            struct.image.fixationX = scanpath(k,2);
+
+            imwrite(smap, [ output_folder_scanpath '/' num2str(k) '_' scanpath_prefix_img output_image output_extension]);
+            disp([output_folder_scanpath '/' num2str(k) '_' scanpath_prefix_img output_image output_extension]);
+            smaps(:,:,k) = smap;
+        end
+    scan_done = 1;
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%calculate scanpath and refixate %%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        [maxval, maxidx] = max(smap(:));
-        [scanpath(k,1), scanpath(k,2)] = ind2sub(size(smap),maxidx); %x,y
-        
-        struct.image.fixationY = scanpath(k,2);
-        struct.image.fixationX = scanpath(k,1);
-        
-        imwrite(smap, [ output_folder_imgs '/' num2str(k) '_' scanpath_prefix_img output_image output_extension]);
-        
-        scanpath_mean(:,:,k) = smap;
 end
+
+if scan_done == 1 
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%write scanpath %%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+   save(output_scanpath_path,'scanpath');
+
+   bmap = scanpath2bmap(scanpath, nscans,[struct.image.oM struct.image.oN]);
+   gaussian_smap = bmap2gaussian(bmap);
+   gaussian_smap = normalize_minmax(gaussian_smap);  
+   imwrite(gaussian_smap,[output_scanpath_path_gaussian_path]);
+
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%write image %%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
+
         
         %make mean of all smaps per N fixations
-    final_smap = normalize_minmax(mean(scanpath_mean,3));
-    imwrite(final_smap,[output_image_path]);
-    
-    save(output_scanpath_path,'scanpath');
+	mean_smap = normalize_minmax(mean(smaps,3));    
+
+	imwrite(mean_smap,[output_scanpath_path_mean0_path]);
+
+	max_smap = normalize_minmax(cummax_reduc(smaps));
+	imwrite(max_smap,[output_scanpath_path_max0_path]);
+	
+
+	smaps1 = smaps(:,:,1:round(nscans/2));
+	smaps2 = smaps(:,:,round(nscans/2):nscans);        
+
+	mean1_smap = normalize_minmax(mean(smaps1,3));
+	imwrite(mean1_smap,[output_scanpath_path_mean1_path]);
+
+	mean2_smap = normalize_minmax(mean(smaps2,3));
+	imwrite(mean2_smap,[output_scanpath_path_mean2_path]);
+
+	max1_smap = normalize_minmax(cummax_reduc(smaps1));
+	imwrite(max1_smap,[output_scanpath_path_max1_path]);
+
+	max2_smap = normalize_minmax(cummax_reduc(smaps2));
+	imwrite(max2_smap,[output_scanpath_path_max2_path]);
+
+
+	imwrite(mean_smap,[output_image_path]);
+
+end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%delete mats or not? %%%%%%%
