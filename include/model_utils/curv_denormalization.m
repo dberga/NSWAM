@@ -1,9 +1,9 @@
 function [dades,normal_max,normal_min] = curv_denormalization(dades, struct,normal_max,normal_min)
 
-factor_normal=struct.zli.normal_input;
+factor_normal=struct.zli_params.normal_input;
 
 	% normalitzacio
-	shift=struct.zli.shift;
+	shift=struct.zli_params.shift;
 
 	ncells=size(dades,1);
 

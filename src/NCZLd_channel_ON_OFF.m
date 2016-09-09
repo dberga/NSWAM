@@ -1,7 +1,7 @@
-function [iFactor_out, iFactor_ON, iFactor_OFF] = NCZLd_channel_ON_OFF(w,struct,channel)
+function [iFactor_out, iFactor_ON, iFactor_OFF, jFactor_ON, jFactor_OFF] = NCZLd_channel_ON_OFF(w,struct,channel)
 
-[curv] = multires_decomp2curv(w,[],struct.wave.n_scales,struct.wave.n_orient);
-[curv_in] = dyncopy_curv(curv,struct.zli.n_membr,struct.wave.n_scales,struct.wave.n_orient);
+[curv] = multires_decomp2curv(w,[],struct.wave_params.n_scales,struct.wave_params.n_orient);
+[curv_in] = dyncopy_curv(curv,struct.zli_params.n_membr,struct.wave_params.n_scales,struct.wave_params.n_orient);
 
 % from NCZLd_channel_ON_OFF.m to Rmodelinductiond.m
 
@@ -10,17 +10,19 @@ function [iFactor_out, iFactor_ON, iFactor_OFF] = NCZLd_channel_ON_OFF(w,struct,
 
 
 
-n_iter=struct.zli.n_iter;
-n_membr=struct.zli.n_membr;
+n_iter=struct.zli_params.n_iter;
+n_membr=struct.zli_params.n_membr;
 
-n_orient=size(struct.wave.n_orient);
-n_scales=struct.wave.n_scales;
-fin_scale=struct.wave.fin_scale;
+n_orient=size(struct.wave_params.n_orient);
+n_scales=struct.wave_params.n_scales;
+fin_scale=struct.wave_params.fin_scale;
 
 iFactor = cell(n_membr,n_iter);
 iFactor_ON = cell(n_membr,n_iter);
 iFactor_OFF = cell(n_membr,n_iter);
-iFactor_out = cell(n_membr,n_iter,fin_scale);
+jFactor = cell(n_membr,n_iter);
+jFactor_ON = cell(n_membr,n_iter);
+jFactor_OFF = cell(n_membr,n_iter);
 
 %-------------------------------------------------------
 % make the structure explicit/get the parameters
@@ -48,7 +50,7 @@ end
 
 
 % forced activation of a given neuron population
-if struct.compute.XOP_activacio_neurona==1
+if struct.compute_params.XOP_activacio_neurona==1
     for ff=1:n_membr
         curv{ff}(64:66,64:66,1,1)=0.1;
     end
@@ -86,10 +88,10 @@ end
 %-------------------------------------------------------
 
 %Rmodelinduction uses n_scales without the last one, which is from curv
-struct.wave.n_scales = struct.wave.fin_scale;
+struct.wave_params.n_scales = struct.wave_params.fin_scale;
 
 % choose the algorithm (separated, abs, quadratic) 
-switch(struct.zli.ON_OFF)
+switch(struct.zli_params.ON_OFF)
     case 0 % separated
         
         
@@ -105,26 +107,28 @@ switch(struct.zli.ON_OFF)
 
             for t_membr=1:n_membr
                 for it=1:n_iter
-                    switch struct.image.output_from_model
+                    
+                    %this should be done after the whole routine
+                    switch struct.fusion_params.output_from_model
                     case 'M&w'
                         % Si l'output de Z.Li es la senyal processada
-                        iFactor_ON{t_membr}{it}=curv_ON{t_membr}.*xFactor_ON_t_i{t_membr}{it}*struct.zli.normal_output; %gx+.*w+
-                        iFactor_OFF{t_membr}{it}=-curv_OFF{t_membr}.*xFactor_OFF_t_i{t_membr}{it}*struct.zli.normal_output; %-(gx-.*w-)
-                        %jFactor_ON{t_membr}{it}=-curv_ON{t_membr}.*yFactor_ON_t_i{t_membr}*struct.zli.normal_output; %-(gy-.*w-)
-                        %jFactor_OFF{t_membr}{it}=-curv_OFF{t_membr}.*yFactor_OFF_t_i{t_membr}*struct.zli.normal_output; %-(gy-.*w-)
+                        iFactor_ON{t_membr}{it}=curv_ON{t_membr}.*xFactor_ON_t_i{t_membr}{it}*struct.zli_params.normal_output; %gx+.*w+
+                        iFactor_OFF{t_membr}{it}=-curv_OFF{t_membr}.*xFactor_OFF_t_i{t_membr}{it}*struct.zli_params.normal_output; %-(gx-.*w-)
+                        jFactor_ON{t_membr}{it}=-curv_ON{t_membr}.*yFactor_ON_t_i{t_membr}*struct.zli_params.normal_output; %-(gy-.*w-)
+                        jFactor_OFF{t_membr}{it}=-curv_OFF{t_membr}.*yFactor_OFF_t_i{t_membr}*struct.zli_params.normal_output; %-(gy-.*w-)
                     case 'M'
                         % Si l'output de Z.Li es un factor
                          %iFactor_ON{t_membr}{it}=xFactor_ON_t_i{t_membr}{it}.*(curv_ON{t_membr}~=0); %gx+
                          %iFactor_OFF{t_membr}{it}=xFactor_OFF_t_i{t_membr}{it}.*(curv_OFF{t_membr}~=0); %gx-
-                            iFactor_ON{t_membr}{it}=xFactor_ON_t_i{t_membr}{it}*struct.zli.normal_output;
-                            iFactor_OFF{t_membr}{it}=xFactor_OFF_t_i{t_membr}{it}*struct.zli.normal_output;
+                            iFactor_ON{t_membr}{it}=xFactor_ON_t_i{t_membr}{it}*struct.zli_params.normal_output;
+                            iFactor_OFF{t_membr}{it}=xFactor_OFF_t_i{t_membr}{it}*struct.zli_params.normal_output;
                          %jFactor_ON{t_membr}{it}=yFactor_ON_t_i{t_membr}{it}.*(curv_ON{t_membr}~=0); %gy+
                          %jFactor_OFF{t_membr}{it}=yFactor_OFF_t_i{t_membr}{it}.*(curv_OFF{t_membr}~=0); %gy-
-                            %jFactor_ON{t_membr}{it}=yFactor_ON_t_i{t_membr}{it}*struct.zli.normal_output;
-                            %jFactor_OFF{t_membr}{it}=yFactor_OFF_t_i{t_membr}{it}*struct.zli.normal_output;
+                            jFactor_ON{t_membr}{it}=yFactor_ON_t_i{t_membr}{it}*struct.zli_params.normal_output;
+                            jFactor_OFF{t_membr}{it}=yFactor_OFF_t_i{t_membr}{it}*struct.zli_params.normal_output;
                     end
                     iFactor{t_membr}{it}=iFactor_ON{t_membr}{it}+iFactor_OFF{t_membr}{it};
-                    %jFactor{t_membr}{it}=jFactor_ON{t_membr}{it}+jFactor_OFF{t_membr}{it};
+                    jFactor{t_membr}{it}=jFactor_ON{t_membr}{it}+jFactor_OFF{t_membr}{it};
                 end
             end
         
@@ -138,7 +142,7 @@ switch(struct.zli.ON_OFF)
         
         for t_membr=1:n_membr
             for it=1:n_iter
-                iFactor{t_membr}{it}=curv{t_membr}.*xFactor_t_i{t_membr}{it}*struct.zli.normal_output;
+                iFactor{t_membr}{it}=curv{t_membr}.*xFactor_t_i{t_membr}{it}*struct.zli_params.normal_output;
             end
         end
         
@@ -152,7 +156,7 @@ switch(struct.zli.ON_OFF)
         
         for t_membr=1:n_membr
             for it=1:n_iter
-                iFactor{t_membr}{it}=curv{t_membr}.*xFactor_t_fi{t_membr}{it}*struct.zli.normal_output;
+                iFactor{t_membr}{it}=curv{t_membr}.*xFactor_t_fi{t_membr}{it}*struct.zli_params.normal_output;
             end
         end
 end

@@ -7,72 +7,72 @@ function [gx_final,gy_final,gx_final_per_iter,gy_final_per_iter] = Rmodelinducti
 % get the structure and the parameters
 % scale=wav.scale;
 % orient=wav.orient;
-wave=struct.wave;
-use_fft=struct.compute.use_fft;
-n_scales=wave.fin_scale;
+wave_params=struct.wave_params;
+use_fft=struct.compute_params.use_fft;
+n_scales=wave_params.fin_scale;
 % make the structure explicit
-zli=struct.zli;
-compute=struct.compute;
-avoid_circshift_fft=compute.avoid_circshift_fft;
-image=struct.image;
+zli_params=struct.zli_params;
+compute_params=struct.compute_params;
+avoid_circshift_fft=compute_params.avoid_circshift_fft;
+
 % struct.zli
 % differential equation
-n_membr=zli.n_membr;
-n_iter=zli.n_iter;
+n_membr=zli_params.n_membr;
+n_iter=zli_params.n_iter;
 %prec=1/n_iter;
- prec=zli.prec;
+ prec=zli_params.prec;
 % normalization
-normal_input=zli.normal_input;
-dist_type=zli.dist_type;
+normal_input=zli_params.normal_input;
+dist_type=zli_params.dist_type;
 %var_noise=0.1*2*normal_input/4;
 var_noise=0.1*2;
-% zli.normal_output=2.0;
+% zli_params.normal_output=2.0;
 % 
 % 
-% zli.ON_OFF=0; % 0: separate, 1: abs, 2:square
-% zli.nu_0=2;
+% zli_params.ON_OFF=0; % 0: separate, 1: abs, 2:square
+% zli_params.nu_0=2;
 
-zli.Delta = round(zli.Delta / zli.reduccio_JW);
-zli.kappax = zli.kappax/(zli.reduccio_JW*zli.reduccio_JW);
-zli.kappay = zli.kappay/(zli.reduccio_JW*zli.reduccio_JW);
+zli_params.Delta = round(zli_params.Delta / zli_params.reduccio_JW);
+zli_params.kappax = zli_params.kappax/(zli_params.reduccio_JW*zli_params.reduccio_JW);
+zli_params.kappay = zli_params.kappay/(zli_params.reduccio_JW*zli_params.reduccio_JW);
 
 
 
 % Delta
 Delta=zeros(n_scales);
-switch (wave.multires)
+switch (wave_params.multires)
 	case 'a_trous'
-		if compute.scale_interaction_debug==1
-			Delta=zli.Delta.*ones(1,n_scales);
+		if struct.display_params.scale_interaction_debug==1
+			Delta=zli_params.Delta.*ones(1,n_scales);
 		else
-% 			Delta=zli.Delta*2.^((1:n_scales)-1);
-               if zli.bScaleDelta
-                    Delta=zli.Delta*scale2size(1:n_scales,zli.scale2size_type,zli.scale2size_epsilon);
+% 			Delta=zli_params.Delta*2.^((1:n_scales)-1);
+               if zli_params.bScaleDelta
+                    Delta=zli_params.Delta*scale2size(1:n_scales,zli_params.scale2size_type,zli_params.scale2size_epsilon);
                else
-                   Delta=zli.Delta*ones(1,n_scales);
+                   Delta=zli_params.Delta*ones(1,n_scales);
                end
 		end
 	case 'a_trous_contrast'
-% 		Delta=zli.Delta*2.^((1:n_scales)-1);
-        if zli.bScaleDelta
-			Delta=zli.Delta*scale2size(1:n_scales,zli.scale2size_type,zli.scale2size_epsilon);
+% 		Delta=zli_params.Delta*2.^((1:n_scales)-1);
+        if zli_params.bScaleDelta
+			Delta=zli_params.Delta*scale2size(1:n_scales,zli_params.scale2size_type,zli_params.scale2size_epsilon);
         else
-            Delta=zli.Delta*ones(1,n_scales);
+            Delta=zli_params.Delta*ones(1,n_scales);
         end
     case 'gabor_HMAX'
-% 		Delta=zli.Delta*2.^((1:n_scales)-1);
-			Delta=zli.Delta*ones(1,n_scales);
+% 		Delta=zli_params.Delta*2.^((1:n_scales)-1);
+			Delta=zli_params.Delta*ones(1,n_scales);
 	otherwise
 		disp('ERRORRR!!!!!!!!!!!!!!!!!!!!!!!! no sabem com fer la Delta');
 end
 
 % normalization (I_norm)
-r=zli.normalization_power;
+r=zli_params.normalization_power;
 % struct.compute
 % dynamic/constant
-% dynamic=compute.dynamic;
+% dynamic=dynamic_params.dynamic;
 % debug display
-XOP_DEBUG=struct.compute.XOP_DEBUG;
+XOP_DEBUG=struct.display_params.XOP_DEBUG;
 %-------------------------------------------------------
 
 M=size(Iitheta{1},1);
@@ -119,8 +119,8 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%% parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-alphax=zli.alphax;
-alphay=zli.alphay;
+alphax=zli_params.alphax;
+alphay=zli_params.alphay;
 
 % the number of neuron pairs in each hypercolumn (i.e. the number of preferred orientations)
 % K=1; % no orientation here
@@ -200,7 +200,7 @@ diam=2*Delta+1; % maximum diameter of the area of influence
 % two_dimensional
 
 
-[M_norm_conv,inv_den]=Fer_M_norm_conv(n_scales,dist_type,zli.scale2size_type,zli.scale2size_epsilon,zli.bScaleDelta);
+[M_norm_conv,inv_den]=Fer_M_norm_conv(n_scales,dist_type,zli_params.scale2size_type,zli_params.scale2size_epsilon,zli_params.bScaleDelta);
 
 % M_norm_conv(3,3)=0;
 % den=24;
@@ -216,7 +216,7 @@ diam=2*Delta+1; % maximum diameter of the area of influence
 %%%%%%%%%%%%%%%%%%%% prepare orientation/scale interaction for x_ei   %%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % orientations
-switch(wave.multires)
+switch(wave_params.multires)
 	case('wav')
 		a=pi/4;
 		b=pi/2;
@@ -234,8 +234,8 @@ switch(wave.multires)
 		PsiDtheta=Psi(Dtheta);
 	case('gabor_HMAX')
 		Dtheta=zeros(K,K);
-		theta=angle_orient(1,wave.multires);
-		Dtheta(1,:)=theta-angle_orient([1:K],wave.multires);
+		theta=angle_orient(1,wave_params.multires);
+		Dtheta(1,:)=theta-angle_orient([1:K],wave_params.multires);
 		for o=2:K
 			Dtheta(o,:)=circshift(Dtheta(1,:),[1,o-1]);
 		end
@@ -247,8 +247,8 @@ radius_sc=1;
 weight_scales=zeros(1,1+2*radius_sc);
 n_weight_scales=1+2*radius_sc;
 
-if(zli.scale_interaction==1)
-	switch(wave.multires)
+if(zli_params.scale_interaction==1)
+	switch(wave_params.multires)
 		case('gabor_HMAX')
 			e=0.001; % e=0.11 es el tall entre fase i contrafase
 			f=1;
@@ -303,7 +303,7 @@ for s=1:n_scales
 	all_J{s}=zeros(diam(s),diam(s),K,K);
 	all_W{s}=zeros(diam(s),diam(s),K,K);
 	for o=1:K
-		[all_J{s}(:,:,:,o),all_W{s}(:,:,:,o)]=get_Jithetajtheta_v0_4(s,K,o,Delta(s),wave,zli);
+		[all_J{s}(:,:,:,o),all_W{s}(:,:,:,o)]=get_Jithetajtheta_v0_4(s,K,o,Delta(s),wave_params,zli_params);
 	end
 % 	J=zeros(diam,diam,1,K,K);
 % 	W=zeros(diam,diam,1,K,K);
@@ -346,7 +346,7 @@ for s=1:n_scales
 		
 		for ov=1:K
 			for oc=1:K
-				if compute.avoid_circshift_fft==1
+				if compute_params.avoid_circshift_fft==1
 					% fft that do not requires circshift (by far better)
 					J_circ=padarray(all_J{s}(:,:,1,ov,oc),[M+2*Delta(s)-diam(s),N+2*Delta(s)-diam(s)],0,'post');
 					W_circ=padarray(all_W{s}(:,:,1,ov,oc),[M+2*Delta(s)-diam(s),N+2*Delta(s)-diam(s)],0,'post');
@@ -364,7 +364,7 @@ for s=1:n_scales
 		
 		radi=(size(M_norm_conv{s})-1)/2;
 
-		if compute.avoid_circshift_fft==1
+		if compute_params.avoid_circshift_fft==1
 				% fft that do not requires circshift (by far better)
 			M_circ=padarray(M_norm_conv{s},[M+2*radi(1)-(radi(1)*2+1),N+2*radi(2)-(radi(2)*2+1)],0,'post');
 			M_circ=circshift(M_circ,-radi);
@@ -536,7 +536,7 @@ for t_membr=1:n_membr  % membrane time
 					
 					
 					
-					% 					[all_J(:,:,:,o),all_W(:,:,:,o)]=get_Jithetajtheta(M,N,K,o,Delta,wave.multires);
+					% 					[all_J(:,:,:,o),all_W(:,:,:,o)]=get_Jithetajtheta(M,N,K,o,Delta,wave_params.multires);
 					
 					if XOP_DEBUG
 						% 					W_ov=all_W(:,:,:,ov,oc)*0; %Xavier: Desactivem inhibicio
@@ -619,7 +619,7 @@ for t_membr=1:n_membr  % membrane time
 % 		end
  		for s=radius_sc+1:radius_sc+n_scales
 % 			radi=2^(s-radius_sc);
-% 			radi=scale2size(s-radius_sc,zli.scale2size_type);
+% 			radi=scale2size(s-radius_sc,zli_params.scale2size_type);
 			radi=(size(M_norm_conv{s-radius_sc})-1)/2;
             % sum over all the orientations
 			sum_newgx_toroidal_x_sc=sum(newgx_toroidal_x{s},4);
@@ -683,9 +683,9 @@ for t_membr=1:n_membr  % membrane time
 				+0.85...             % spontaneous firing rate
                 +var_noise*(rand(M,N,n_scales,K))-0.5);   % neural noise (comment for speed)
 
-    if struct.image.foveate == 1 && struct.image.redistort_periter == 1
-        for s=1:struct.wave.fin_scale
-            for o=1:struct.wave.n_orient
+    if struct.gaze_params.foveate == 1 && struct.gaze_params.redistort_periter == 1
+        for s=1:struct.wave_params.fin_scale
+            for o=1:struct.wave_params.n_orient
                 x_und = foveate(x(:,:,s,o),1,struct);
                 x(:,:,s,o) = foveate(x_und,0,struct);
             end
@@ -746,7 +746,7 @@ for i=1:n_membr   % change format
     end
 end
 
-%save([image.name 'gx_final_per_iter_' type '_' channel '.mat'], 'gx_final_per_iter', '-v7.3');
+%save([file_params.name 'gx_final_per_iter_' type '_' channel '.mat'], 'gx_final_per_iter', '-v7.3');
 
 
 % store_matrix_givenparams_channel(all_J,'all_J',channel,struct);
@@ -759,7 +759,7 @@ end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%DATA STRUCTURES 
-%Delta=zli.Delta*ones(1,n_scales);
+%Delta=zli_params.Delta*ones(1,n_scales);
 %diam=2*Delta+1;
 %M=size(Iitheta{1},1);
 %N=size(Iitheta{1},2);

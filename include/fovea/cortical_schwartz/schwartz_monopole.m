@@ -1,4 +1,4 @@
-function [X,Y] = eye2cortex(i,j,lambda,e0)
+function [X,Y] = schwartz_monopole(i,j,lambda,a)
 % X and Y are in mm
 % i and j are in radians
 
@@ -7,9 +7,10 @@ neg_i = find(i<0);
 
 Z = complex(abs(j),abs(i));
 
+angle2rad = pi/180;
+Z = Z/angle2rad;
 
-% W = log(Z+1);
-W = lambda*log1p(Z/e0);
+W = lambda*log(Z+a);
 
 
 X = real(W);

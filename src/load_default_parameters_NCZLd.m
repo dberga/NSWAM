@@ -12,10 +12,10 @@ output_folder_figs = 'figs'; %output_folder_figs = 'output_figs';
 output_folder_mats = 'mats'; %output_folder_mats = 'output_mats';
 output_folder_imgs = [output_folder '/' output_subfolder '/']; %output_folder_imgs = 'output_imgs';
 
-strct.compute.outputstr = [output_folder '/' output_subfolder '/'];
-strct.compute.outputstr_figs = output_folder_figs;
-strct.compute.outputstr_mats = output_folder_mats;
-strct.compute.outputstr_imgs = output_folder_imgs;
+strct.file_params.outputstr = [output_folder '/' output_subfolder '/'];
+strct.file_params.outputstr_figs = output_folder_figs;
+strct.file_params.outputstr_mats = output_folder_mats;
+strct.file_params.outputstr_imgs = output_folder_imgs;
 
 end
 

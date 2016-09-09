@@ -4,30 +4,52 @@ if nargin < 1
     folder = 'conf_test';
 end
 
-[wave] = get_all_parameters_wave_NCZLd();
-[zli] = get_all_parameters_zli_NCZLd();
+% zli_params
+% wave_params
+% csf_params
+% color_params
+% dynamic_params
+% resize_params
+% fusion_params
+% file_params
+% compute_params
+% display_params
+% cortex_params
+% gaze_params
+
+[wave_params] = get_all_parameters_wave_NCZLd();
+[zli_params] = get_all_parameters_zli_NCZLd();
 
 
-    if cell2mat(strfind(wave.multires,'gabor_HMAX')) > 0
-         zli.scale2size_type={-2};  % new gop14
+    if cell2mat(strfind(wave_params.multires,'gabor_HMAX')) > 0
+         zli_params.scale2size_type={-2};  % new gop14
     end
     
-[compute] = get_all_parameters_compute_NCZLd();
-[image] = get_all_parameters_image_NCZLd();
-[csfparams] = get_all_parameters_csf_NCZLd();
-[display_plot] = get_all_parameters_display_plot_NCZLd();
+[csf_params] = get_all_parameters_csf_NCZLd();
+[color_params] = get_all_parameters_color_NCZLd();
+%[dynamic_params] = get_all_parameters_dynamic_NCZLd();
+[resize_params] = get_all_parameters_resize_NCZLd();
+[fusion_params] = get_all_parameters_fusion_NCZLd();
+[file_params] = get_all_parameters_file_NCZLd();
+[compute_params] = get_all_parameters_compute_NCZLd();
+[display_params] = get_all_parameters_display_params_NCZLd();
+[gaze_params] = get_all_parameters_gaze_NCZLd();
+[cortex_params] = get_all_parameters_cortex_NCZLd();
 
 
+wave_n = parse_all_parameters_NCZLd(wave_params);
+zli_n = parse_all_parameters_NCZLd(zli_params);
+csf_n = parse_all_parameters_NCZLd(csf_params);
+color_n = parse_all_parameters_NCZLd(color_params);
+resize_n = parse_all_parameters_NCZLd(resize_params);
+fusion_n = parse_all_parameters_NCZLd(fusion_params);
+file_n = parse_all_parameters_NCZLd(file_params);
+compute_n = parse_all_parameters_NCZLd(compute_params);
+display_n = parse_all_parameters_NCZLd(display_params);
+gaze_n = parse_all_parameters_NCZLd(gaze_params);
+cortex_n = parse_all_parameters_NCZLd(cortex_params);
 
-wave_n = parse_all_parameters_NCZLd(wave);
-zli_n = parse_all_parameters_NCZLd(zli);
-compute_n = parse_all_parameters_NCZLd(compute);
-image_n = parse_all_parameters_NCZLd(image);
-csfparams_n = parse_all_parameters_NCZLd(csfparams);
-display_plot_n = parse_all_parameters_NCZLd(display_plot);
-
-
-superstruct_n = combine_all_parameters(wave_n, zli_n, compute_n, image_n, csfparams_n, display_plot_n);
+superstruct_n = combine_all_parameters(wave_n, zli_n, csf_n, color_n, resize_n, fusion_n, file_n, compute_n, display_n, gaze_n, cortex_n);
 
 
 %display(superstruct_n);
@@ -226,27 +248,37 @@ end
     
 end
 
-function [superstruct_n] = combine_all_parameters(wave_n, zli_n, compute_n, image_n, csfparams_n, display_plot_n)
+function [superstruct_n] = combine_all_parameters(wave_n, zli_n, csf_n, color_n, resize_n, fusion_n, file_n, compute_n, display_n, gaze_n, cortex_n)
 
 
-superstruct_n = cell(numel(wave_n)*numel(zli_n)*numel(compute_n)*numel(image_n)*numel(csfparams_n)*numel(display_plot_n),1);
+superstruct_n = cell(numel(wave_n)*numel(zli_n)*numel(csf_n)*numel(color_n)*numel(resize_n)*numel(fusion_n)*numel(file_n)*numel(display_n)*numel(gaze_n)*numel(cortex_n),1);
 
 fcount = 0;
-for w=1:numel(wave_n)
-    for z=1:numel(zli_n)
-        for c=1:numel(compute_n)
-            for i=1:numel(image_n)
-                for s=1:numel(csfparams_n)
-                    for d=1:numel(display_plot_n)
-
-                       fcount = fcount +1;
-                       superstruct_n{fcount}=struct('zli',zli_n{z},'wave',wave_n{w},'csfparams',csfparams_n{s},'image',image_n{i},'display_plot',display_plot_n{d},'compute',compute_n{c});
+for a=1:numel(wave_n)
+    for b=1:numel(zli_n)
+        for c=1:numel(csf_n)
+            for d=1:numel(color_n)
+                for e=1:numel(resize_n)
+                    for f=1:numel(fusion_n)
+                        for g=1:numel(file_n)
+                            for h=1:numel(compute_n)
+                                for i=1:numel(display_n)
+                                    for j=1:numel(gaze_n)
+                                        for k=1:numel(cortex_n)
+                                           fcount = fcount +1;
+                                           superstruct_n{fcount}=struct('wave_params',wave_n{a},'zli_params',zli_n{b},'csf_params',csf_n{c},'color_params',color_n{d},'resize_params',resize_n{e},'fusion_params',fusion_n{f},'file_params',file_n{g},'compute_params',compute_n{h},'display_params',display_n{i},'gaze_params',gaze_n{j},'cortex_params',cortex_n{k});
+                                        end
+                                    end
+                                end
+                            end
+                        end
                     end
                 end
             end
         end
     end
 end
+           
 
 
 
@@ -259,28 +291,28 @@ function [] = store_superstruct(superstruct_n,folder)
     end
 end
 
-function [wave] = get_all_parameters_wave_NCZLd()
+function [wave_params] = get_all_parameters_wave_NCZLd()
 
 
-    %wave.multires={'a_trous', 'wav', 'wav_contrast', 'curv', 'gabor', 'gabor_HMAX'};
-    wave.multires={'a_trous'};
+    %wave_params.multires={'a_trous', 'wav', 'wav_contrast', 'curv', 'gabor', 'gabor_HMAX'};
+    wave_params.multires={'a_trous'};
     
-    wave.n_scales={0}; %auto
+    wave_params.n_scales={0}; %auto
     
-    wave.fin_scale_offset={1};
-    wave.ini_scale={1};
-    wave.fin_scale = {wave.ini_scale{1} + wave.fin_scale_offset{1}}; %auto
-    wave.n_orient={0}; %auto
+    wave_params.fin_scale_offset={1};
+    wave_params.ini_scale={1};
+    wave_params.fin_scale = {wave_params.ini_scale{1} + wave_params.fin_scale_offset{1}}; %auto
+    wave_params.n_orient={0}; %auto
 
-    wave.mida_min={32}; wave.nmida_min = {num2str(wave.mida_min{1})};
+    wave_params.mida_min={32}; wave_params.nmida_min = {num2str(wave_params.mida_min{1})};
 
 
 end
 
-function [csfparams] = get_all_parameters_csf_NCZLd()
-    %csfparams.nu_0 = num2cell(0.5:0.5:6);
-    csfparams.nu_0 ={2.357,4};
-    %csfparams.nu_0 ={4};
+function [csf_params] = get_all_parameters_csf_NCZLd()
+    %csf_params.nu_0 = num2cell(0.5:0.5:6);
+    %csf_params.nu_0 ={2.357,4}; *
+    csf_params.nu_0 ={4};
     
     
     profile1.params_intensity.fOffsetMax=0.;
@@ -330,97 +362,165 @@ function [csfparams] = get_all_parameters_csf_NCZLd()
     profile2.params_chromatic.fOffsetMin=1.059210;
     
     
-    csfparams.params_intensity = {profile1.params_intensity, profile2.params_intensity};
-    csfparams.params_chromatic = {profile1.params_chromatic, profile2.params_chromatic};
+    %*csf_params.params_intensity = {profile1.params_intensity, profile2.params_intensity};
+    %*csf_params.params_chromatic = {profile1.params_chromatic, profile2.params_chromatic};
 
-    %csfparams.params_intensity = {profile2.params_intensity};
-    %csfparams.params_chromatic = {profile2.params_chromatic};
+    csf_params.params_intensity = {profile2.params_intensity};
+    csf_params.params_chromatic = {profile2.params_chromatic};
     
     
     
 end
 
+
+function [color_params] = get_all_parameters_color_NCZLd()
+    color_params.gamma={2.4};
+    %color_params.srgb_flag = {-1,0,1};                      % -1 = rgb, 0= opponents without gamma correction. 1= opponents with gamma correction
+    color_params.srgb_flag = {1};  
+    
+    %color_params.HDR={0}; % high dynamic range
+    %color_params.orgb_flag= {1,0};
+    color_params.orgb_flag= {0};
+
+
+end
+
+
+function [dynamic_params] = get_all_parameters_dynamic_NCZLd()
+
+        %dynamic_params.stim={3}; 
+        %dynamic_params.dynamic={0};
+end
+
+function [resize_params] = get_all_parameters_resize_NCZLd() 
+    %resize_params.autoresize_ds = {-1,0,1,2,3,4}; %-1 = resize to get < 1024, 0 = not resize, > 0 = 2^ds
+    resize_params.autoresize_ds = {0};
+    %resize_params.updown={[1],[1,2]};
+    %resize_params.updown=[1];
+    %resize_params.autoresize_nd = {0,10}; %proportion between image size and window size
+    resize_params.autoresize_nd = {0};
+    resize_params.M = {0}; %auto
+    resize_params.N = {0}; %auto
+end
+
+function [fusion_params] = get_all_parameters_fusion_NCZLd() 
+        %fusion_params.output_from_model={'M&w','M'};
+     fusion_params.output_from_model={'M'};
+    
+    %*fusion_params.output_from_csf= {'iFactor','eCSF'};
+    fusion_params.output_from_csf= {'iFactor'};
+    
+    %*fusion_params.residual_wave= {0,1,2};
+    fusion_params.residual_wave= {0};
+
+    %fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','wta'};
+    fusion_params.smethod= {'pmax2'};
+
+    %fusion_params.fusion= {1,2,3,4,5,6};
+    fusion_params.fusion= {6};
+
+    %fusion_params.tmem_res = {'mean','max'}; %temporal mean of iFactor or temporal max?
+    fusion_params.tmem_res = {'mean'}; 
+end
+
+function [file_params] = get_all_parameters_file_NCZLd()
+
+    file_params.name = {'image'};
+    
+        % Directory to work
+    file_params.outputstr = {'output/'};
+    file_params.outputstr_imgs = {''}; 
+    file_params.outputstr_figs = {'figs'};
+    file_params.outputstr_mats = {'mats'};
+    file_params.inputstr = {'input/'};
+    file_params.dir={{'/home/cic/xcerda/Neurodinamic','/home/cic/xcerda/Neurodinamic/stimuli'}};
+
+    %file_params.delete_mats= {0,1};
+    file_params.delete_mats= {0};
+end
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%% Z.Li's model parameters %%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [zli] = get_all_parameters_zli_NCZLd()
+function [zli_params] = get_all_parameters_zli_NCZLd()
 
-    zli.n_membr={10};
-    zli.n_iter={10};
-    zli.prec = {0.1};
+    zli_params.n_membr={10};
+    zli_params.n_iter={10};
+    zli_params.prec = {0.1};
     
-    %zli.n_frames.promig=num2cell(1:1:10);
-    zli.n_frames_promig={3,5,8,10};
-    %zli.n_frames_promig={10};
+    %zli_params.n_frames.promig=num2cell(1:1:10);
+    %*zli_params.n_frames_promig={3,5,8,10};
+    zli_params.n_frames_promig={10};
     
-    %zli.dist_type={'eucl', 'manh'}; 
-    zli.dist_type={'eucl'};
+    %zli_params.dist_type={'eucl', 'manh'}; 
+    zli_params.dist_type={'eucl'};
 
-    zli.scalesize_type={-1};
-    zli.scale2size_type={1};
-    zli.scale2size_epsilon = {1.3}; zli.nepsilon={num2str(zli.scale2size_epsilon{1})};
+    zli_params.scalesize_type={-1};
+    zli_params.scale2size_type={1};
+    zli_params.scale2size_epsilon = {1.3}; zli_params.nepsilon={num2str(zli_params.scale2size_epsilon{1})};
     
-    %zli.bScaleDelta=0,1;
-    zli.bScaleDelta={1};
+    %zli_params.bScaleDelta=0,1;
+    zli_params.bScaleDelta={1};
     
-    %zli.reduccio_JW=num2cell(0:0.25:4);
-    zli.reduccio_JW={1};
+    %zli_params.reduccio_JW=num2cell(0:0.25:4);
+    zli_params.reduccio_JW={1};
 
-    %zli.normal_type={'all', 'scale', 'absolute'}; zli.normal_min_absolute=0; zli.normal_max_absolute=255;
-    zli.normal_type={'scale'};
+    %zli_params.normal_type={'all', 'scale', 'absolute'}; zli_params.normal_min_absolute=0; zli_params.normal_max_absolute=255;
+    zli_params.normal_type={'scale'};
        
 
-    %zli.alphax={1.0, 1.35, 1.6, 2.0};
-    %zli.alphay={1.0, 1.35, 1.6, 2.0};
-    zli.alphax={1.0};
-    zli.alphay={1.0};
+    %zli_params.alphax={1.0, 1.35, 1.6, 2.0};
+    %zli_params.alphay={1.0, 1.35, 1.6, 2.0};
+    zli_params.alphax={1.0};
+    zli_params.alphay={1.0};
     
-    %zli.nb_periods=num2cell(1:1:10);
-    zli.nb_periods={5};
-    zli.osc_wv={zli.nb_periods{1}*(2*pi/zli.n_membr{1})};
+    %zli_params.nb_periods=num2cell(1:1:10);
+    zli_params.nb_periods={5};
+    zli_params.osc_wv={zli_params.nb_periods{1}*(2*pi/zli_params.n_membr{1})};
 
-    %zli.normal_input=num2cell(0:0.5:5);
-    %zli.normal_output=num2cell(0:0.5:5);
-    zli.normal_input={2};
-    zli.normal_output={2.0};	
-    zli.nnormal_output={num2str(zli.normal_output{1})};
-    zli.normal_min_absolute={0}; 
-    zli.normal_max_absolute={0.25};
+    %zli_params.normal_input=num2cell(0:0.5:5);
+    %zli_params.normal_output=num2cell(0:0.5:5);
+    zli_params.normal_input={2};
+    zli_params.normal_output={2.0};	
+    zli_params.nnormal_output={num2str(zli_params.normal_output{1})};
+    zli_params.normal_min_absolute={0}; 
+    zli_params.normal_max_absolute={0.25};
 
-    %zli.Delta={5, 10, 15, 20, 30, 50, 100};
-    zli.Delta={15};
+    %zli_params.Delta={5, 10, 15, 20, 30, 50, 100};
+    zli_params.Delta={15};
 
-    %zli.ON_OFF={0, 1, 2};
-    zli.ON_OFF={0};
+    %zli_params.ON_OFF={0, 1, 2};
+    zli_params.ON_OFF={0};
 
-    %zli.boundary={'mirror', 'wrap'};
-    zli.boundary={'mirror'};
+    %zli_params.boundary={'mirror', 'wrap'};
+    zli_params.boundary={'mirror'};
 
     
-    zli.normalization_power={2};
+    zli_params.normalization_power={2};
 
-    %zli.kappax={1.0, 1.35, 1.6, 2.0}; %exc
-    %zli.kappay={1.0, 1.35, 1.6, 2.0}; %inh
-    zli.kappax={1.0};
-    zli.kappay={1.35}; zli.nkappay={num2str(zli.kappay{1})}; 
+    %zli_params.kappax={1.0, 1.35, 1.6, 2.0}; %exc
+    %zli_params.kappay={1.0, 1.35, 1.6, 2.0}; %inh
+    zli_params.kappax={1.0};
+    zli_params.kappay={1.35}; zli_params.nkappay={num2str(zli_params.kappay{1})}; 
 
-    %zli.dedi=set_parameters_v2(2000, multires); % OP improve set_parameters
+    %zli_params.dedi=set_parameters_v2(2000, multires); % OP improve set_parameters
                                                 % was (0,multires) for all the
                                                 % experiments until 1 2 12
-    %zli.dedi(1,:)=3*3*ones(1,9);
-    %zli.dedi(2,:)=0*3*3*ones(1,9);
-    zli.dedi = {[3*3*ones(1,9); 0*3*3*ones(1,9)]};
+    %zli_params.dedi(1,:)=3*3*ones(1,9);
+    %zli_params.dedi(2,:)=0*3*3*ones(1,9);
+    zli_params.dedi = {[3*3*ones(1,9); 0*3*3*ones(1,9)]};
     
-    %zli.shift={0, 1};
-    zli.shift={1};
+    %zli_params.shift={0, 1};
+    zli_params.shift={1};
 
 
 
-    %zli.scale_interaction={0, 1};
-    %zli.orient_interaction={0, 1};
-    zli.scale_interaction={1};
-    zli.orient_interaction={1};
+    %zli_params.scale_interaction={0, 1};
+    %zli_params.orient_interaction={0, 1};
+    zli_params.scale_interaction={1};
+    zli_params.orient_interaction={1};
 		
     
     
@@ -432,133 +532,93 @@ end
 %%%%%%%% computational setting %%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [compute] = get_all_parameters_compute_NCZLd()
+function [compute_params] = get_all_parameters_compute_NCZLd()
 
-    % Directory to work
-    compute.outputstr = {'output/'};
-    compute.outputstr_imgs = {''}; 
-    compute.outputstr_figs = {'figs'};
-    compute.outputstr_mats = {'mats'};
-    compute.inputstr = {'input/'};
-    compute.dir={{'/home/cic/xcerda/Neurodinamic','/home/cic/xcerda/Neurodinamic/stimuli'}};
+    compute_params.model = {1}; %matlab
     % Jobmanager
-    compute.jobmanager={'xcerda-10'}; % 'penacchio'/'xotazu'/'xcerda'/'xcerda-10'
+    compute_params.jobmanager={'xcerda-10'}; % 'penacchio'/'xotazu'/'xcerda'/'xcerda-10'
 
     % Use MATLAB workers (0:no, 1:yes)
-    compute.parallel={0};
-    compute.parallel_channel={0};
-    compute.parallel_scale={0};
-    compute.parallel_ON_OFF={0};
-    compute.parallel_orient={0};
-    compute.dynamic={0};
-    compute.multiparameters={0};
+    compute_params.parallel={0};
+    compute_params.parallel_channel={0};
+    compute_params.parallel_scale={0};
+    compute_params.parallel_ON_OFF={0};
+    compute_params.parallel_orient={0};
+
+    %compute_params.multiparameters={0};
 
     % complexity of the set of parameters you want to study 
-    if compute.multiparameters{1}==0
-        compute.Nparam={1};
-    else    
-        compute.Nparam={size(zli.dedi{1},3)};
-    end
+%     if compute_params.multiparameters{1}==0
+%         compute_params.Nparam={1};
+%     else    
+%         compute_params.Nparam={size(zli_params.dedi{1},3)};
+%     end
 
 
-    compute.use_fft={1};
-    compute.avoid_circshift_fft={1};
+    compute_params.use_fft={1};
+    compute_params.avoid_circshift_fft={1};
 
-    compute.XOP_DEBUG={0}; % debug (display control values)
-    compute.scale_interaction_debug={0};  % debug (display scale interaction information)
-    compute.XOP_activacio_neurona={0}; % impose activity to a given unit
+    compute_params.XOP_activacio_neurona={0}; % impose activity to a given unit
 
 
-    compute.HDR={0}; % high dynamic range
 
     %%%%%model output, ecsf
 
     
-    compute.output_from_csf= {'iFactor','eCSF'};
-    %compute.output_from_csf= {'iFactor'};
     
-    compute.output_from_residu= {0,1};
-    %compute.output_from_residu= {0};
 
-    %compute.smethod= {'sqmean','pmax','pmaxc','pmax2','wta'};
-    compute.smethod= {'pmax2'};
     
-    %compute.delete_mats= {0,1};
-    compute.delete_mats= {0};
     
-    %compute.orgb_flag= {1,0};
-    compute.orgb_flag= {0};
-    
-    %compute.fusion= {1,2,3,4,5,6};
-    compute.fusion= {6};
+
 
 end
+
+
+function [cortex_params] = get_all_parameters_cortex_NCZLd()
+
+        cortex_params.cm_method = {'schwartz_monopole','dsech_monopole','schwartz_dipole'};
+        cortex_params.cortex_width = {128};
+        cortex_params.a={degtorad(0.77),degtorad(1)};
+        cortex_params.b={degtorad(150),degtorad(90)};
+        cortex_params.lambda={12,18};
+        cortex_params.isoPolarGrad={0.1821};
+        cortex_params.eccWidth={0.7609};
+        cortex_params.cortex_max_elong_mm = {120};
+        cortex_params.cortex_max_az_mm = {60};
+        cortex_params.mirroring = {1};
+    
+end
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%  stimulus (image, name...) %%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [image] = get_all_parameters_image_NCZLd()
+function [gaze_params] = get_all_parameters_gaze_NCZLd()
 
 
     
 
-    image.name = {'image'};
-    %image.single_or_multiple={1,2};
-    image.single_or_multiple={1};
-    %image.single={'mach','che','whi','whi_swirl','whi_swirl_petit'};
-    image.single={'mach'};
-    
-     %image.multiple={'mach','che','whi'};
-     %image.multiple={'whi','whi_new25','whi_new50'};
-    image.multiple={'mach'};
+
+        gaze_params.orig_width = {0}; %unknown on undistort
+        gaze_params.orig_height = {0}; %unknown on undistort
+        gaze_params.fov_x = {0};
+        gaze_params.fov_y = {0};
+        gaze_params.img_diag_angle = {degtorad(35.12),degtorad(44.12)};
 
 
-    image.gamma={2.4};
-    %image.srgb_flag = {-1,0,1};                      % -1 = rgb, 0= opponents without gamma correction. 1= opponents with gamma correction
-    image.srgb_flag = {1};  
-    
-    %image.updown={[1],[1,2]};
-    image.updown=[1];
-
-    
-    image.stim={3}; 
-    image.nstripes = {0};
-
-    %image.foveate = {0,1};
-    image.foveate = {1};
-    %image.fov_type = {'cortical_xavi','cortical_xavi_mirrored','cortical', 'gaussian', 'fisheye'};
-    image.fov_type = {'cortical_xavi_mirrored'};
+    %gaze_params.foveate = {0,1};
+    gaze_params.foveate = {1};
+    %gaze_params.fov_type = {'cortical_xavi','cortical_xavi_mirrored','cortical', 'gaussian', 'fisheye'};
+    gaze_params.fov_type = {'cortical'};
  
-    %image.output_from_model={'M&w','M'};
-     image.output_from_model='M';
-    
-    %image.autoresize_ds = {-1,0,1,2,3,4}; %-1 = resize to get < 1024, 0 = not resize, > 0 = 2^ds
-    image.autoresize_ds = {0};
 
-    %image.autoresize_nd = {0,10}; %proportion between image size and window size
-    image.autoresize_nd = {0};
+    gaze_params.redistort_periter = {1};
 
-    %image.tmem_res = {'mean','max'}; %temporal mean of iFactor or temporal max?
-    image.tmem_res = {'mean'}; 
-
-    image.fixationX = {0}; %auto
-    image.fixationY = {0}; %auto
-
-
-    image.M = {0}; %auto
-    image.N = {0}; %auto
-
-    image.e0 = {1.5};
-
-    image.lambda = {12};
-
-    image.cortex_width = {128};
-
-    image.vAngle = {35.12};
-
-    image.redistort_periter = {0};
-
+    gaze_params.ngazes = {1};
+    gaze_params.gaze_idx = {0};
 
 end
 
@@ -566,27 +626,29 @@ end
 %%%%%%%% display plot/store    %%%%%%%%%%%   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [display_plot] = get_all_parameters_display_plot_NCZLd()
+function [display_params] = get_all_parameters_display_params_NCZLd()
 
-    display_plot.plot_io={0};  % plot input/output (default 1)
-    display_plot.reduce={0};   % 0 all (9)/ 1 reduced (useless if single_or_multiple=1) (default 0)
-    display_plot.plot_wavelet_planes={0};  % display wavelet coefficients (default 0)
-    display_plot.store_img_img_out={1};   % 0 don't save/ 1 save img and img_out
+    display_params.plot_io={0};  % plot input/output (default 1)
+    display_params.reduce={0};   % 0 all (9)/ 1 reduced (useless if single_or_multiple=1) (default 0)
+    display_params.plot_wavelet_planes={0};  % display wavelet coefficients (default 0)
+    display_params.store_img_img_out={1};   % 0 don't save/ 1 save img and img_out
     
-    display_plot.store={1};    % 0 don't store/ 1 iFactor, c (residual) and Ls (from decomp) and struct [default= 1]
-    display_plot.store_irrelevant={0};    % 0 don't store irrelevant/ 1 store irrelevant params (J, W...)... (default= 1)
-    display_plot.savefigs={0};  % save figures for stored values for iFactor, omega ...
+    display_params.store={1};    % 0 don't store/ 1 iFactor, c (residual) and Ls (from decomp) and struct [default= 1]
+    display_params.store_irrelevant={0};    % 0 don't store irrelevant/ 1 store irrelevant params (J, W...)... (default= 1)
+    display_params.savefigs={0};  % save figures for stored values for iFactor, omega ...
     
     
+    display_params.XOP_DEBUG={0}; % debug (display control values)
+    display_params.scale_interaction_debug={0};  % debug (display scale interaction information)
     
     % White effect
-    % display_plot.y_video=128/256;
-    % display_plot.x_video=92/256;
-    %display_plot.y_video=0.5;
-    %display_plot.x_video=68/128;
+    % display_params.y_video=128/256;
+    % display_params.x_video=92/256;
+    %display_params.y_video=0.5;
+    %display_params.x_video=68/128;
     % dynamical case
-    display_plot.y_video={65/128}; % (default 0.5)
-    display_plot.x_video={65/128}; % (default 68/128)
+    display_params.y_video={65/128}; % (default 0.5)
+    display_params.x_video={65/128}; % (default 68/128)
 
    
 

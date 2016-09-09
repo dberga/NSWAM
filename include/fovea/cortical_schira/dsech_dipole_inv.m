@@ -1,0 +1,32 @@
+function [i,j] = dsech_dipole_inv(X,Y,lambda,a,b,eccWidth,isoPolarGrad)
+% X and Y are in mm
+% i and j are in radians
+
+
+neg_X = find(X<0);
+neg_Y = find(Y<0);
+
+W = complex(abs(X),abs(Y));
+
+Z = (a-b*exp(W/lambda))./(exp(W/lambda)-1);
+
+angle2rad = pi/180;
+Z = Z*angle2rad;
+
+i = imag(Z);
+j = real(Z);
+
+i = i .* real((sech(i) .^ sech(log(j/a)*eccWidth)*isoPolarGrad));
+i1 = i .* real((sech(i) .^ sech(log(j/a)*eccWidth)*isoPolarGrad));
+i2 = i .* real((sech(i) .^ sech(log(j/b)*eccWidth)*isoPolarGrad));
+
+i(neg_Y) = -i(neg_Y);
+j(neg_X) = -j(neg_X);
+
+end
+
+
+% f = sech(x) = 2/(exp(x)+exp(-x)); 
+% x = log((1-f+sqrt((1+-f^2)/f^2))/y);
+
+

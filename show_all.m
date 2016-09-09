@@ -44,7 +44,7 @@ function [  ] = show_all( image_name )
     image_struct = load(image_struct_path); image_struct = image_struct.matrix_in;
     
         %OPPONENTS
-    image_opponents = get_the_cstimulus(image,image_struct.image.gamma,image_struct.image.srgb_flag);%! color  to opponent
+    image_opponents = get_the_cstimulus(image,image_struct.color_params.gamma,image_struct.color_params.srgb_flag);%! color  to opponent
     mosaic = zeros(size(image_opponents,1),size(image_opponents,2),1,size(image_opponents,3)); mosaic(:,:,1,:) = image_opponents(:,:,:);
     figure; [fig] = montage(mosaic, 'Size',[1 3]);
     fig_image = getimage(fig);
@@ -64,7 +64,7 @@ function [  ] = show_all( image_name )
         figure; [fig] = imshow(image_foveated/255);
         fig_image = getimage(fig);
         imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_gaze1_' image_name_noext '.png']);
-        image_opponents = get_the_cstimulus(image_foveated,image_struct.image.gamma,image_struct.image.srgb_flag);%! color  to opponent
+        image_opponents = get_the_cstimulus(image_foveated,image_struct.color_params.gamma,image_struct.color_params.srgb_flag);%! color  to opponent
         mosaic = zeros(size(image_opponents,1),size(image_opponents,2),1,size(image_opponents,3)); mosaic(:,:,1,:) = image_opponents(:,:,:);
         figure; [fig] = montage(mosaic, 'Size',[1 3]);
         fig_image = getimage(fig);
@@ -80,7 +80,7 @@ function [  ] = show_all( image_name )
         figure; [fig] = imshow(image_foveated/255);
         fig_image = getimage(fig);
         imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_gaze2_' image_name_noext '.png']);
-        image_opponents = get_the_cstimulus(image_foveated,image_struct.image.gamma,image_struct.image.srgb_flag);%! color  to opponent
+        image_opponents = get_the_cstimulus(image_foveated,image_struct.color_params.gamma,image_struct.color_params.srgb_flag);%! color  to opponent
         mosaic = zeros(size(image_opponents,1),size(image_opponents,2),1,size(image_opponents,3)); mosaic(:,:,1,:) = image_opponents(:,:,:);
         figure; [fig] = montage(mosaic, 'Size',[1 3]);
         fig_image = getimage(fig);
@@ -96,7 +96,7 @@ function [  ] = show_all( image_name )
         figure; [fig] = imshow(image_foveated/255);
         fig_image = getimage(fig);
         imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_gaze3_' image_name_noext '.png']);
-        image_opponents = get_the_cstimulus(image_foveated,image_struct.image.gamma,image_struct.image.srgb_flag);%! color  to opponent
+        image_opponents = get_the_cstimulus(image_foveated,image_struct.color_params.gamma,image_struct.color_params.srgb_flag);%! color  to opponent
         mosaic = zeros(size(image_opponents,1),size(image_opponents,2),1,size(image_opponents,3)); mosaic(:,:,1,:) = image_opponents(:,:,:);
         figure; [fig] = montage(mosaic, 'Size',[1 3]);
         fig_image = getimage(fig);
@@ -112,7 +112,7 @@ function [  ] = show_all( image_name )
         figure; [fig] = imshow(image_foveated/255);
         fig_image = getimage(fig);
         imwrite(im2uint8(fig_image),[figs_folder '/' 'magnified_rgb_gaze4_' image_name_noext '.png']);
-        image_opponents = get_the_cstimulus(image_foveated,image_struct.image.gamma,image_struct.image.srgb_flag);%! color  to opponent
+        image_opponents = get_the_cstimulus(image_foveated,image_struct.color_params.gamma,image_struct.color_params.srgb_flag);%! color  to opponent
         mosaic = zeros(size(image_opponents,1),size(image_opponents,2),1,size(image_opponents,3)); mosaic(:,:,1,:) = image_opponents(:,:,:);
         figure; [fig] = montage(mosaic, 'Size',[1 3]);
         fig_image = getimage(fig);
@@ -137,37 +137,37 @@ function [  ] = show_all( image_name )
     
     
     %WAVE CHROMATIC 1
-    figure; [fig] = show_wav(c1_curv,1,image_struct.wave.n_scales-1,1,image_struct.wave.n_orient);
+    figure; [fig] = show_wav(c1_curv,1,image_struct.wave_params.n_scales-1,1,image_struct.wave_params.n_orient);
     fig_image = getimage(fig);
     imwrite(im2uint8(mat2gray(fig_image)),[figs_folder '/' 'curv_' channels{1} '_' image_name_noext '.png']);
     close all;
-    figure; [fig] = show_wav(c1_residual,1,image_struct.wave.n_scales-1,1,1);
+    figure; [fig] = show_wav(c1_residual,1,image_struct.wave_params.n_scales-1,1,1);
     fig_image = getimage(fig);
     imwrite(im2uint8(mat2gray(fig_image)),[figs_folder '/' 'residual_' channels{1} '_' image_name_noext '.png']);
     close all;
     
     %WAVE CHROMATIC 2
-    figure; [fig] = show_wav(c2_curv,1,image_struct.wave.n_scales-1,1,image_struct.wave.n_orient);
+    figure; [fig] = show_wav(c2_curv,1,image_struct.wave_params.n_scales-1,1,image_struct.wave_params.n_orient);
     fig_image = getimage(fig);
     imwrite(im2uint8(mat2gray(fig_image)),[figs_folder '/' 'curv_'  channels{2} '_' image_name_noext '.png']);
     close all;
-    figure; [fig] = show_wav(c2_residual,1,image_struct.wave.n_scales-1,1,1);
+    figure; [fig] = show_wav(c2_residual,1,image_struct.wave_params.n_scales-1,1,1);
     fig_image = getimage(fig);
     imwrite(im2uint8(mat2gray(fig_image)),[figs_folder '/' 'residual_' channels{2} '_' image_name_noext '.png']);
     close all;
     
     %WAVE CHROMATIC 3
-    figure; [fig] = show_wav(c3_curv,1,image_struct.wave.n_scales-1,1,image_struct.wave.n_orient);
+    figure; [fig] = show_wav(c3_curv,1,image_struct.wave_params.n_scales-1,1,image_struct.wave_params.n_orient);
     fig_image = getimage(fig);
     imwrite(im2uint8(mat2gray(fig_image)),[figs_folder '/' 'curv_'  channels{3} '_' image_name_noext '.png']);
     close all;
-    figure; [fig] = show_wav(c3_residual,1,image_struct.wave.n_scales-1,1,1);
+    figure; [fig] = show_wav(c3_residual,1,image_struct.wave_params.n_scales-1,1,1);
     fig_image = getimage(fig);
     imwrite(im2uint8(mat2gray(fig_image)),[figs_folder '/' 'residual_' channels{3} '_' image_name_noext '.png']);
     close all;
     
     %IFACTOR CHROMATIC 1
-    [figs] = show_RF_dynamic(c1_iFactor,1,image_struct.zli.n_membr,1,image_struct.zli.n_iter,1,image_struct.wave.n_scales-1,1,image_struct.wave.n_orient);
+    [figs] = show_RF_dynamic(c1_iFactor,1,image_struct.zli_params.n_membr,1,image_struct.zli_params.n_iter,1,image_struct.wave_params.n_scales-1,1,image_struct.wave_params.n_orient);
     for f=1:numel(figs)
         fig = figs(f);
         fig_image = getimage(fig);
@@ -176,7 +176,7 @@ function [  ] = show_all( image_name )
     close all;
     
     %IFACTOR CHROMATIC 2
-    [figs] = show_RF_dynamic(c2_iFactor,1,image_struct.zli.n_membr,1,image_struct.zli.n_iter,1,image_struct.wave.n_scales-1,1,image_struct.wave.n_orient);
+    [figs] = show_RF_dynamic(c2_iFactor,1,image_struct.zli_params.n_membr,1,image_struct.zli_params.n_iter,1,image_struct.wave_params.n_scales-1,1,image_struct.wave_params.n_orient);
     for f=1:numel(figs)
         fig = figs(f);
         fig_image = getimage(fig);
@@ -185,7 +185,7 @@ function [  ] = show_all( image_name )
     close all;
     
     %IFACTOR CHROMATIC 3
-    [figs] = show_RF_dynamic(c3_iFactor,1,image_struct.zli.n_membr,1,image_struct.zli.n_iter,1,image_struct.wave.n_scales-1,1,image_struct.wave.n_orient);
+    [figs] = show_RF_dynamic(c3_iFactor,1,image_struct.zli_params.n_membr,1,image_struct.zli_params.n_iter,1,image_struct.wave_params.n_scales-1,1,image_struct.wave_params.n_orient);
     for f=1:numel(figs)
         fig = figs(f);
         fig_image = getimage(fig);
@@ -194,7 +194,7 @@ function [  ] = show_all( image_name )
     close all;
     
     %IFACTOR ACTIVITY CHROMATIC 1
-%     [activity_mean,activity_mean_mean,activity_max,activity_max_max, activity_sum,activity_sum_sum] = show_activity(c1_iFactor,1,image_struct.zli.n_membr,1,image_struct.zli.n_iter,1,image_struct.wave.n_scales-1,1,image_struct.wave.n_orient);
+%     [activity_mean,activity_mean_mean,activity_max,activity_max_max, activity_sum,activity_sum_sum] = show_activity(c1_iFactor,1,image_struct.zli_params.n_membr,1,image_struct.zli_params.n_iter,1,image_struct.wave_params.n_scales-1,1,image_struct.wave_params.n_orient);
 %     [fig] = show_activity_plots(activity_mean);
 %     fig_image = getimage(fig);
 %     imwrite(im2uint8(fig_image),[figs_folder '/' 'iFactor_mean_' channels{1} '_' image_name_noext '.png']);
@@ -221,7 +221,7 @@ function [  ] = show_all( image_name )
 %     close all;
     
     %IFACTOR ACTIVITY CHROMATIC 2
-%     [activity_mean,activity_mean_mean,activity_max,activity_max_max, activity_sum,activity_sum_sum] = show_activity(c2_iFactor,1,image_struct.zli.n_membr,1,image_struct.zli.n_iter,1,image_struct.wave.n_scales-1,1,image_struct.wave.n_orient);
+%     [activity_mean,activity_mean_mean,activity_max,activity_max_max, activity_sum,activity_sum_sum] = show_activity(c2_iFactor,1,image_struct.zli_params.n_membr,1,image_struct.zli_params.n_iter,1,image_struct.wave_params.n_scales-1,1,image_struct.wave_params.n_orient);
 %     [fig] = show_activity_plots(activity_mean);
 %     fig_image = getimage(fig);
 %     imwrite(im2uint8(fig_image),[figs_folder '/' 'iFactor_mean_' channels{2} '_' image_name_noext '.png']);
@@ -248,7 +248,7 @@ function [  ] = show_all( image_name )
 %     close all;
     
     %IFACTOR ACTIVITY CHROMATIC 3
-%     [activity_mean,activity_mean_mean,activity_max,activity_max_max, activity_sum,activity_sum_sum] = show_activity(c3_iFactor,1,image_struct.zli.n_membr,1,image_struct.zli.n_iter,1,image_struct.wave.n_scales-1,1,image_struct.wave.n_orient);
+%     [activity_mean,activity_mean_mean,activity_max,activity_max_max, activity_sum,activity_sum_sum] = show_activity(c3_iFactor,1,image_struct.zli_params.n_membr,1,image_struct.zli_params.n_iter,1,image_struct.wave_params.n_scales-1,1,image_struct.wave_params.n_orient);
 %     [fig] = show_activity_plots(activity_mean);
 %     fig_image = getimage(fig);
 %     imwrite(im2uint8(fig_image),[figs_folder '/' 'iFactor_mean_' channels{3} '_' image_name_noext '.png']);

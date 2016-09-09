@@ -1,10 +1,10 @@
 function [dades,normal_max,normal_min] = curv_normalization(dades, struct)
 
-factor_normal=struct.zli.normal_input;
-type=struct.zli.normal_type;
+factor_normal=struct.zli_params.normal_input;
+type=struct.zli_params.normal_type;
 
 	% normalitzacio
-	shift=struct.zli.shift;
+	shift=struct.zli_params.shift;
 
 	ncells=size(dades,1);
 	n_scales=size(dades{1},3);
@@ -60,8 +60,8 @@ switch type
 			% -------------------------------
 
 	case ('absolute')
-		normal_min=struct.zli.normal_min_absolute; 
-		normal_max=struct.zli.normal_max_absolute; 
+		normal_min=struct.zli_params.normal_min_absolute; 
+		normal_max=struct.zli_params.normal_max_absolute; 
 			for i=1:ncells
 				dades{i}=((dades{i}-normal_min)/(normal_max-normal_min))*(factor_normal-shift)+shift;
 			end

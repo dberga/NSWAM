@@ -18,7 +18,7 @@ clear struct wave zli display_plot compute
 strct=get_default_parameters_NCZLd();
 
 % Prepare structures 
-zli=strct.zli;
+zli_params=strct.zli_params;
 wave=strct.wave;
 image=strct.image;
 display=strct.display;

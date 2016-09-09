@@ -239,7 +239,7 @@ if(param.strct.compute.parallel==1)
  
  
 	job = createJob(jm);
- 	p=param.strct.compute.dir;
+ 	p=param.strct.file_params.dir;
  	set(job,'FileDependencies',p);
  	set(job,'PathDependencies',p);
 % 	path(path,'/home/xotazu/neuro/olivier/ZLi_model_for_induction_minimal_implementation_31_1_2011/vd_3_6_2')

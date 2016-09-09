@@ -97,15 +97,15 @@ mexPrintf("Going into mex NCZLd_mex routine ... \n");
                 fPtr2 = mxGetField(fPtr,0,"orient_interaction"); double_realPtr2 = (double *) mxGetPr(fPtr2); strParam.strParamZLiNetwork.strParamZLiExcInh.bOrientInteraction = double_realPtr2[0]; //mexPrintf("bOrientInteraction=%d\n",strParam.strParamZLiNetwork.strParamZLiExcInh.bOrientInteraction);
                 fPtr2 = mxGetField(fPtr,0,"bScaleDelta"); double_realPtr2 = (double *) mxGetPr(fPtr2); strParam.strParamZLiNetwork.strParamZLiExcInh.bScaleDelta = double_realPtr2[0]; //mexPrintf("bScaleDelta=%d\n",strParam.strParamZLiNetwork.strParamZLiExcInh.bScaleDelta);
                 
-            fPtr = mxGetField(prhs[1],0,"wave");
+            fPtr = mxGetField(prhs[1],0,"wave_params");
                 fPtr2 = mxGetField(fPtr,0,"ini_scale");  double_realPtr2 = (double *) mxGetPr(fPtr2); strParam.strParamZLiNetwork.strParamZLiExcInh.initial_scale = double_realPtr2[0]-1; //mexPrintf("initial_scale=%d\n",strParam.strParamZLiNetwork.strParamZLiExcInh.initial_scale);
                 fPtr2 = mxGetField(fPtr,0,"n_scales");  double_realPtr2 = (double *) mxGetPr(fPtr2); nScales = double_realPtr2[0]-1; //mexPrintf("nScales=%d\n",nScales);
                 fPtr2 = mxGetField(fPtr,0,"n_orient");  double_realPtr2 = (double *) mxGetPr(fPtr2); nOrient = double_realPtr2[0]; //mexPrintf("nOrient=%d\n",nOrient);
                 
-//         fPtr = mxGetField(prhs[1],0,"csfparams");
+//         fPtr = mxGetField(prhs[1],0,"csf_params");
 //         fPtr = mxGetField(prhs[1],0,"image");
 //         fPtr = mxGetField(prhs[1],0,"display_plot");
-//         fPtr = mxGetField(prhs[1],0,"compute");
+//         fPtr = mxGetField(prhs[1],0,"compute_params");
 
 
     

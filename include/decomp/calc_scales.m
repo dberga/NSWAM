@@ -14,7 +14,7 @@ function [n_scales, ini_scale, fin_scale] = calc_scales(img, ini_scale, fin_scal
                 fin_scale=n_scales;
     % 		case('a_trous')
     % 			n_scales=6;
-                %fin_scale= struct.wave.n_scales - struct.wave.fin_scale_offset;
+                %fin_scale= struct.wave_params.n_scales - struct.wave_params.fin_scale_offset;
             otherwise
                 n_scales=floor(log(max(size(img(:,:,1))-1)/mida_min)/log(2)) + extra;
     %			n_scales=floor(log2(	min(size(img(:,:,1)))-1) )-n_scale_max;

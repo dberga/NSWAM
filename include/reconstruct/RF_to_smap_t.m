@@ -9,12 +9,12 @@ function [smap] = RF_to_smap_t(RF_s_o_c,residual_s_c,Ls_s_c,struct)
     
     
     %compute eCSF
-    if strcmp(struct.compute.output_from_csf,'eCSF') == 1
+    if strcmp(struct.fusion_params.output_from_csf,'eCSF') == 1
         [RF_s_o_c] = apply_eCSF_percanal(RF_s_o_c, struct);
     end
     
     %inverse decomposition or max then inverse decomposition
-    switch (struct.compute.smethod)
+    switch (struct.fusion_params.smethod)
         case 'pmax2'
             [RF_s,residual_s,Ls_s] = get_RF_max_t(RF_s_o_c,residual_s_c,Ls_s_c,struct);        
             RF_s_o = repicate_orient(RF_s,struct);
@@ -37,8 +37,8 @@ function [smap] = RF_to_smap_t(RF_s_o_c,residual_s_c,Ls_s_c,struct)
             [c1_residual_s,c2_residual_s,c3_residual_s] = separate_channels_norient(residual_s_c,struct);
             [c1_Ls_s,c2_Ls_s,c3_Ls_s] = separate_channels_norient(Ls_s_c,struct);
             
-            %for s=1:struct.wave.n_scales-1
-            %for o=1:struct.wave.n_orient
+            %for s=1:struct.wave_params.n_scales-1
+            %for o=1:struct.wave_params.n_orient
                 RF_c(:,:,1) = RF_to_rec_channel_t(c1_RF_s_o,c1_residual_s,c1_Ls_s,struct);
                 RF_c(:,:,2) = RF_to_rec_channel_t(c2_RF_s_o,c2_residual_s,c2_Ls_s,struct);
                 RF_c(:,:,3) = RF_to_rec_channel_t(c3_RF_s_o,c3_residual_s,c3_Ls_s,struct);
@@ -48,13 +48,13 @@ function [smap] = RF_to_smap_t(RF_s_o_c,residual_s_c,Ls_s_c,struct)
     
     
     %from opponent to color (no)
-    if struct.compute.orgb_flag == 1  
-		RF_c = get_the_ostimulus(RF_c,struct.image.gamma,struct.image.srgb_flag);
+    if struct.color_params.orgb_flag == 1  
+		RF_c = get_the_ostimulus(RF_c,struct.color_params.gamma,struct.color_params.srgb_flag);
     end 
     
     
     %combine channels
-	switch (struct.compute.smethod)
+	switch (struct.fusion_params.smethod)
         case 'pmax2'
             smap = RF_c(:,:,1); %max opp i orient, los tres canales lo mismo
         case 'wta' 
@@ -74,7 +74,7 @@ function [smap] = RF_to_smap_t(RF_s_o_c,residual_s_c,Ls_s_c,struct)
 
     
     %normalize according to a specific type (Z, energy ...)
-    switch(struct.compute.fusion)
+    switch(struct.fusion_params.fusion)
 		case 1	
 	
 			  smap = normalize_energy(smap);
@@ -101,7 +101,7 @@ function [smap] = RF_to_smap_t(RF_s_o_c,residual_s_c,Ls_s_c,struct)
     end
     
     %undistort
-    if struct.image.foveate == 1
+    if struct.gaze_params.foveate == 1
         smap = foveate(smap,1,struct);
     end
 

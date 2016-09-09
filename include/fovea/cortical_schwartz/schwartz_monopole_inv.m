@@ -1,4 +1,4 @@
-function [i,j] = cortex2eye(X,Y,lambda,e0)
+function [i,j] = schwartz_monopole_inv(X,Y,lambda,a)
 % X and Y are in mm
 % i and j are in radians
 
@@ -7,10 +7,10 @@ neg_Y = find(Y<0);
 
 W = complex(abs(X),abs(Y));
 
+Z = exp(W/lambda)-a;
 
-% Z = exp(W)-1;
-Z = expm1(W/lambda)*e0;
-
+angle2rad = pi/180;
+Z = Z*angle2rad;
 
 i = imag(Z);
 j = real(Z);

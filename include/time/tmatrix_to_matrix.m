@@ -8,14 +8,14 @@ function [matrix] = tmatrix_to_matrix(tmatrix,struct, portion)
         portion = 1;
     end
     
-    tinit=struct.zli.n_membr-struct.zli.n_frames_promig+1; %index start at 1
-    tfinal = struct.zli.n_membr;
-    sinit = struct.wave.ini_scale;
-    sfinal = struct.wave.fin_scale;
+    tinit=struct.zli_params.n_membr-struct.zli_params.n_frames_promig+1; %index start at 1
+    tfinal = struct.zli_params.n_membr;
+    sinit = struct.wave_params.ini_scale;
+    sfinal = struct.wave_params.fin_scale;
     oinit = 1;
-    ofinal = struct.wave.n_orient;
+    ofinal = struct.wave_params.n_orient;
     
-    m_type = struct.image.tmem_res;
+    m_type = struct.fusion_params.tmem_res;
     
     if strcmp(m_type,'mean') == 1
         matrix = get_tmean_matrix(tmatrix,tinit,tfinal,sinit,sfinal,oinit,ofinal);

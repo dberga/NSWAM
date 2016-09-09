@@ -6,7 +6,7 @@ function [out]=Experim_job(param)
 
 	x0=param.x0;
 	strct=param.strct;
-	n_scales=strct.wave.n_scales;
+	n_scales=strct.wave_params.n_scales;
 
 	% Versio 1	
 	strct.kappa1(1:n_scales)=x0(1)*ones(1,n_scales)/strct.compute.factor_kappa;

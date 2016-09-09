@@ -2,8 +2,8 @@ function [] = writefig_givenparams(figures_in,matrix_name,struct)
 
     
     
-    output_folder = struct.compute.outputstr_figs;
-    output_prefix = struct.image.name;
+    output_folder = struct.file_params.outputstr_figs;
+    output_prefix = struct.file_params.name;
     output_suffix = '';
     format = 'jpg';
    

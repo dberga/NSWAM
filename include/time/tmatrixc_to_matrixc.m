@@ -6,13 +6,13 @@ function [matrix] = tmatrixc_to_matrixc(tmatrixc,struct, channel, portion)
     end
     
     tinit=1;
-    tfinal = struct.zli.n_membr;
-    sinit = struct.wave.ini_scale;
-    sfinal = struct.wave.fin_scale;
+    tfinal = struct.zli_params.n_membr;
+    sinit = struct.wave_params.ini_scale;
+    sfinal = struct.wave_params.fin_scale;
     oinit = 1;
-    ofinal = struct.wave.n_orient;
+    ofinal = struct.wave_params.n_orient;
     
-    m_type = struct.image.tmem_res;
+    m_type = struct.fusion_params.tmem_res;
     
     if strcmp(m_type,'mean') == 1
         matrix = get_tmean_matrixc(tmatrixc,tinit,tfinal,sinit,sfinal,oinit,ofinal,channel);

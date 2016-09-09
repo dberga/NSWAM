@@ -15,8 +15,8 @@
 
 function [img_out] = RF_to_rec_channel_t(RF,residual,Ls, struct)
 
-n_scales =  struct.wave.n_scales;
-method = struct.wave.multires;
+n_scales =  struct.wave_params.n_scales;
+method = struct.wave_params.multires;
 
 img_out = IDWTdispatcher(RF,n_scales,method,residual,Ls);
 

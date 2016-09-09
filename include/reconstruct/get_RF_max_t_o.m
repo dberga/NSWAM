@@ -8,18 +8,18 @@
 function [RFmax_s_o, residualmax_s] = get_RF_max_t_o(RF_s_o_c,residual_s_c,struct)
 
 	
-	RFmax_s = cell(struct.wave.n_scales,1);
-    residualmax_s = cell(struct.wave.n_scales-1,1);
+	RFmax_s = cell(struct.wave_params.n_scales,1);
+    residualmax_s = cell(struct.wave_params.n_scales-1,1);
 	
     
-	for s=1:struct.wave.n_scales-1
+	for s=1:struct.wave_params.n_scales-1
         
         %initialize	
         RFmax = zeros(size(RF_s_o_c{s}{1},1),size(RF_s_o_c{s}{1},2));
         RFresidual = zeros(size(RF_s_o_c{s}{1},1),size(RF_s_o_c{s}{1},2));
         
         %look for max for each frame and scale
-        for o=1:struct.wave.n_orient
+        for o=1:struct.wave_params.n_orient
             for c=1:3
                 values = RF_s_o_c{s}{o}(:,:,c); 
                 for x=1:size(RF_s_o_c{s}{o},1)
@@ -36,7 +36,7 @@ function [RFmax_s_o, residualmax_s] = get_RF_max_t_o(RF_s_o_c,residual_s_c,struc
         end
         
     end
-    RFmax_s_o{struct.wave.n_scales} = RF_s_o_c{struct.wave.n_scales};
+    RFmax_s_o{struct.wave_params.n_scales} = RF_s_o_c{struct.wave_params.n_scales};
 
 end
 
