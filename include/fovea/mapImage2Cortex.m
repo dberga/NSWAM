@@ -36,7 +36,7 @@ switch cortex_params.cm_method
     case 'schwartz_monopole'
         [coord_i_eye, coord_j_eye] = schwartz_monopole_inv( (coord_j_cortex-1-cortex_width_2)*cortex_pix2elong_mm, (coord_i_cortex-1-cortex_height_2)*cortex_pix2az_mm,cortex_params.lambda,cortex_params.a);
     case 'schwartz_dipole'
-        [coord_i_eye, coord_j_eye] = schwartz_dipole_inv(  (coord_j_cortex-1-cortex_width_2)*cortex_pix2elong_mm, (coord_i_cortex-1-cortex_height_2)*cortex_pix2az_mm,lambda,cortex_params.a,cortex_params.b);
+        [coord_i_eye, coord_j_eye] = schwartz_dipole_inv(  (coord_j_cortex-1-cortex_width_2)*cortex_pix2elong_mm, (coord_i_cortex-1-cortex_height_2)*cortex_pix2az_mm,cortex_params.lambda,cortex_params.a,cortex_params.b);
     case 'dsech_monopole'
         [coord_i_eye, coord_j_eye] = dsech_monopole_inv( (coord_j_cortex-1-cortex_width_2)*cortex_pix2elong_mm, (coord_i_cortex-1-cortex_height_2)*cortex_pix2az_mm,cortex_params.lambda,cortex_params.a);
     case 'dsech_dipole'

@@ -269,7 +269,6 @@ for k=1:struct.gaze_params.ngazes
 		    t_ini=tic;
 		    disp([image_name_noext ' neurodynamical process on channel: ' channels{op}]);
             
-            struct.compute_params.model = 1;
             switch struct.compute_params.model
                 case 0
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

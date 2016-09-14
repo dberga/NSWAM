@@ -576,11 +576,11 @@ end
 
 function [cortex_params] = get_all_parameters_cortex_NCZLd()
 
-        cortex_params.cm_method = {'schwartz_monopole','dsech_monopole','schwartz_dipole'};
+        cortex_params.cm_method = {'dsech_monopole'};
         cortex_params.cortex_width = {128};
-        cortex_params.a={degtorad(0.77),degtorad(1)};
-        cortex_params.b={degtorad(150),degtorad(90)};
-        cortex_params.lambda={12,18};
+        cortex_params.a={degtorad(0.77)};
+        cortex_params.b={degtorad(150)};
+        cortex_params.lambda={12};
         cortex_params.isoPolarGrad={0.1821};
         cortex_params.eccWidth={0.7609};
         cortex_params.cortex_max_elong_mm = {120};
@@ -606,7 +606,7 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
         gaze_params.orig_height = {0}; %unknown on undistort
         gaze_params.fov_x = {0};
         gaze_params.fov_y = {0};
-        gaze_params.img_diag_angle = {degtorad(35.12),degtorad(44.12)};
+        gaze_params.img_diag_angle = {degtorad(44.12)};
 
 
     %gaze_params.foveate = {0,1};
