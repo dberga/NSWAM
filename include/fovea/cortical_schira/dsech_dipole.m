@@ -2,9 +2,11 @@ function [X,Y] = dsech_dipole(i,j,lambda,a,b,eccWidth,isoPolarGrad)
 % X and Y are in mm
 % i and j are in radians
 
-i = i .* real((sech(i) .^ sech(log(j/a)*eccWidth)*isoPolarGrad));
-i1 = i .* real((sech(i) .^ sech(log(j/a)*eccWidth)*isoPolarGrad));
-i2 = i .* real((sech(i) .^ sech(log(j/b)*eccWidth)*isoPolarGrad));
+f_a = cortical_shear(j,i,a,eccWidth,isoPolarGrad);
+f_b = cortical_shear(j,i,b,eccWidth,isoPolarGrad);
+i_a = i .* f_a;
+i_b = i .* f_b;
+i = i_a;
 
 neg_j = find(j<0);
 neg_i = find(i<0);

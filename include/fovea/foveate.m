@@ -32,8 +32,8 @@ function [im_out] = foveate(im_in, flag, struct )
 %     
 
     if ~exist('struct','var')
-        cortex_params.cm_method = 'schwartz_monopole';
-        cortex_params.cortex_width = 681;
+        cortex_params.cm_method = 'schwartz_dipole';
+        cortex_params.cortex_width = 400;
         cortex_params.a=degtorad(0.77);
         cortex_params.b=degtorad(150);
         cortex_params.lambda=18;

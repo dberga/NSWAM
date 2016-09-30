@@ -1,9 +1,8 @@
-function [i,j] = dsech_monopole_inv(X,Y,lambda,a)
+function [i,j] = dsech_monopole_inv(X,Y,lambda,a, eccWidth, isoPolarGrad)
 % X and Y are in mm
 % i and j are in radians
 
-isoPolarGrad=0.1821;
-eccWidth=0.7609;
+
 
 
 neg_X = find(X<0);
@@ -19,7 +18,8 @@ Z = Z*angle2rad;
 i = imag(Z);
 j = real(Z);
 
-i = i ./ real((sech(i) .^ sech(log(j/a)*eccWidth)*isoPolarGrad));
+f_a = cortical_shear(j,i,a,eccWidth,isoPolarGrad); %mal
+i = i ./ f_a;
 
 i(neg_Y) = -i(neg_Y);
 j(neg_X) = -j(neg_X);

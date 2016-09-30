@@ -158,7 +158,9 @@ end
 for k=1:struct.gaze_params.ngazes
 
     struct.gaze_params.gaze_idx = k;
-
+    scanpath(k,2) = struct.gaze_params.fov_y;
+    scanpath(k,1) = struct.gaze_params.fov_x;
+            
     input_image = aux_input_image;
     
     %resize if necessary
@@ -574,11 +576,10 @@ for k=1:struct.gaze_params.ngazes
         %%%%%calculate scanpath and refixate %%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             [maxval, maxidx] = max(smap(:));
-            [scanpath(k,2), scanpath(k,1)] = ind2sub(size(smap),maxidx); %x,y
-
-            struct.image.fixationY = scanpath(k,1);
-            struct.image.fixationX = scanpath(k,2);
-
+            
+            [struct.gaze_params.fov_y, struct.gaze_params.fov_x] = ind2sub(size(smap),maxidx); %x,y
+            %cuidado con el size(smap), tiene que ser fov de imagen original
+            
             imwrite(smap, [ output_folder_scanpath '/' num2str(k) '_' scanpath_prefix_img output_image output_extension]);
             disp([output_folder_scanpath '/' num2str(k) '_' scanpath_prefix_img output_image output_extension]);
             smaps(:,:,k) = smap;

@@ -77,7 +77,7 @@ mexPrintf("Going into mex NCZLd_mex routine ... \n");
         char *char_realPtr2;
         bool *bool_realPtr2;
         
-        fPtr = mxGetField(prhs[1],0,"zli");
+        fPtr = mxGetField(prhs[1],0,"zli_params");
                 fPtr2 = mxGetField(fPtr,0,"n_membr"); double_realPtr2 = (double *) mxGetPr(fPtr2); n_membr = double_realPtr2[0]; //mexPrintf("n_membr=%d\n",n_membr);
                 fPtr2 = mxGetField(fPtr,0,"n_iter"); double_realPtr2 = (double *) mxGetPr(fPtr2); nIter = double_realPtr2[0]; strParam.strParamZLiNetwork.strParamComputation.nIterPerMembrTime = nIter; //mexPrintf("nIter=%d\n",strParam.strParamZLiNetwork.strParamComputation.nIterPerMembrTime );
                 fPtr2 = mxGetField(fPtr,0,"n_frames_promig"); double_realPtr2 = (double *) mxGetPr(fPtr2); n_membr_ini_mean = n_membr-double_realPtr2[0]; //mexPrintf("n_membr_ini_mean=%d\n",n_membr_ini_mean);
@@ -102,10 +102,10 @@ mexPrintf("Going into mex NCZLd_mex routine ... \n");
                 fPtr2 = mxGetField(fPtr,0,"n_scales");  double_realPtr2 = (double *) mxGetPr(fPtr2); nScales = double_realPtr2[0]-1; //mexPrintf("nScales=%d\n",nScales);
                 fPtr2 = mxGetField(fPtr,0,"n_orient");  double_realPtr2 = (double *) mxGetPr(fPtr2); nOrient = double_realPtr2[0]; //mexPrintf("nOrient=%d\n",nOrient);
                 
-//         fPtr = mxGetField(prhs[1],0,"csf_params");
+//         fPtr = mxGetField(prhs[1],0,"csfparams");
 //         fPtr = mxGetField(prhs[1],0,"image");
 //         fPtr = mxGetField(prhs[1],0,"display_plot");
-//         fPtr = mxGetField(prhs[1],0,"compute_params");
+//         fPtr = mxGetField(prhs[1],0,"compute");
 
 
     

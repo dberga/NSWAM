@@ -16,9 +16,12 @@ Z = Z*angle2rad;
 i = imag(Z);
 j = real(Z);
 
-i = i .* real((sech(i) .^ sech(log(j/a)*eccWidth)*isoPolarGrad));
-i1 = i .* real((sech(i) .^ sech(log(j/a)*eccWidth)*isoPolarGrad));
-i2 = i .* real((sech(i) .^ sech(log(j/b)*eccWidth)*isoPolarGrad));
+f_a = cortical_shear(j,i,a,eccWidth,isoPolarGrad); %mal
+f_b = cortical_shear(j,i,b,eccWidth,isoPolarGrad); %mal
+
+i_a = i .* f_a;
+i_b = i .* f_b;
+i = i_a;
 
 i(neg_Y) = -i(neg_Y);
 j(neg_X) = -j(neg_X);

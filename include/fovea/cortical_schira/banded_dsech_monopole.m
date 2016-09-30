@@ -1,6 +1,8 @@
-function [X,Y] = dsech_monopole(i,j,lambda,a,eccWidth,isoPolarGrad)
+function [X,Y] = banded_dsech_monopole(i,j,lambda,a,eccWidth,isoPolarGrad, shiftAmount)
 % X and Y are in mm
 % i and j are in radians
+
+[i,j] = cortical_shift(j,i,shiftAmount);
 
 f_a = cortical_shear(j,i,a,eccWidth,isoPolarGrad);
 i = i .* f_a;

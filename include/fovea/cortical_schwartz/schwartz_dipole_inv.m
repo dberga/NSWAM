@@ -7,7 +7,7 @@ neg_Y = find(Y<0);
 
 W = complex(abs(X),abs(Y));
 
-Z = (a-b*exp(W/lambda))./(exp(W/lambda)-1);
+Z = (a-(b*exp(W./lambda)))./(exp(W./lambda)-1);
 
 angle2rad = pi/180;
 Z = Z*angle2rad;
