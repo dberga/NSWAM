@@ -1,10 +1,15 @@
-function [] = executa(input_dir, conf_dir, fileformat, funcio)
+
+
+function [] = executa(input_dir, conf_dir, output_dir, mats_dir, fileformat,output_extension, funcio)
 
 if nargin < 1
 
 input_dir = 'input';
+output_dir = 'output';
+mats_dir = 'mats';
 conf_dir = 'conf';
 fileformat = 'jpg';
+output_extension = 'png';
 funcio = 'saliency';
 
 end
@@ -19,9 +24,10 @@ addpath('src_mex');
 
 conf_mats= dir(fullfile(conf_dir, ['*.mat']));
 
-parfor i=1:length(conf_mats)
+for i=1:length(conf_mats)
     conf_path = [conf_dir '/' conf_mats(i).name];
-    improcdir(funcio,fileformat,1,input_dir,conf_path);
+    args = {conf_path, output_dir, mats_dir, output_extension};
+    improcdir(funcio,fileformat,1,input_dir,args);
 end
 
 
@@ -31,3 +37,5 @@ end
 %0 = for (1=parfor)
 
 end
+
+

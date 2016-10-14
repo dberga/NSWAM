@@ -1,711 +1,815 @@
+function [smap,scanpath] = saliency(input_image,image_name,conf_struct_path,output_folder,output_folder_mats,output_extension)
 
-function [] = saliency(input_image,image_name,conf_struct_path,output_folder,output_folder_mats,output_folder_figs,output_extension)
-
-clear struct wave_params zli_params display_params compute matrix_in conf_struct image_struct
-
-if nargin < 7
-output_folder = 'output';
-output_folder_mats = 'mats'; %output_folder_mats = [output_path 'output_mats'];
-output_folder_figs = 'figs'; %output_folder_figs = [output_path 'output_figs'];
-output_extension = '.png';
-
-if nargin < 3
-	conf_struct_path = 'default_struct.mat';
-end
-
-end
-
-
-[conf_struct_path_folder,conf_struct_path_name,conf_struct_path_ext] = fileparts(conf_struct_path);
-
-
-%set path parameters
-output_prefix = '';
-scanpath_prefix_mat = 'scanpath_';
-scanpath_prefix_img = 'scanpath_';
-
-
-output_subfolder = conf_struct_path_name ;
-output_path = [output_folder '/' output_subfolder];
-output_folder_imgs = output_path; %output_folder_imgs = [output_path 'output_imgs'];
-output_folder_scanpath = [ output_folder_imgs '/' 'scanpath'];
-image_name_noext = remove_extension(image_name);
-output_image = [output_prefix image_name_noext];
-experiment_name =  image_name_noext;
-output_image_path= [output_folder_imgs '/' output_image output_extension];
-output_scanpath_path= [ output_folder_scanpath '/' scanpath_prefix_mat output_image];
-output_scanpath_path_gaussian_path= [ output_folder_scanpath '/' 'scansgaussian' '/'  output_image output_extension];
-output_scanpath_path_mean1_path= [ output_folder_scanpath '/' 'scansmean1' '/'  output_image output_extension];
-output_scanpath_path_mean2_path= [ output_folder_scanpath '/' 'scansmean2' '/'  output_image output_extension];
-output_scanpath_path_mean0_path= [ output_folder_scanpath '/' 'scansmean0' '/'  output_image output_extension];
-
-
-mkdir(output_folder_imgs);
-mkdir(output_folder_scanpath);
-mkdir([output_folder_scanpath '/' 'scansmean0']);
-mkdir([output_folder_scanpath '/' 'scansmean1']);
-mkdir([output_folder_scanpath '/' 'scansmean2']);
-mkdir([output_folder_scanpath '/' 'scansgaussian']);
-
-
-
-channels = {'chromatic', 'chromatic2' ,'intensity'};
-image_struct_path = [ output_folder_mats '/' image_name_noext '_' 'struct' '.mat'];
-c1_iFactorpath = [ output_folder_mats '/' image_name_noext '_' 'iFactor' '_channel(' channels{1} ')' '.mat'];
-c2_iFactorpath = [ output_folder_mats '/' image_name_noext '_' 'iFactor' '_channel(' channels{2} ')' '.mat'];
-c3_iFactorpath = [ output_folder_mats '/' image_name_noext '_' 'iFactor' '_channel(' channels{3} ')' '.mat'];
-c1_residualpath = [ output_folder_mats '/' image_name_noext '_' 'c' '_channel(' channels{1} ')' '.mat'];
-c2_residualpath = [ output_folder_mats '/' image_name_noext '_' 'c' '_channel(' channels{2} ')' '.mat'];
-c3_residualpath = [ output_folder_mats '/' image_name_noext '_' 'c' '_channel(' channels{3} ')' '.mat'];
-c1_curvpath = [ output_folder_mats '/' image_name_noext '_' 'w' '_channel(' channels{1} ')' '.mat'];
-c2_curvpath = [ output_folder_mats '/' image_name_noext '_' 'w' '_channel(' channels{2} ')' '.mat'];
-c3_curvpath = [ output_folder_mats '/' image_name_noext '_' 'w' '_channel(' channels{3} ')' '.mat'];
-
-
-if exist(output_image_path, 'file')
-	
-	%do nothing
-	disp([image_name_noext ' already exists']);
-    
-else
-    
-%struct params
-%conf_struct = load(conf_struct_path);
-%conf_struct = conf_struct.matrix_in;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%% Load parameters %%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-
-
-%struct=get_default_parameters_NCZLd();
-%struct=load_default_parameters_NCZLd(conf_struct_path);
-
-struct = load(conf_struct_path);
-struct = struct.matrix_in;
-
-struct.file_params.outputstr_figs = output_folder_figs;
-struct.file_params.outputstr_mats = output_folder_mats;
-struct.file_params.outputstr_imgs = output_folder_imgs;
-
-struct.resize_params.M = size(input_image,1);
-struct.resize_params.N = size(input_image,2);
-struct.gaze_params.orig_height = struct.resize_params.M;
-struct.gaze_params.orig_width = struct.resize_params.N;
-if struct.gaze_params.fov_x == 0 && struct.gaze_params.fov_y == 0
-    struct.gaze_params.fov_y =round(struct.gaze_params.orig_height/2); 
-    struct.gaze_params.fov_x =round(struct.gaze_params.orig_width/2); 
-end
-struct.file_params.name = experiment_name;
-
-struct.file_params.dir{1} = pwd;
-struct.file_params.dir{2} = [pwd '/src'];
-struct.file_params.dir{3} = [pwd '/include'];
-struct.file_params.dir{4} = genpath([pwd '/include']);
-
-
-scanpath = zeros(struct.gaze_params.ngazes,2);
-scan_done = 0;
-
-mkdir(output_folder_imgs);
-mkdir(output_folder_mats);
-mkdir(output_folder_figs);
-
-if struct.gaze_params.ngazes < 2 && exist(image_struct_path, 'file') && exist(c1_iFactorpath, 'file') && exist(c2_iFactorpath, 'file') && exist(c3_iFactorpath, 'file') && exist(c1_residualpath, 'file') && exist(c2_residualpath, 'file') && exist(c3_residualpath, 'file')
-	
-    image_struct = load(image_struct_path); image_struct = image_struct.matrix_in;
-    if  compare_structs(struct,image_struct) == 1
-        
-        neurocalculate = 0;
-    else 
-        neurocalculate = 1;
-    end
-    
-	%do nothing, recall afterwards
-	neurorecons = 1;
-else
-	neurocalculate = 1;
-	neurorecons = 1;
-end
-
-
-struct.color_params.nchannels = size(input_image,3);
-
-%if image is monochromatic, copy channels
-if(struct.color_params.nchannels<3)
-        input_image(:,:,2) = input_image(:,:,1);
-        input_image(:,:,3) = input_image(:,:,1);
-        
-end
-if struct.color_params.nchannels < 3
-    start_op = 3;
-    end_op = 3;
-else
-    start_op=1;
-    end_op = 3;
-end
-channels={'chromatic', 'chromatic2', 'intensity'};
-
+%non modified input_image
 aux_input_image = input_image;
 
-if struct.gaze_params.foveate == 0
-    struct.gaze_params.ngazes = 1;
-    scanpath = zeros(struct.gaze_params.ngazes,2);
+%%%%%%%%%%%%%%%%%%default arguments (nargin)
+if ~exist('output_extension','var')    output_extension = 'png'; end
+if ~exist('output_folder','var')    output_folder = 'output'; end
+if ~exist('output_folder_mats','var')   output_folder_mats = 'mats'; end
+if ~exist('conf_struct_path','var')    conf_struct_path = ''; end
+
+
+%%%%%%%%%%%%%%%%%%LOAD/CREATE CONFIG STRUCT PARAMS
+
+[~,conf_struct_path_name,~] = fileparts(conf_struct_path);
+if strcmp(conf_struct_path,'')==0
+    
+    [conf_struct] = load(conf_struct_path); conf_struct = conf_struct.matrix_in;
+else
+    [conf_struct] = get_default_parameters();
 end
-for k=1:struct.gaze_params.ngazes
 
-    struct.gaze_params.gaze_idx = k;
-    scanpath(k,2) = struct.gaze_params.fov_y;
-    scanpath(k,1) = struct.gaze_params.fov_x;
+%discriminate if no foveation
+if  conf_struct.gaze_params.foveate == 0
+    conf_struct.gaze_params.ngazes = 1;
+end
+%color or grayscale image
+conf_struct.color_params.nchannels = size(input_image,3);
+conf_struct.color_params.channels = {'chromatic','chromatic2','intensity'};
+
+%set gaze parameters
+conf_struct.resize_params.M = size(aux_input_image,1);
+conf_struct.resize_params.N = size(aux_input_image,2);
+conf_struct.gaze_params.orig_height = conf_struct.resize_params.M;
+conf_struct.gaze_params.orig_width = conf_struct.resize_params.N;
+if conf_struct.gaze_params.fov_x == 0 && conf_struct.gaze_params.fov_y == 0
+    conf_struct.gaze_params.fov_y =round(conf_struct.gaze_params.orig_height/2); 
+    conf_struct.gaze_params.fov_x =round(conf_struct.gaze_params.orig_width/2); 
+end
+
+%%%%%%%%%%%%%%%%%%INITIALIZE OUTPUT
+[M,N,C] = size(input_image);
+smap = zeros(M,N);
+smaps = zeros(M,N,conf_struct.gaze_params.ngazes);
+scanpath = zeros(conf_struct.gaze_params.ngazes+1,2);
+
+iFactors = cell(1,3);
+curvs = cell(1,3);
+residuals = cell(1,3);
+%%%%%%%%%%%%%%%%%%get folder_props and image_props
+[folder_props] = get_folder_properties(output_folder,conf_struct_path_name,output_folder_mats,output_extension);
+[image_props] = get_image_properties(input_image,image_name,folder_props,conf_struct);
+[mat_props] = get_mat_properties(folder_props,image_props,conf_struct);
+
+
+%%%%%%%%%%%%%%%%%%GET RUN FLAGS (LOAD,NEURODYN,RECONS...)
+[run_flags] = get_run_flags(image_props,mat_props,conf_struct);
+
+
+if run_flags.run_all==1
+    if run_flags.run_smaps
+        for k=1:conf_struct.gaze_params.ngazes
+
+            input_image = double(aux_input_image);
+
+            %%%%%%%%%%%%% 1.foveate (or mapping)
+            [input_image] = get_foveate(input_image,conf_struct);
+
+            %%%%%%%%%%%%% resize (if foveated, do not resize)
+            [input_image] = get_resize(input_image,conf_struct);
             
-    input_image = aux_input_image;
+            %%%%%%%%%%%%% save loaded struct properties
+            [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,image_props,mat_props,conf_struct,input_image,k);
+
+            %%%%%%%%%%%%% 2.im2opponent
+            input_image = get_the_cstimulus(input_image,loaded_struct.color_params.gamma,loaded_struct.color_params.srgb_flag);%! color  to opponent
+
+            %%%%%%%%%%%%% 3. DWT
+            [curvs,residuals] = get_DWT(run_flags,loaded_struct,folder_props,image_props,C,k,input_image);
+
+            
+            %%%%%%%%%%%%% 4. CORE, COMPUTE DYNAMICS
+            [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,k,curvs,residuals);
+
+            %%%%%%%%%%%%% 5. FUSION
+
+            %residual to zero?
+            [residuals{1}] = get_residual_updated(loaded_struct,residuals{1});
+            [residuals{2}] = get_residual_updated(loaded_struct,residuals{2});
+            [residuals{3}] = get_residual_updated(loaded_struct,residuals{3});
+            
+
+            %change its cell dimensions back to its format
+            RF_ti_s_o_c = unify_channels_ti(iFactors{1},iFactors{2},iFactors{3},loaded_struct);
+            residual_s_c = unify_channels_norient(residuals{1},residuals{2},residuals{3},loaded_struct);
+
+            %temporal mean for RF
+            RF_s_o_c = timatrix_to_matrix(RF_ti_s_o_c,loaded_struct);
+
+            %eCSF
+            [RF_s_o_c] = get_eCSF(loaded_struct,RF_s_o_c);
+            
+            % max of RF (orientation and channel), copy afterwards
+            [RF_c_s_o,residual_c_s] = get_maxRF(loaded_struct,RF_s_o_c,residual_s_c);
+            
+            %IDWT
+            [RF_c_s_o{1},residual_c_s{1}] = multires_curv2decomp(RF_c_s_o{1},residual_c_s{1},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            [RF_c_s_o{2},residual_c_s{2}] = multires_curv2decomp(RF_c_s_o{2},residual_c_s{2},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            [RF_c_s_o{3},residual_c_s{3}] = multires_curv2decomp(RF_c_s_o{3},residual_c_s{3},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+                
+            [RF_c] = get_IDWT(loaded_struct,RF_c_s_o,residual_c_s);
+            
+            %from opponent to color (depending on flag)
+            [RF_c] = get_opp2rgb(loaded_struct,RF_c);
+
+            %combine channels
+            [smap] = get_combine_channels(loaded_struct,RF_c);
+
+            %undistort
+            smap = get_undistort(loaded_struct,smap);
+            
+            %deresize to original size
+            smap = get_deresize(loaded_struct,smap);
+            
+            %normalize
+            smap = get_normalize(loaded_struct,smap);
+
+            %save
+            imwrite(smap, image_props.output_image_paths{k});
+
+            %delete files
+            run_delete_files(folder_props,image_props,loaded_struct,k);
+            
+            
+            %update fov_x and fov_y
+            [maxval, maxidx] = max(smap(:));
+            [conf_struct.gaze_params.fov_y, conf_struct.gaze_params.fov_x] = ind2sub(size(smap),maxidx); %x,y
+            
+            %iterate
+            smaps(:,:,k) = smap;
+        end
+    end
     
-    %resize if necessary
-    if struct.resize_params.autoresize_ds ~= -1    
-        input_image = autoresize(input_image,struct.resize_params.autoresize_ds);
-    else
-        input_image = autoresize(input_image);
-    end
-
-    if struct.resize_params.autoresize_nd ~= 0
-        input_image = autoresize_nd(input_image,struct,struct.resize_params.autoresize_nd);
-    end
+    %scanpath from files or from computed smaps(k)
+    scanpath = run_scanpath(run_flags,image_props,conf_struct,smaps);
     
-    %foveate function
-    if struct.gaze_params.foveate == 1
-        input_image = foveate(input_image,0,struct);
+    %smap from means of gazed smaps
+    mean_smap = run_mean(run_flags,image_props,conf_struct,smaps);
+    smap = mean_smap;
+    
+    %smap from density of scanpath
+    mean_gaussian = run_gaussian(run_flags,image_props,conf_struct,scanpath);
+    
+    
+
+end
+
+end
+
+
+function [input_image] = get_foveate(input_image,conf_struct)
+    if conf_struct.gaze_params.foveate == 1
+        input_image = foveate(input_image,0,conf_struct);
     end
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%% Calc scales and orient %%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-    %if n_scales = 0
-    [struct.wave_params.n_scales, struct.wave_params.ini_scale, struct.wave_params.fin_scale]= calc_scales(input_image, struct.wave_params.ini_scale, struct.wave_params.fin_scale_offset, struct.wave_params.mida_min, struct.wave_params.multires); % calculate number of scales (n_scales) automatically
-
-    [struct.wave_params.n_orient] = calc_norient(input_image,struct.wave_params.multires,struct.wave_params.n_scales,struct.zli_params.n_membr);
-    devlog(strcat('Nombre scales a la funci channel_v1_0: ', num2str(struct.wave_params.n_scales)));
-        
-
-    if neurocalculate == 1
-        
-        if(struct.compute_params.parallel_channel==1)
-           disp('Executant els canals en paralel');
-           p=struct.file_params.dir;
-
-           jm=findResource('scheduler','type','jobmanager','Name',struct.compute_params.jobmanager,'LookupURL','localhost');
-           get(jm);
-           job = createJob(jm);
-           set(job,'FileDependencies',p)
-           set(job,'PathDependencies',p)
-           get(job)
-       end
-
-
-		disp([image_name_noext ' pre neurodynamical process ']);
-		
-		input_image = double(input_image);
-		devlog(int2str(size(input_image(:,:,1))) );
-		
-		
-
-
-		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		%%%%% Plot and store  struct %%%%%%
-		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-		store_matrix_givenparams(struct,'struct',struct);
-
-		
-		
-		% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		% %%%%%%%  stimulus (image) to opponent, + gamma correction
-		% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-		input_image = get_the_cstimulus(input_image,struct.color_params.gamma,struct.color_params.srgb_flag);%! color  to opponent
-
-
-
-        
-        
-		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		%%%%%%%% Apply neurodynamical %%%%%%%%%%%%%%
-		%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		
-        
-        
-        
-        iFactors = cell(1,3);
-		for op=start_op:end_op
+end
+function [input_image] = get_resize(input_image,conf_struct)
+    if conf_struct.gaze_params.foveate == 0
+        %resize functions
+        if conf_struct.resize_params.autoresize_ds ~= -1    
+            input_image = autoresize(input_image,conf_struct.resize_params.autoresize_ds);
+        else
+            input_image = autoresize(input_image);
+        end
+        if conf_struct.resize_params.autoresize_nd ~= 0
+            input_image = autoresize_nd(input_image,conf_struct.zli_params.Delta,conf_struct.zli_params.reduccio_JW,conf_struct.resize_params.autoresize_nd);
+        end
+    end
+             
+end
+function [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,image_props,mat_props,conf_struct,input_image,gaze_idx)
             
-		    im_opponent = input_image(:,:,op);
+            %get scales, orientations
+            [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(input_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
+            [conf_struct.wave_params.n_orient] = calc_norient(input_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);
 
-		    %im_opponent_dynamic = dynrep_channel(im_opponent,struct.zli_params.n_membr); %if static, replicate frames
+            %loaded struct from mats folder
+            if run_flags.load_struct(gaze_idx)==1    
+                [loaded_struct] = load(mat_props.loaded_struct_path{gaze_idx}); loaded_struct = loaded_struct.matrix_in;
 
-		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		    %%%%% wavelet decomposition %%%%%%%
-		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                %for reconstruction, we can use post-calculation params
+                loaded_struct.fusion_params = conf_struct.fusion_params;
+                loaded_struct.csf_params = conf_struct.csf_params;
+            else    
+                [loaded_struct] = conf_struct;
+                save_mat('struct',loaded_struct,folder_props,image_props,gaze_idx);
+            end
+            
+end
+function [curvs,residuals] = get_DWT(run_flags,loaded_struct,folder_props,image_props,C,gaze_idx,input_image)
+            
+        curvs = cell(1,C);
+        residuals = cell(1,C);
+            for c=1:C
+                if run_flags.load_WavCurv_mats(gaze_idx)==1 && run_flags.load_WavResidual_mats(gaze_idx)==1
+                    [curv] = load(get_mat_name('w',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); curv = curv.matrix_in;
+                    [residual] = load(get_mat_name('c',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); residual = residual.matrix_in;
+                    curv = curv(~cellfun('isempty',curv)); %clean void cells
+                    residual = residual(~cellfun('isempty',residual)); %clean void cells
 
-		     [w,c] = multires_dispatcher(im_opponent, struct.wave_params.multires,struct.wave_params.n_scales, struct.wave_params.n_orient);
-            %[w,c] = multires_dispatcher(im_opponent, 'a_trous',struct.wave_params.n_scales, struct.wave_params.n_orient);
-            %[w,c] = multires_dispatcher(im_opponent, 'wav',struct.wave_params.n_scales, struct.wave_params.n_orient);
+                else
+                    [curv,residual] = multires_dispatcher(input_image(:,:,c), loaded_struct.wave_params.multires,loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient);
+                    save_mat('w',curv,folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c});
+                    save_mat('c',residual,folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c});
+
+                end
+                curvs{c} = curv;
+                residuals{c} = residual;
+                
+                
+            end
             
+            if C < 2
+            % grayscale case: copy to other channels
+            curvs{2} = curvs{1};
+            curvs{3} = curvs{1};
+            save_mat('w',curvs{2},folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2});
+            save_mat('w',curvs{3},folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3});
             
-            
-            
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		    %%%%% store dwt (curv) %%%%%%%
-		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
             
-            store_matrix_givenparams_channel(w,'w',channels{op},struct);
-            store_matrix_givenparams_channel(c,'c',channels{op},struct);
+            residuals{2} = residuals{1};
+            residuals{3} = residuals{1};
+            save_mat('residual',residuals{2},folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2});
+            save_mat('residual',residuals{3},folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3});
             
+            end
+end
+
+
+
+function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,gaze_idx,curvs,residuals)
+                
+    iFactors = cell(1,C);
+    for c=1:C
             
-		        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		    %%%%% apply neurodinamic %%%%%%%
-		    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-		    t_ini=tic;
-		    disp([image_name_noext ' neurodynamical process on channel: ' channels{op}]);
-            
-            switch struct.compute_params.model
+        if run_flags.load_iFactor_mats(gaze_idx)==1 && run_flags.load_struct(gaze_idx)==1
+            iFactor = load(get_mat_name('iFactor',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); iFactor = iFactor.matrix_in;
+            iFactor = iFactor(~cellfun('isempty',iFactor)); %clean void cells
+        else
+            t_ini = tic;
+            switch loaded_struct.compute_params.model
                 case 0
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%% NOTHING (only curv from DWT) %%%%%%%
+                    %%%%% NOTHING (only curv from DWT, dynamic = tmem copies) %%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    
-                    iFactor = multires_decomp2dyndecomp(w,c,struct.zli_params.n_membr,struct.zli_params.n_iter,struct.wave_params.n_scales);
-                    
-                    
+                    iFactor = multires_decomp2dyndecomp(curvs{c},residuals{c},loaded_struct.zli_params.n_membr,loaded_struct.zli_params.n_iter,loaded_struct.wave_params.n_scales);
+
                 case 1
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%% NEURODYNAMIC IN MATLAB %%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    if(struct.compute_params.parallel_channel==1)
-                        t=createTask(job, @NCZLd_channel_ON_OFF, 1, {w,struct,channels{op}});
-                    else
-                        [iFactor, iFactor_ON, iFactor_OFF, jFactor_ON, jFactor_OFF] =NCZLd_channel_ON_OFF(w,struct,channels{op});
-                        
-                    end
+
+                    [iFactor, iFactor_ON, iFactor_OFF, jFactor_ON, jFactor_OFF] =NCZLd_channel_ON_OFF(curvs{c},loaded_struct,loaded_struct.color_params.channels{c});
+
                 case 2
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%% NEURODYNAMIC IN C++ %%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    [iFactor_single,iFactor] = NCZLd_periter_mex(w,struct); %iFactor_single has mean of memtime and iter (scale and orientation dimensions)
+                    [iFactor_single,iFactor] = NCZLd_periter_mex(curvs{c},loaded_struct); %iFactor_single has mean of memtime and iter (scale and orientation dimensions)
 
-                   
-                case 3
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%% Relative Contrast (murray's zctr) %%%%%%%
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    zctr = calc_zctr(w,struct);
-                    iFactor = multires_decomp2dyndecomp(zctr,c,struct.zli_params.n_membr,struct.zli_params.n_iter,struct.wave_params.n_scales);
             end
-            
-            %use here 'M' or 'M*w', by default 'M'
-
-             
             toc(t_ini);
             
-            iFactors{op} = iFactor;
-            
-        end
-        
-        
-        if(struct.compute_params.parallel_channel==1)
-              submit(job);
-              get(job,'Tasks')
-              waitForState(job, 'finished');
-              for op=start_op:end_op
-                  job.Tasks(op).ErrorMessage;
-              end
-              out = getAllOutputArguments(job);
-              for op=start_op:end_op
-                 iFactors{op}=out{op};
-              end
-              destroy(job);
-        end
             
         
-        % Copy results 
-        for op=start_op:end_op
-              
-              iFactor = iFactors{op};
-              %from {ff}{iter}{s}(:,:,o) to {ff}{iter}{s}{o}
-                for ff=1:struct.zli_params.n_membr
-                         for iter=1:struct.zli_params.n_iter
-                             [iFactor{ff}{iter},~] = multires_decomp2curv(iFactor{ff}{iter},c,struct.wave_params.n_scales,struct.wave_params.n_orient);
-                         end
-                end
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            %%%%% store iFactor %%%%%%%
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %change its cell dimensions format
+            for ff=1:loaded_struct.zli_params.n_membr
+                     for iter=1:loaded_struct.zli_params.n_iter
+                         [iFactor{ff}{iter},~] = multires_decomp2curv(iFactor{ff}{iter},residuals{c},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+                     end
+            end
+            
+            
+            
+            
+            % save computed iFactor
+            save_mat('iFactor',iFactors{c},folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c});
+        end
+        
+        iFactors{c} = iFactor;
+            
+        
+    
+    end
+    
+        if C < 2
+        %case grayscale
+        iFactors{2} = iFactors{1};
+        iFactors{3} = iFactors{1};
+        save_mat('iFactor',iFactors{2},folder_props,image_props,gaze_idx,conf_struct.color_params.channels{2});
+        save_mat('iFactor',iFactors{3},folder_props,image_props,gaze_idx,conf_struct.color_params.channels{3});
+        
+        end
+end
 
-                store_matrix_givenparams_channel(iFactor,'iFactor',channels{op},struct);
+function [residuals] = get_residual_updated(loaded_struct,residuals)
+            switch loaded_struct.fusion_params.residual_wave
+                case 0
+                    for s=1:loaded_struct.wave_params.n_scales-1
+                        residuals{s} = zeros(size(residuals{s}));
+                    end
+                case 1
+                    for s=1:loaded_struct.wave_params.n_scales-1
+                        residuals{s} = zeros(size(residuals{s})) +1;
+                    end
+                otherwise
+                    %keep it as it is
+            end
+end
 
 
-                %if struct.fusion_params.tmem_rw_res == 1
-                %    iFactor_meanized = timatrix_to_matrix(iFactor,struct);
-                %    store_matrix_givenparams_channel(iFactor_meanized,'iFactor',channel,struct);
-                %end
+function [RF_s_o_c] = get_eCSF(loaded_struct,RF_s_o_c)
+            if strcmp(loaded_struct.fusion_params.output_from_csf,'eCSF') == 1
+                [RF_s_o_c] = apply_eCSF_percanal(RF_s_o_c, loaded_struct);
+            end
+            
+end
+
+function [RF_c_s_o,residual_c_s] = get_maxRF(loaded_struct,RF_s_o_c,residual_s_c)
+        switch (loaded_struct.fusion_params.smethod)
+            case 'pmax2'
+                [RF_s,residual_s] = get_RF_max_t(RF_s_o_c,residual_s_c,loaded_struct);        
+                RF_s_o = repicate_orient(RF_s,loaded_struct);
+                %[RF_s_o_c{1},RF_s_o_c{2},RF_s_o_c{3}] = separate_channels(RF_s_o,loaded_struct);
+                %[residual_s_c{1},residual_s_c{2},residual_s_c{3}] = separate_channels_norient(residual_s,loaded_struct);
+                RF_c_s_o{1} = RF_s_o;
+                RF_c_s_o{2} = RF_s_o;
+                RF_c_s_o{3} = RF_s_o;
+                residual_c_s{1} = residual_s;
+                residual_c_s{2} = residual_s;
+                residual_c_s{3} = residual_s;
+            case 'pmaxc'
+                [RF_s_o,residual_s] = get_RF_max_t_o(RF_s_o_c,residual_s_c,loaded_struct);  
+                %[RF_s_o_c{1},RF_s_o_c{2},RF_s_o_c{3}] = separate_channels(RF_s_o,loaded_struct);
+                %[residual_s_c{1},residual_s_c{2},residual_s_c{3}] = separate_channels_norient(residual_s,loaded_struct);
                 
+                RF_c_s_o{1} = RF_s_o;
+                RF_c_s_o{2} = RF_s_o;
+                RF_c_s_o{3} = RF_s_o;
+                residual_c_s{1} = residual_s;
+                residual_c_s{2} = residual_s;
+                residual_c_s{3} = residual_s;
+            otherwise
+                RF_c_s_o = soc2cso(RF_s_o_c,loaded_struct.color_params.nchannels,loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+                residual_c_s = sc2cs(residual_s_c,loaded_struct.color_params.nchannels,loaded_struct.wave_params.n_scales);
+                
+                
+
         end
-        
-        
-        
-        if struct.color_params.nchannels < 2 %grayscale image
-                copyfile(c3_curvpath,c1_curvpath);
-                copyfile(c3_curvpath,c2_curvpath);
-                copyfile(c3_residualpath,c1_residualpath);
-                copyfile(c3_residualpath,c2_residualpath);
-                copyfile(c3_iFactorpath,c1_iFactorpath);
-                copyfile(c3_iFactorpath,c2_iFactorpath);
-        end
-	end
-    
+end
+function [RF_c] = get_IDWT(loaded_struct,RF_s_o_c,residual_s_c)
+            
 
-    if neurorecons == 1
+            RF_c(:,:,1) = multires_inv_dispatcher(RF_s_o_c{1},residual_s_c{1},loaded_struct.wave_params.multires,loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            RF_c(:,:,2) = multires_inv_dispatcher(RF_s_o_c{2},residual_s_c{2},loaded_struct.wave_params.multires,loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            RF_c(:,:,3) = multires_inv_dispatcher(RF_s_o_c{3},residual_s_c{3},loaded_struct.wave_params.multires,loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+end
+            
+            
+function [RF_c] = get_opp2rgb(loaded_struct,RF_c)
+            if loaded_struct.color_params.orgb_flag == 1  
+                RF_c = get_the_ostimulus(RF_c,loaded_struct.color_params.gamma,loaded_struct.color_params.srgb_flag);
+            end 
+end
+            
+function [smap] = get_combine_channels(loaded_struct,RF_c)
+    switch (loaded_struct.fusion_params.smethod)
+        case 'pmax2'
+            smap = RF_c(:,:,1); %max opp i orient, los tres canales lo mismo
+        case 'wta' 
+            smap = channelwta(RF_c); %guanya nomes canal amb mes energia
+        case 'pmax'  
 
-    disp([image_name_noext ' post-neurodynamical process']);
-    
-    %esto deberia ir en la primera parte del if, usar iFactor, c y Ls
-    
-  
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%% load stored struct (mats loaded in that way) %%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            smap = channelmax(RF_c);	%maxim canals, despres de recons.
+        case 'pmaxc'
 
-    %struct=get_default_parameters_NCZLd();
-    %image_struct=load_default_parameters_NCZLd(img_struct_path);
-    
-    image_struct = load(image_struct_path); image_struct = image_struct.matrix_in;
-    
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%% use compute params as config struct params (post-neurodym parameters) %%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            smap = RF_c(:,:,1); %maxim opp, los tres canales lo mismo
+        case 'sqmean'
+            smap = channelsqmean(RF_c);
+        otherwise
+            smap = channelsqmean(RF_c);
+    end
 
-    image_struct.fusion_params = struct.fusion_params;
-    
-	
-    
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%% load stored mats %%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+end
 
+function [smap] = get_deresize(loaded_struct,smap)
+    if loaded_struct.resize_params.autoresize_ds ~= 0 || loaded_struct.resize_params.autoresize_nd ~=0
+        smap = imresize(smap,[loaded_struct.gaze_params.orig_height loaded_struct.gaze_params.orig_width]);
+    end
 
-     %load matrixes
-    
-    c1_iFactor = load(c1_iFactorpath); c1_iFactor = c1_iFactor.matrix_in; 
-    c1_residual = load(c1_residualpath); c1_residual = c1_residual.matrix_in;
-    c2_iFactor = load(c2_iFactorpath); c2_iFactor = c2_iFactor.matrix_in; 
-    c2_residual = load(c2_residualpath); c2_residual = c2_residual.matrix_in;
-    c3_iFactor = load(c3_iFactorpath); c3_iFactor = c3_iFactor.matrix_in; 
-    c3_residual = load(c3_residualpath); c3_residual = c3_residual.matrix_in;
-    
-    c1_iFactor =  c1_iFactor(~cellfun('isempty',c1_iFactor));
-    c2_iFactor =  c2_iFactor(~cellfun('isempty',c2_iFactor));
-    c3_iFactor =  c3_iFactor(~cellfun('isempty',c3_iFactor));
-    c1_residual =  c1_residual(~cellfun('isempty',c1_residual));
-    c2_residual =  c2_residual(~cellfun('isempty',c2_residual));
-    c3_residual =  c3_residual(~cellfun('isempty',c3_residual));
-    
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %%%%%residual forced to zero %%%%%%%
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    
-    switch image_struct.fusion_params.residual_wave
-        case 0
-            for s=1:image_struct.wave_params.n_scales-1
-                c1_residual{s} = zeros(size(c1_residual{s}));
-                c2_residual{s} = zeros(size(c2_residual{s}));
-                c3_residual{s} = zeros(size(c3_residual{s}));
+end
+
+function [smap] = get_undistort(loaded_struct,smap)
+            if loaded_struct.gaze_params.foveate == 1
+                smap = foveate(smap,1,loaded_struct);
             end
 
-    %          for ff=1:image_struct.zli_params.n_membr
-    %              for it=1:image_struct.zli_params.n_iter
-    %                 c1_iFactor{ff}{it}{image_struct.wave_params.n_scales}{1} = zeros(size(c1_iFactor{ff}{it}{image_struct.wave_params.n_scales}{1}));
-    %                 c2_iFactor{ff}{it}{image_struct.wave_params.n_scales}{1} = zeros(size(c2_iFactor{ff}{it}{image_struct.wave_params.n_scales}{1}));
-    %                 c3_iFactor{ff}{it}{image_struct.wave_params.n_scales}{1} = zeros(size(c3_iFactor{ff}{it}{image_struct.wave_params.n_scales}{1}));
-    %              end
-    %          end
-        case 1
-            for s=1:image_struct.wave_params.n_scales-1
-                c1_residual{s} = zeros(size(c1_residual{s})) +1;
-                c2_residual{s} = zeros(size(c2_residual{s})) +1;
-                c3_residual{s} = zeros(size(c3_residual{s})) +1;
-            end
+end
+
+function [smap] = get_normalize(loaded_struct,smap)
+
+    switch(loaded_struct.fusion_params.fusion)
+        case 1	
+
+              smap = normalize_energy(smap);
+
+        case 2
+
+              smap = normalize_Z(smap);
+        case 3
+
+            smap = normalize_Zp(smap);
+        case 4
+            smap = normalize_energy(smap);
+            smap = normalize_minmax(smap);
+
+        case 5
+            smap = normalize_Z(smap);
+            smap = normalize_minmax(smap);
+        case 6
+            smap = normalize_Zp(smap);
+            smap = normalize_minmax(smap);
 
         otherwise
-            %keep it as it is
+            %do nothing
     end
-        
-        
+            
+    smap = normalize_minmax(smap); 
     
-	    
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%unified RF cells %%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        RF_ti_s_o_c = unify_channels_ti(c1_iFactor,c2_iFactor,c3_iFactor,image_struct);
-        
-        residual_s_c = unify_channels_norient(c1_residual,c2_residual,c3_residual,image_struct);
-
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%recons function %%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        
-        RF_s_o_c = timatrix_to_matrix(RF_ti_s_o_c,image_struct);
-        
-        
-        
-        %compute eCSF
-        if strcmp(image_struct.fusion_params.output_from_csf,'eCSF') == 1
-            [RF_s_o_c] = apply_eCSF_percanal(RF_s_o_c, image_struct);
-        end
-
-        %inverse decomposition or max then inverse decomposition
-        switch (image_struct.fusion_params.smethod)
-            case 'pmax2'
-                [RF_s,residual_s] = get_RF_max_t(RF_s_o_c,residual_s_c,image_struct);        
-                RF_s_o = repicate_orient(RF_s,image_struct);
-
-                %despues de maximos solo hay un canal que copiar y reconstruir, que son los maximos
-                [RF_s_o,residual_s] = multires_curv2decomp(RF_s_o,residual_s,image_struct.wave_params.n_scales,image_struct.wave_params.n_orient);
-                RF_c(:,:,1) = multires_inv_dispatcher(RF_s_o,residual_s,image_struct.wave_params.multires,image_struct.wave_params.n_scales,image_struct.wave_params.n_orient);
-                RF_c(:,:,2) = RF_c(:,:,1);
-                RF_c(:,:,3) = RF_c(:,:,1);
-
-            case 'pmaxc'
-                [RF_s_o,residual_s] = get_RF_max_t_o(RF_s_o_c,residual_s_c,image_struct);   
-
-                %despues de maximos solo hay un canal, que son los maximos
-                [RF_s_o,residual_s] = mutires_curv2decomp(RF_s_o,residual_s,image_struct.wave_params.n_scales,image_struct.wave_params.n_orient);
-                RF_c(:,:,1) = multires_inv_dispatcher(RF_s_o,residual_s,image_struct.wave_params.multires,image_struct.wave_params.n_scales,image_struct.wave_params.n_orient);
-                RF_c(:,:,2) = RF_c(:,:,1);
-                RF_c(:,:,3) = RF_c(:,:,1);
-            otherwise
-
-                
-                
-                [c1_RF_s_o,c2_RF_s_o,c3_RF_s_o] = separate_channels(RF_s_o_c,image_struct);
-                [c1_residual_s,c2_residual_s,c3_residual_s] = separate_channels_norient(residual_s_c,image_struct);
-                
-                [c1_RF_s_o,c1_residual_s] = multires_curv2decomp(c1_RF_s_o,c1_residual_s,image_struct.wave_params.n_scales,image_struct.wave_params.n_orient);
-                [c2_RF_s_o,c2_residual_s] = multires_curv2decomp(c2_RF_s_o,c2_residual_s,image_struct.wave_params.n_scales,image_struct.wave_params.n_orient);
-                [c3_RF_s_o,c3_residual_s] = multires_curv2decomp(c3_RF_s_o,c3_residual_s,image_struct.wave_params.n_scales,image_struct.wave_params.n_orient);
-                RF_c(:,:,1) = multires_inv_dispatcher(c1_RF_s_o,c1_residual_s,image_struct.wave_params.multires,image_struct.wave_params.n_scales,image_struct.wave_params.n_orient);
-                RF_c(:,:,2) = multires_inv_dispatcher(c2_RF_s_o,c2_residual_s,image_struct.wave_params.multires,image_struct.wave_params.n_scales,image_struct.wave_params.n_orient);
-                RF_c(:,:,3) = multires_inv_dispatcher(c3_RF_s_o,c3_residual_s,image_struct.wave_params.multires,image_struct.wave_params.n_scales,image_struct.wave_params.n_orient);
-
-        end
-
-
-        %from opponent to color (no)
-        if image_struct.color_params.orgb_flag == 1  
-            RF_c = get_the_ostimulus(RF_c,image_struct.color_params.gamma,image_struct.color_params.srgb_flag);
-        end 
-
-
-        %combine channels
-        switch (image_struct.fusion_params.smethod)
-            case 'pmax2'
-                smap = RF_c(:,:,1); %max opp i orient, los tres canales lo mismo
-            case 'wta' 
-                smap = channelwta(RF_c); %guanya nomes canal amb mes energia
-            case 'pmax'  
-
-                smap = channelmax(RF_c);	%maxim canals, despres de recons.
-            case 'pmaxc'
-
-                smap = RF_c(:,:,1); %maxim opp, los tres canales lo mismo
-            case 'sqmean'
-                smap = channelsqmean(RF_c);
-            otherwise
-                smap = channelsqmean(RF_c);
-        end
-
-
-
-        %normalize according to a specific type (Z, energy ...)
-        switch(image_struct.fusion_params.fusion)
-            case 1	
-
-                  smap = normalize_energy(smap);
-
-            case 2
-
-                  smap = normalize_Z(smap);
-            case 3
-
-                smap = normalize_Zp(smap);
-            case 4
-                smap = normalize_energy(smap);
-                smap = normalize_minmax(smap);
-
-            case 5
-                smap = normalize_Z(smap);
-                smap = normalize_minmax(smap);
-            case 6
-                smap = normalize_Zp(smap);
-                smap = normalize_minmax(smap);
-
-            otherwise
-                %do nothing
-        end
     
-        %undistort
-        if image_struct.gaze_params.foveate == 1
-            smap = foveate(smap,1,image_struct);
+
+end
+
+function [] = run_delete_files(folder_props,image_props,loaded_struct,gaze_idx)
+    delete_files = loaded_struct.file_params.delete_mats; %delete mats after creating imgs (0=no, 1=yes)
+    if delete_files == 1
+        delete(get_mat_name('struct',folder_props,image_props,gaze_idx));
+        delete(get_mat_name('iFactor',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{1}));
+        delete(get_mat_name('iFactor',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2}));
+        delete(get_mat_name('iFactor',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3}));
+        delete(get_mat_name('w',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{1}));
+        delete(get_mat_name('w',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2}));
+        delete(get_mat_name('w',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3}));
+        delete(get_mat_name('c',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{1}));
+        delete(get_mat_name('c',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2}));
+        delete(get_mat_name('c',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3}));
+
+    end
+
+end
+
+function [smaps] = get_smaps(image_props,conf_struct)
+    for k=1:conf_struct.gaze_params.ngazes
+              smaps(:,:,k)=double(imread(image_props.output_image_paths{k})); 
+    end
+
+end
+
+function [scanpath] = run_scanpath(run_flags,image_props,conf_struct,smaps)
+    if run_flags.run_scanpath
+        for k=1:conf_struct.gaze_params.ngazes
+            if run_flags.load_smap(k)
+                  smaps(:,:,k)=double(imread(image_props.output_image_paths{k})); 
+            else
+               %we have already computed the smaps(k) on previous loop
+            end
         end
+        [scanpath] = get_scanpath(smaps,conf_struct);
         
-        if image_struct.resize_params.autoresize_ds ~= 0 || image_struct.resize_params.autoresize_nd ~=0
-            smap = imresize(smap,[image_struct.image.oM image_struct.image.oN]);
+        save(image_props.output_scanpath_path,'scanpath');
+
+
+    else
+        scanpath = load(image_props.output_scanpath_path); scanpath = scanpath.scanpath;
+    end
+end
+function [mean_smap] = run_mean(run_flags,image_props,conf_struct,smaps)
+    if run_flags.run_smap || run_flags.run_mean
+        for k=1:conf_struct.gaze_params.ngazes
+           if run_flags.load_smap(k)
+              smaps(:,:,k)=double(imread(image_props.output_image_paths{k})); 
+           else
+              %we have already computed the smaps(k) on previous loop
+           end
         end
-    
-        smap = normalize_minmax(smap);
-    
-        %space to uint8
-        smap = smap*255;
-        smap = uint8(smap);
+        part = 1:round(conf_struct.gaze_params.ngazes)*1; %all gazes
+        mean_smap = get_smaps_mean(smaps,part);
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%calculate scanpath and refixate %%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        imwrite(mean_smap,[image_props.output_mean_path]);
+        imwrite(mean_smap,[image_props.output_image_path]);
+        
+    else
+        mean_smap = imread(image_props.output_mean_path); 
+    end
+end
+function [gaussian_smap] = run_gaussian(run_flags,image_props,conf_struct,scanpath)
+    if run_flags.run_smap || run_flags.run_gaussian
+    gaussian_smap = get_smaps_gaussian(scanpath,conf_struct);
+    imwrite(gaussian_smap,[image_props.output_gaussian_path]);
+    
+    else
+       gaussian_smap = imread(image_props.output_gaussian_path); 
+    end
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SUB_PROCEDURES
+
+function [scanpath] = get_scanpath(smaps,conf_struct)
+        for k=1:conf_struct.gaze_params.ngazes
+           scanpath(k,2) = conf_struct.gaze_params.fov_y;
+           scanpath(k,1) = conf_struct.gaze_params.fov_x;
+           
+           
+            smap = smaps(:,:,k);
             [maxval, maxidx] = max(smap(:));
-            
-            [struct.gaze_params.fov_y, struct.gaze_params.fov_x] = ind2sub(size(smap),maxidx); %x,y
-            %cuidado con el size(smap), tiene que ser fov de imagen original
-            
-            imwrite(smap, [ output_folder_scanpath '/' num2str(k) '_' scanpath_prefix_img output_image output_extension]);
-            disp([output_folder_scanpath '/' num2str(k) '_' scanpath_prefix_img output_image output_extension]);
-            smaps(:,:,k) = smap;
-        end
-    scan_done = 1;
-    
-end
-
-if scan_done == 1 
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%write scanpath %%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-   save(output_scanpath_path,'scanpath');
-
-   bmap = scanpath2bmap(scanpath, struct.gaze_params.ngazes,[struct.gaze_params.orig_height struct.gaze_params.orig_width]);
-   gaussian_smap = bmap2gaussian(bmap);
-   gaussian_smap = normalize_minmax(gaussian_smap);  
-   imwrite(gaussian_smap,[output_scanpath_path_gaussian_path]);
-
-   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%write image %%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+            [conf_struct.gaze_params.fov_y, conf_struct.gaze_params.fov_x] = ind2sub(size(smap),maxidx); %x,y
+                %cuidado con el size(smap), tiene que ser fov de imagen original
+            scanpath(k+1,2) = conf_struct.gaze_params.fov_y;
+            scanpath(k+1,1) = conf_struct.gaze_params.fov_x;
+           
         
-        %make mean of all smaps per N fixations
-	mean_smap = normalize_minmax(mean(smaps,3));    
-
-	imwrite(mean_smap,[output_scanpath_path_mean0_path]);
-
-	smaps1 = smaps(:,:,1:round(struct.gaze_params.ngazes/2));
-	smaps2 = smaps(:,:,round(struct.gaze_params.ngazes/2):struct.gaze_params.ngazes);        
-
-	mean1_smap = normalize_minmax(mean(smaps1,3));
-	imwrite(mean1_smap,[output_scanpath_path_mean1_path]);
-
-	mean2_smap = normalize_minmax(mean(smaps2,3));
-	imwrite(mean2_smap,[output_scanpath_path_mean2_path]);
-
-
-
-
-	imwrite(mean_smap,[output_image_path]);
-
+        end
+    
 end
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%%%%delete mats or not? %%%%%%%
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    delete_files = image_struct.file_params.delete_mats; %delete mats after creating imgs (0=no, 1=yes)
-	if delete_files == 1
-	    
-	    delete(c1_residualpath);
-	    delete(c1_Lspath);
-	    delete(c1_iFactorpath);
-	    delete(c2_residualpath);
-	    delete(c2_Lspath);
-	    delete(c2_iFactorpath);
-	    delete(c3_residualpath);
-	    delete(c3_Lspath);
-	    delete(c3_iFactorpath);
 
-	    %delete(c1_eCSFpath);
-            %delete(c2_eCSFpath);
-	    %delete(c3_eCSFpath);
-	end
+function [mean_smap] = get_smaps_mean(smaps,part)
+    if ~exist('part','var') part = size(smaps,3); end
+    
+    smaps_part = smaps(:,:,part);
+    
+    mean_smap = normalize_minmax(mean(smaps_part,3));  
+    
+end
 
-	end
+function [gaussian_smap] = get_smaps_gaussian(scanpath,conf_struct)
+    bmap = scanpath2bmap(scanpath, conf_struct.gaze_params.ngazes+1,[conf_struct.gaze_params.orig_height conf_struct.gaze_params.orig_width]);
+    gaussian_smap = bmap2gaussian(bmap);
+    gaussian_smap = normalize_minmax(gaussian_smap);   
+    
 end
 
 
 
 
 
-function [veredict] = compare_structs(struct, image_struct)
 
-    if  image_struct.gaze_params.foveate == struct.gaze_params.foveate  ...  
-       && strcmp(image_struct.gaze_params.fov_type,struct.gaze_params.fov_type)  ...
-       && strcmp(image_struct.fusion_params.output_from_model,struct.fusion_params.output_from_model)  ... 
-       && image_struct.color_params.gamma == struct.color_params.gamma  ... 
-       && image_struct.color_params.srgb_flag == struct.color_params.srgb_flag  ... 
-       && image_struct.resize_params.autoresize_ds == struct.resize_params.autoresize_ds  ...
-       && image_struct.resize_params.autoresize_nd == struct.resize_params.autoresize_nd  ...
-       && image_struct.compute_params.model == struct.compute_params.model  ... 
-       && image_struct.zli_params.n_membr == struct.zli_params.n_membr  ...
-       && image_struct.zli_params.n_iter == struct.zli_params.n_iter  ... 
-       && strcmp(image_struct.zli_params.dist_type, struct.zli_params.dist_type)  ...
-       && image_struct.zli_params.scalesize_type == struct.zli_params.scalesize_type  ... 
-       && image_struct.zli_params.scale2size_type == struct.zli_params.scale2size_type  ... 
-       && image_struct.zli_params.scale2size_epsilon == struct.zli_params.scale2size_epsilon  ...
-       && image_struct.zli_params.bScaleDelta == struct.zli_params.bScaleDelta  ... 
-       && image_struct.zli_params.reduccio_JW == struct.zli_params.reduccio_JW  ... 
-       && strcmp(image_struct.zli_params.normal_type, struct.zli_params.normal_type)  ... 
-       && image_struct.zli_params.alphax == struct.zli_params.alphax ... 
-       && image_struct.zli_params.alphay == struct.zli_params.alphay ... 
-       && image_struct.zli_params.nb_periods == struct.zli_params.nb_periods ... 
-       && image_struct.zli_params.normal_input == struct.zli_params.normal_input ...
-       && image_struct.zli_params.normal_output == struct.zli_params.normal_output ...
-       && image_struct.zli_params.normal_min_absolute == struct.zli_params.normal_min_absolute ... 
-       && image_struct.zli_params.normal_max_absolute == struct.zli_params.normal_max_absolute ... 
-       && image_struct.zli_params.Delta == struct.zli_params.Delta ... 
-       && image_struct.zli_params.ON_OFF == struct.zli_params.ON_OFF ... 
-       && strcmp(image_struct.zli_params.boundary,struct.zli_params.boundary) ...
-       && image_struct.zli_params.normalization_power == struct.zli_params.normalization_power ...
-       && image_struct.zli_params.kappax == struct.zli_params.kappax ...
-       && image_struct.zli_params.kappay == struct.zli_params.kappay ...
-       && image_struct.zli_params.shift == struct.zli_params.shift ...
-       && image_struct.zli_params.scale_interaction == struct.zli_params.scale_interaction ... 
-       && image_struct.zli_params.orient_interaction == struct.zli_params.orient_interaction ...
-       &&  strcmp(image_struct.cortex_params.cm_method,struct.cortex_params.cm_method) ...
-       && image_struct.cortex_params.a == struct.cortex_params.a ...
-       && image_struct.cortex_params.b == struct.cortex_params.b ...
-       && image_struct.cortex_params.lambda == struct.cortex_params.lambda  ... 
-       && image_struct.cortex_params.cortex_width == struct.cortex_params.cortex_width  ...
-       && image_struct.cortex_params.isoPolarGrad == struct.cortex_params.isoPolarGrad ...
-       && image_struct.cortex_params.eccWidth == struct.cortex_params.eccWidth ...
-       && image_struct.cortex_params.cortex_max_elong_mm == struct.cortex_params.cortex_max_elong_mm ... 
-       && image_struct.cortex_params.cortex_max_az_mm == struct.cortex_params.cortex_max_az_mm ...
-       && image_struct.cortex_params.mirroring == struct.cortex_params.mirroring ...
-       && image_struct.gaze_params.redistort_periter == struct.gaze_params.redistort_periter ...  
-       && image_struct.gaze_params.fov_x == struct.gaze_params.fov_x  ... 
-       && image_struct.gaze_params.fov_y == struct.gaze_params.fov_y  ...
-       && image_struct.gaze_params.orig_width == struct.gaze_params.orig_width  ...
-       && image_struct.gaze_params.orig_height == struct.gaze_params.orig_height  ...
-       && image_struct.gaze_params.img_diag_angle == struct.gaze_params.img_diag_angle   
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% UTILS FOR RUNNING MAIN
+
+function [folder_props] = get_folder_properties(output_folder,conf_struct_path_name,output_folder_mats,output_extension)
+    %get folder properties
+    folder_props.output_folder = output_folder ;
+    folder_props.output_subfolder = conf_struct_path_name ;
+    folder_props.output_path = [folder_props.output_folder '/' folder_props.output_subfolder];
+    folder_props.output_folder_mats = output_folder_mats ;
+    folder_props.output_extension = output_extension ;
+    folder_props.output_folder_scanpath = [ folder_props.output_path '/' 'scanpath'];
+    folder_props.output_folder_mean = [ folder_props.output_folder_scanpath '/' 'mean' '_' folder_props.output_subfolder];
+    folder_props.output_folder_gaussian = [ folder_props.output_folder_scanpath '/' 'gaussian' '_' folder_props.output_subfolder];
+    mkdir(folder_props.output_folder);
+    mkdir(folder_props.output_path);
+    mkdir(folder_props.output_folder_scanpath);
+    mkdir(folder_props.output_folder_mean);
+    mkdir(folder_props.output_folder_gaussian);
+
+end
+
+function [image_props] = get_image_properties(input_image,image_name,folder_props,conf_struct)
+    %get image properties
+    image_props.input_image = input_image;
+    image_props.image_name = image_name;
+    image_props.image_name_noext = remove_extension(image_props.image_name);
+    image_props.output_image_path= [folder_props.output_path '/' image_props.image_name_noext '.' folder_props.output_extension];
+    image_props.output_scanpath_path= [ folder_props.output_folder_scanpath '/' image_props.image_name_noext '.mat' ];
+    
+    image_props.output_image_paths = cell(1,conf_struct.gaze_params.ngazes);
+    for k=1:conf_struct.gaze_params.ngazes
+        image_props.output_image_paths{k} = [folder_props.output_path '/' image_props.image_name_noext '_gaze' num2str(k) '.' folder_props.output_extension];
+        
+    end
+    
+    image_props.output_mean_path = [folder_props.output_folder_mean '/' image_props.image_name_noext '.' folder_props.output_extension];
+    image_props.output_gaussian_path = [folder_props.output_folder_gaussian '/' image_props.image_name_noext '.' folder_props.output_extension];
+
+end
+
+function [mat_props] = get_mat_properties(folder_props,image_props,conf_struct)
+
+    mat_props.loaded_struct_path = cell(1,conf_struct.gaze_params.ngazes);
+    mat_props.op1_iFactor_path = cell(1,conf_struct.gaze_params.ngazes);
+    mat_props.op2_iFactor_path = cell(1,conf_struct.gaze_params.ngazes);
+    mat_props.op3_iFactor_path = cell(1,conf_struct.gaze_params.ngazes);
+    mat_props.op1_WavCurv_path = cell(1,conf_struct.gaze_params.ngazes);
+    mat_props.op2_WavCurv_path = cell(1,conf_struct.gaze_params.ngazes);
+    mat_props.op3_WavCurv_path = cell(1,conf_struct.gaze_params.ngazes);
+    mat_props.op1_WavResidual_path = cell(1,conf_struct.gaze_params.ngazes);
+    mat_props.op2_WavResidual_path = cell(1,conf_struct.gaze_params.ngazes);
+    mat_props.op3_WavResidual_path = cell(1,conf_struct.gaze_params.ngazes);
+    
+    
+    
+    for k=1:conf_struct.gaze_params.ngazes
+        
+        mat_props.loaded_struct_path{k} = get_mat_name('struct',folder_props,image_props,k);
+        
+        mat_props.op1_iFactor_path{k} = get_mat_name('iFactor',folder_props,image_props,k,'chromatic');
+        mat_props.op2_iFactor_path{k} = get_mat_name('iFactor',folder_props,image_props,k,'chromatic2');
+        mat_props.op3_iFactor_path{k} = get_mat_name('iFactor',folder_props,image_props,k,'intensity');
+        
+        mat_props.op1_WavCurv_path{k} = get_mat_name('w',folder_props,image_props,k,'chromatic');
+        mat_props.op2_WavCurv_path{k} = get_mat_name('w',folder_props,image_props,k,'chromatic2');
+        mat_props.op3_WavCurv_path{k} = get_mat_name('w',folder_props,image_props,k,'intensity');
+        
+        mat_props.op1_WavResidual_path{k} = get_mat_name('c',folder_props,image_props,k,'chromatic');
+        mat_props.op2_WavResidual_path{k} = get_mat_name('c',folder_props,image_props,k,'chromatic2');
+        mat_props.op3_WavResidual_path{k} = get_mat_name('c',folder_props,image_props,k,'intensity');
+        
+        
+    end
+end
+
+function [run_flags] = get_run_flags(image_props,mat_props,conf_struct)
+
+    
+    
+    for k=1:conf_struct.gaze_params.ngazes
+       run_flags.run_smaps = 0;
+       if exist(image_props.output_image_paths{k},'file')==0
+           run_flags.load_smap(k)=0;
+           run_flags.run_smaps = 1;
+       else
+           
+           run_flags.load_smap(k)=1;
+       end
+    end
+    
+    if exist(image_props.output_image_path, 'file') 
+        run_flags.run_smap = 0;
+     else
+        run_flags.run_smap = 1;
+    end
+    if exist(image_props.output_gaussian_path, 'file') 
+        run_flags.run_gaussian = 0;
+     else
+        run_flags.run_gaussian = 1;
+    end
+    
+    if exist(image_props.output_mean_path, 'file') 
+        run_flags.run_mean = 0;
+     else
+        run_flags.run_mean = 1;
+    end
+    
+    if exist(image_props.output_scanpath_path, 'file') 
+        run_flags.run_scanpath = 0;
+     else
+        run_flags.run_scanpath = 1;
+    end
+    
+    if exist(image_props.output_image_path, 'file') ...
+            && exist(image_props.output_scanpath_path, 'file') ...
+            && exist(image_props.output_mean_path, 'file') ...
+            && exist(image_props.output_gaussian_path, 'file') 
+        run_flags.run_all = 0;
+     else
+        run_flags.run_all = 1;
+    end
+    
+     for k=1:conf_struct.gaze_params.ngazes
+         
+         
+         if exist(mat_props.loaded_struct_path{k}, 'file') 
+             loaded_struct = load(mat_props.loaded_struct_path{k}); loaded_struct = loaded_struct.matrix_in;
+             if compare_structs(conf_struct,loaded_struct) == 1
+                 run_flags.load_struct(k)=1;
+             else
+                 run_flags.load_struct(k)=0;
+             end
+         else
+             run_flags.load_struct(k)=0;
+         end
+         
+         if exist(mat_props.loaded_struct_path{k}, 'file') ...
+             && exist(mat_props.op1_iFactor_path{k}, 'file') ...
+             && exist(mat_props.op2_iFactor_path{k}, 'file') ...
+             && exist(mat_props.op3_iFactor_path{k}, 'file') ...
+
+             run_flags.load_iFactor_mats(k)=1;
+         else
+             run_flags.load_iFactor_mats(k)=0;
+         end
+         
+         
+         if exist(mat_props.loaded_struct_path{k}, 'file') ...
+             && exist(mat_props.op1_WavCurv_path{k}, 'file') ...
+             && exist(mat_props.op2_WavCurv_path{k}, 'file') ...
+             && exist(mat_props.op3_WavCurv_path{k}, 'file')
+         
+             run_flags.load_WavCurv_mats(k)=1;
+         else
+             run_flags.load_WavCurv_mats(k)=0;
+         end
+         
+         if  exist(mat_props.loaded_struct_path{k}, 'file') ...
+             && exist(mat_props.op1_WavResidual_path{k}, 'file') ...
+             && exist(mat_props.op2_WavResidual_path{k}, 'file') ...
+             && exist(mat_props.op3_WavResidual_path{k}, 'file')
+         
+             run_flags.load_WavResidual_mats(k)=1;
+         else
+             run_flags.load_WavResidual_mats(k)=0;
+         end
+         
+         
+     end
+    
+
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% UTILS FILES AND STRUCTS
+
+
+function [mat_path] = get_mat_name(mat_name,folder_props,image_props,gaze_idx,channel)
+    if exist('channel','var') && exist('gaze_idx','var')
+        mat_path = [ folder_props.output_folder_mats '/' image_props.image_name_noext '_' mat_name '_channel(' channel ')' '_gaze' num2str(gaze_idx) '.mat'];
+    elseif exist('channel','var') && ~exist('gaze_idx','var')
+        mat_path = [ folder_props.output_folder_mats '/' image_props.image_name_noext '_' mat_name '_channel(' channel ')' '.mat'];
+    elseif ~exist('channel','var') && exist('gaze_idx','var')
+        mat_path = [ folder_props.output_folder_mats '/' image_props.image_name_noext '_' mat_name '_gaze' num2str(gaze_idx) '.mat'];
+    else
+        mat_path = [ folder_props.output_folder_mats '/' image_props.image_name_noext '_' mat_name '.mat'];
+    end
+end
+
+
+function [] = save_mat(mat_name,matrix_in,folder_props,image_props,gaze_idx,channel)
+    if exist('channel','var') && exist('gaze_idx','var')
+        mat_path = [ folder_props.output_folder_mats '/' image_props.image_name_noext '_' mat_name '_channel(' channel ')' '_gaze' num2str(gaze_idx) '.mat'];
+    elseif exist('channel','var') && ~exist('gaze_idx','var')
+        mat_path = [ folder_props.output_folder_mats '/' image_props.image_name_noext '_' mat_name '_channel(' channel ')' '.mat'];
+    elseif ~exist('channel','var') && exist('gaze_idx','var')
+        mat_path = [ folder_props.output_folder_mats '/' image_props.image_name_noext '_' mat_name '_gaze' num2str(gaze_idx) '.mat'];
+    else
+        mat_path = [ folder_props.output_folder_mats '/' image_props.image_name_noext '_' mat_name '.mat'];
+    end
+    save(mat_path,'matrix_in');
+
+end
+
+
+
+function [veredict] = compare_structs(struct, loaded_struct)
+
+    if  loaded_struct.gaze_params.foveate == struct.gaze_params.foveate  ...  
+       && strcmp(loaded_struct.gaze_params.fov_type,struct.gaze_params.fov_type)  ...
+       && strcmp(loaded_struct.fusion_params.output_from_model,struct.fusion_params.output_from_model)  ... 
+       && loaded_struct.color_params.gamma == struct.color_params.gamma  ... 
+       && loaded_struct.color_params.srgb_flag == struct.color_params.srgb_flag  ... 
+       && loaded_struct.resize_params.autoresize_ds == struct.resize_params.autoresize_ds  ...
+       && loaded_struct.resize_params.autoresize_nd == struct.resize_params.autoresize_nd  ...
+       && loaded_struct.compute_params.model == struct.compute_params.model  ... 
+       && loaded_struct.zli_params.n_membr == struct.zli_params.n_membr  ...
+       && loaded_struct.zli_params.n_iter == struct.zli_params.n_iter  ... 
+       && strcmp(loaded_struct.zli_params.dist_type, struct.zli_params.dist_type)  ...
+       && loaded_struct.zli_params.scalesize_type == struct.zli_params.scalesize_type  ... 
+       && loaded_struct.zli_params.scale2size_type == struct.zli_params.scale2size_type  ... 
+       && loaded_struct.zli_params.scale2size_epsilon == struct.zli_params.scale2size_epsilon  ...
+       && loaded_struct.zli_params.bScaleDelta == struct.zli_params.bScaleDelta  ... 
+       && loaded_struct.zli_params.reduccio_JW == struct.zli_params.reduccio_JW  ... 
+       && strcmp(loaded_struct.zli_params.normal_type, struct.zli_params.normal_type)  ... 
+       && loaded_struct.zli_params.alphax == struct.zli_params.alphax ... 
+       && loaded_struct.zli_params.alphay == struct.zli_params.alphay ... 
+       && loaded_struct.zli_params.nb_periods == struct.zli_params.nb_periods ... 
+       && loaded_struct.zli_params.normal_input == struct.zli_params.normal_input ...
+       && loaded_struct.zli_params.normal_output == struct.zli_params.normal_output ...
+       && loaded_struct.zli_params.normal_min_absolute == struct.zli_params.normal_min_absolute ... 
+       && loaded_struct.zli_params.normal_max_absolute == struct.zli_params.normal_max_absolute ... 
+       && loaded_struct.zli_params.Delta == struct.zli_params.Delta ... 
+       && loaded_struct.zli_params.ON_OFF == struct.zli_params.ON_OFF ... 
+       && strcmp(loaded_struct.zli_params.boundary,struct.zli_params.boundary) ...
+       && loaded_struct.zli_params.normalization_power == struct.zli_params.normalization_power ...
+       && loaded_struct.zli_params.kappax == struct.zli_params.kappax ...
+       && loaded_struct.zli_params.kappay == struct.zli_params.kappay ...
+       && loaded_struct.zli_params.shift == struct.zli_params.shift ...
+       && loaded_struct.zli_params.scale_interaction == struct.zli_params.scale_interaction ... 
+       && loaded_struct.zli_params.orient_interaction == struct.zli_params.orient_interaction ...
+       &&  strcmp(loaded_struct.cortex_params.cm_method,struct.cortex_params.cm_method) ...
+       && loaded_struct.cortex_params.a == struct.cortex_params.a ...
+       && loaded_struct.cortex_params.b == struct.cortex_params.b ...
+       && loaded_struct.cortex_params.lambda == struct.cortex_params.lambda  ... 
+       && loaded_struct.cortex_params.cortex_width == struct.cortex_params.cortex_width  ...
+       && loaded_struct.cortex_params.isoPolarGrad == struct.cortex_params.isoPolarGrad ...
+       && loaded_struct.cortex_params.eccWidth == struct.cortex_params.eccWidth ...
+       && loaded_struct.cortex_params.cortex_max_elong_mm == struct.cortex_params.cortex_max_elong_mm ... 
+       && loaded_struct.cortex_params.cortex_max_az_mm == struct.cortex_params.cortex_max_az_mm ...
+       && loaded_struct.cortex_params.mirroring == struct.cortex_params.mirroring ...
+       && loaded_struct.gaze_params.redistort_periter == struct.gaze_params.redistort_periter ...  
+       && loaded_struct.gaze_params.fov_x == struct.gaze_params.fov_x  ... 
+       && loaded_struct.gaze_params.fov_y == struct.gaze_params.fov_y  ...
+       && loaded_struct.gaze_params.orig_width == struct.gaze_params.orig_width  ...
+       && loaded_struct.gaze_params.orig_height == struct.gaze_params.orig_height  ...
+       && loaded_struct.gaze_params.img_diag_angle == struct.gaze_params.img_diag_angle   
    
         veredict = 1;
     else
@@ -713,55 +817,7 @@ function [veredict] = compare_structs(struct, image_struct)
     end
 end
 
-function [veredict] = compare_structs_old(struct, image_struct)
 
-    if image_struct.image.foveate == struct.gaze_params.foveate  ...
-       && strcmp(image_struct.image.fov_type,struct.gaze_params.fov_type)  ... 
-       && strcmp(image_struct.compute.output_from_model,struct.fusion_params.output_from_model)  ...
-       && image_struct.image.gamma == struct.color_params.gamma  ...
-       && image_struct.image.srgb_flag == struct.color_params.srgb_flag  ...
-       && image_struct.image.autoresize_ds == struct.resize_params.autoresize_ds  ... 
-       && image_struct.image.autoresize_nd == struct.resize_params.autoresize_nd  ... 
-       && image_struct.compute.model == struct.compute_params.model  ... 
-       && image_struct.zli.n_membr == struct.zli_params.n_membr  ... 
-       && image_struct.zli.n_iter == struct.zli_params.n_iter  ...
-       && strcmp(image_struct.zli.dist_type, struct.zli_params.dist_type)  ...
-       && image_struct.zli.scalesize_type == struct.zli_params.scalesize_type  ... 
-       && image_struct.zli.scale2size_type == struct.zli_params.scale2size_type  ...
-       && image_struct.zli.scale2size_epsilon == struct.zli_params.scale2size_epsilon  ... 
-       && image_struct.zli.bScaleDelta == struct.zli_params.bScaleDelta  ... 
-       && image_struct.zli.reduccio_JW == struct.zli_params.reduccio_JW  ... 
-       && strcmp(image_struct.zli.normal_type, struct.zli_params.normal_type)  ...
-       && image_struct.zli.alphax == struct.zli_params.alphax ... 
-       && image_struct.zli.alphay == struct.zli_params.alphay ...
-       && image_struct.zli.nb_periods == struct.zli_params.nb_periods ...
-       && image_struct.zli.normal_input == struct.zli_params.normal_input ... 
-       && image_struct.zli.normal_output == struct.zli_params.normal_output ... 
-       && image_struct.zli.normal_min_absolute == struct.zli_params.normal_min_absolute ... 
-       && image_struct.zli.normal_max_absolute == struct.zli_params.normal_max_absolute ... 
-       && image_struct.zli.Delta == struct.zli_params.Delta ... 
-       && image_struct.zli.ON_OFF == struct.zli_params.ON_OFF ...
-       && strcmp(image_struct.zli.boundary,struct.zli_params.boundary) ...
-       && image_struct.zli.normalization_power == struct.zli_params.normalization_power ...
-       && image_struct.zli.kappax == struct.zli_params.kappax ...
-       && image_struct.zli.kappay == struct.zli_params.kappay ... 
-       && image_struct.zli.shift == struct.zli_params.shift ...
-       && image_struct.zli.scale_interaction == struct.zli_params.scale_interaction ...
-       && image_struct.zli.orient_interaction == struct.zli_params.orient_interaction ...
-       && image_struct.image.e0 == struct.cortex_params.a ... 
-       && image_struct.image.lambda == struct.cortex_params.lambda  ... 
-       && image_struct.image.cortex_width == struct.cortex_params.cortex_width  ...
-       && image_struct.image.redistort_periter == struct.gaze_params.redistort_periter ... 
-       && image_struct.image.fixationX == struct.gaze_params.fov_x  ... 
-       && image_struct.image.fixationY == struct.gaze_params.fov_y  ...
-       && image_struct.image.oN == struct.gaze_params.orig_width  ...
-       && image_struct.image.oM == struct.gaze_params.orig_height  ...
-       && image_struct.image.vAngle == struct.gaze_params.img_diag_angle 
 
-   
-        veredict = 1;
-    else
-        veredict = 0;
-    end
-end
+
 

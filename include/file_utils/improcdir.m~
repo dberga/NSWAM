@@ -6,7 +6,7 @@ if(nargin < 5)
     conf_path = uigetfile(pwd, 'Select a conf file');
     mats_folder = uigetdir(pwd, 'Select an mats folder');
     
-    args = {conf_path,output_directory,mats_folder,'png'};
+    args = cellstr([conf_path;output_directory;mats_folder;'png']);
 else
 	directory = input_path;
 end
@@ -21,19 +21,19 @@ switch mode
         for i=1:N_files
             disp(files(i).name); %files array with names
             img = imread(files(i).name);
-            feval(process,img, files(i).name,args{1},args{2},args{3},args{4});
+            feval(process,img,files(i).name,args(:,:));
         end
     case 1
         parfor i=1:N_files
             disp(files(i).name); %files array with names
             img = imread(files(i).name);
-            feval(process,img, files(i).name,args{1},args{2},args{3},args{4});
+            feval(process,img, files(i).name,args(1),args(2),args(3),);
         end
     otherwise
         for i=1:N_files
             disp(files(i).name); %files array with names
             img = imread(files(i).name);
-            feval(process,img, files(i).name,args{1},args{2},args{3},args{4});
+            feval(process,img,files(i).name,args(:,:));
         end
         
 end

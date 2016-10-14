@@ -1,5 +1,5 @@
 
-function [input_image_resized] = autoresize_nd(input_image,strct,nd_ctt)
+function [input_image_resized] = autoresize_nd(input_image,Delta, reduccio_JW,nd_ctt)
      %nd_ctt = La constant (numero de neurones de matcon.) es specific size/window
         %exemple:
         %if width=1024,Delta=15,ctt=10 -> width_new = 15*2*10
@@ -11,7 +11,7 @@ function [input_image_resized] = autoresize_nd(input_image,strct,nd_ctt)
     [m n p]    = size(input_image);
     nm_ratio = n/m;
     
-    Delta_final = round(strct.zli_params.Delta / strct.zli_params.reduccio_JW);
+    Delta_final = round(Delta / reduccio_JW);
     Delta_final = Delta_final * 2; %radius to diameter
 
     mnew = nd_ctt*Delta_final; %m * (nd_ctt/(m/Delta_final));
