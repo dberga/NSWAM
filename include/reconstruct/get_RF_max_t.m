@@ -4,12 +4,12 @@
 
 
 
-function [RFmax_s, residualmax_s,Lsmax_s] = get_RF_max_t(RF_s_o_c,residual_s_c,struct)
+function [RFmax_s, residualmax_s] = get_RF_max_t(RF_s_o_c,residual_s_c,struct)
 
 	
 	RFmax_s = cell(struct.wave_params.n_scales,1);
     residualmax_s = cell(struct.wave_params.n_scales-1,1);
-    Lsmax_s = cell(struct.wave_params.n_scales-1,1);
+    
 	
     
 	for s=1:struct.wave_params.n_scales-1

@@ -1,7 +1,7 @@
 function [  ] = confgen( folder)
 
 if nargin < 1
-    folder = 'conf_test';
+    folder = 'conf_default';
 end
 
 % zli_params
@@ -311,8 +311,8 @@ end
 
 function [csf_params] = get_all_parameters_csf_NCZLd()
     %csf_params.nu_0 = num2cell(0.5:0.5:6);
-    %csf_params.nu_0 ={2.357,4}; *
-    csf_params.nu_0 ={4};
+    csf_params.nu_0 ={2.357,4}; 
+    %csf_params.nu_0 ={4};
     
     
     profile1.params_intensity.fOffsetMax=0.;
@@ -362,11 +362,11 @@ function [csf_params] = get_all_parameters_csf_NCZLd()
     profile2.params_chromatic.fOffsetMin=1.059210;
     
     
-    %*csf_params.params_intensity = {profile1.params_intensity, profile2.params_intensity};
-    %*csf_params.params_chromatic = {profile1.params_chromatic, profile2.params_chromatic};
+    csf_params.params_intensity = {profile1.params_intensity, profile2.params_intensity};
+    csf_params.params_chromatic = {profile1.params_chromatic, profile2.params_chromatic};
 
-    csf_params.params_intensity = {profile2.params_intensity};
-    csf_params.params_chromatic = {profile2.params_chromatic};
+    %csf_params.params_intensity = {profile2.params_intensity};
+    %csf_params.params_chromatic = {profile2.params_chromatic};
     
     
     
@@ -382,7 +382,8 @@ function [color_params] = get_all_parameters_color_NCZLd()
     %color_params.orgb_flag= {1,0};
     color_params.orgb_flag= {0};
 
-
+    %color_params.nchannels = 3;
+    
 end
 
 
@@ -404,20 +405,20 @@ function [resize_params] = get_all_parameters_resize_NCZLd()
 end
 
 function [fusion_params] = get_all_parameters_fusion_NCZLd() 
-        %fusion_params.output_from_model={'M&w','M'};
-     fusion_params.output_from_model={'M'};
+    %fusion_params.output_from_model={'M&w','M'};
+    fusion_params.output_from_model={'M'};
     
-    %*fusion_params.output_from_csf= {'iFactor','eCSF'};
-    fusion_params.output_from_csf= {'iFactor'};
+    fusion_params.output_from_csf= {'iFactor','eCSF'};
+    %fusion_params.output_from_csf= {'iFactor'};
     
-    %*fusion_params.residual_wave= {0,1,2};
-    fusion_params.residual_wave= {0};
+    fusion_params.residual_wave= {0,1,2};
+    %fusion_params.residual_wave= {0};
 
-    %fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','wta'};
-    fusion_params.smethod= {'pmax2'};
+    fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','wta'};
+    %fusion_params.smethod= {'pmax2'};
 
-    %fusion_params.fusion= {1,2,3,4,5,6};
-    fusion_params.fusion= {6};
+    fusion_params.fusion= {1,2,3};
+    %fusion_params.fusion= {3};
 
     %fusion_params.tmem_res = {'mean','max'}; %temporal mean of iFactor or temporal max?
     fusion_params.tmem_res = {'mean'}; 
@@ -451,8 +452,8 @@ function [zli_params] = get_all_parameters_zli_NCZLd()
     zli_params.prec = {0.1};
     
     %zli_params.n_frames.promig=num2cell(1:1:10);
-    %*zli_params.n_frames_promig={3,5,8,10};
-    zli_params.n_frames_promig={10};
+    zli_params.n_frames_promig={7,10};
+    %zli_params.n_frames_promig={10};
     
     %zli_params.dist_type={'eucl', 'manh'}; 
     zli_params.dist_type={'eucl'};
@@ -461,7 +462,7 @@ function [zli_params] = get_all_parameters_zli_NCZLd()
     zli_params.scale2size_type={1};
     zli_params.scale2size_epsilon = {1.3}; zli_params.nepsilon={num2str(zli_params.scale2size_epsilon{1})};
     
-    %zli_params.bScaleDelta=0,1;
+    %zli_params.bScaleDelta={0,1};
     zli_params.bScaleDelta={1};
     
     %zli_params.reduccio_JW=num2cell(0:0.25:4);
@@ -576,15 +577,18 @@ end
 
 function [cortex_params] = get_all_parameters_cortex_NCZLd()
 
-        cortex_params.cm_method = {'dsech_monopole'};
+        %cortex_params.cm_method = {'schwartz_monopole','schwartz_dipole'};
+        cortex_params.cm_method = {'schwartz_monopole'};
         cortex_params.cortex_width = {128};
         cortex_params.a={degtorad(0.77)};
         cortex_params.b={degtorad(150)};
+        %cortex_params.lambda={12,18};
         cortex_params.lambda={12};
         cortex_params.isoPolarGrad={0.1821};
         cortex_params.eccWidth={0.7609};
         cortex_params.cortex_max_elong_mm = {120};
         cortex_params.cortex_max_az_mm = {60};
+        %cortex_params.mirroring = {1,0};
         cortex_params.mirroring = {1};
     
 end
@@ -604,20 +608,22 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
 
         gaze_params.orig_width = {0}; %unknown on undistort
         gaze_params.orig_height = {0}; %unknown on undistort
-        gaze_params.fov_x = {0};
-        gaze_params.fov_y = {0};
-        gaze_params.img_diag_angle = {degtorad(44.12)};
+        gaze_params.fov_x = {0}; %auto
+        gaze_params.fov_y = {0}; %auto
+        %gaze_params.img_diag_angle = {degtorad(35.12),degtorad(44.12)};
+        gaze_params.img_diag_angle = {degtorad(35.12)};
 
 
-    %gaze_params.foveate = {0,1};
     gaze_params.foveate = {1};
+    %gaze_params.foveate = {0};
     %gaze_params.fov_type = {'cortical_xavi','cortical_xavi_mirrored','cortical', 'gaussian', 'fisheye'};
     gaze_params.fov_type = {'cortical'};
  
 
+    %gaze_params.redistort_periter = {1,0};
     gaze_params.redistort_periter = {1};
 
-    gaze_params.ngazes = {1};
+    gaze_params.ngazes = {2,5,10};
     gaze_params.gaze_idx = {0};
 
 end

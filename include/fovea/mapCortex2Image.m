@@ -32,10 +32,10 @@ switch cortex_params.cm_method
         [coord_j_cortex,coord_i_cortex] = schwartz_monopole( (coord_i_img-gaze_params.fov_y)*eye_pix2az, (coord_j_img-gaze_params.fov_x)*eye_pix2elong,cortex_params.lambda,cortex_params.a);
     case 'schwartz_dipole'
         [coord_j_cortex,coord_i_cortex] = schwartz_dipole( (coord_i_img-gaze_params.fov_y)*eye_pix2az, (coord_j_img-gaze_params.fov_x)*eye_pix2elong,cortex_params.lambda,cortex_params.a,cortex_params.b);
-    case 'dsech_monopole'
-        [coord_j_cortex,coord_i_cortex] = dsech_monopole( (coord_i_img-gaze_params.fov_y)*eye_pix2az, (coord_j_img-gaze_params.fov_x)*eye_pix2elong,cortex_params.lambda,cortex_params.a,cortex_params.eccWidth,cortex_params.isoPolarGrad);
-    case 'dsech_dipole'
-        [coord_j_cortex,coord_i_cortex] = dsech_dipole( (coord_i_img-gaze_params.fov_y)*eye_pix2az, (coord_j_img-gaze_params.fov_x)*eye_pix2elong,cortex_params.lambda,cortex_params.a,cortex_params.b,cortex_params.eccWidth,cortex_params.isoPolarGrad);
+    %case 'dsech_monopole'
+    %    [coord_j_cortex,coord_i_cortex] = dsech_monopole( (coord_i_img-gaze_params.fov_y)*eye_pix2az, (coord_j_img-gaze_params.fov_x)*eye_pix2elong,cortex_params.lambda,cortex_params.a,cortex_params.eccWidth,cortex_params.isoPolarGrad);
+    %case 'dsech_dipole'
+    %    [coord_j_cortex,coord_i_cortex] = dsech_dipole( (coord_i_img-gaze_params.fov_y)*eye_pix2az, (coord_j_img-gaze_params.fov_x)*eye_pix2elong,cortex_params.lambda,cortex_params.a,cortex_params.b,cortex_params.eccWidth,cortex_params.isoPolarGrad);
     otherwise
         [coord_j_cortex,coord_i_cortex] = schwartz_monopole( (coord_i_img-fov_y)*eye_pix2az, (coord_j_img-fov_x)*eye_pix2elong,cortex_params.lambda,cortex_params.a);
 end

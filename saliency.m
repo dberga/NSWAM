@@ -89,10 +89,11 @@ if run_flags.run_all==1
             [residuals{2}] = get_residual_updated(loaded_struct,residuals{2});
             [residuals{3}] = get_residual_updated(loaded_struct,residuals{3});
             
-
+            residual_s_c = cs2sc(residuals,loaded_struct.color_params.nchannels,loaded_struct.wave_params.n_scales);
+            
             %change its cell dimensions back to its format
             RF_ti_s_o_c = unify_channels_ti(iFactors{1},iFactors{2},iFactors{3},loaded_struct);
-            residual_s_c = unify_channels_norient(residuals{1},residuals{2},residuals{3},loaded_struct);
+                %residual_c_s = unify_channels_norient(residuals{1},residuals{2},residuals{3},loaded_struct);
 
             %temporal mean for RF
             RF_s_o_c = timatrix_to_matrix(RF_ti_s_o_c,loaded_struct);
@@ -101,14 +102,18 @@ if run_flags.run_all==1
             [RF_s_o_c] = get_eCSF(loaded_struct,RF_s_o_c);
             
             % max of RF (orientation and channel), copy afterwards
-            [RF_c_s_o,residual_c_s] = get_maxRF(loaded_struct,RF_s_o_c,residual_s_c);
-            
-            %IDWT
-            [RF_c_s_o{1},residual_c_s{1}] = multires_curv2decomp(RF_c_s_o{1},residual_c_s{1},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
-            [RF_c_s_o{2},residual_c_s{2}] = multires_curv2decomp(RF_c_s_o{2},residual_c_s{2},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
-            [RF_c_s_o{3},residual_c_s{3}] = multires_curv2decomp(RF_c_s_o{3},residual_c_s{3},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            [RF_c_s_o,~] = get_maxRF(loaded_struct,RF_s_o_c,residual_s_c);
                 
-            [RF_c] = get_IDWT(loaded_struct,RF_c_s_o,residual_c_s);
+                
+            %IDWT
+            RF_c_s_o{1} = so2s_o(RF_c_s_o{1},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            RF_c_s_o{2} = so2s_o(RF_c_s_o{2},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            RF_c_s_o{3} = so2s_o(RF_c_s_o{3},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            %[RF_c_s_o{1},residual_c_s{1}] = multires_curv2decomp(RF_c_s_o{1},residual_c_s{1},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            %[RF_c_s_o{2},residual_c_s{2}] = multires_curv2decomp(RF_c_s_o{2},residual_c_s{2},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            %[RF_c_s_o{3},residual_c_s{3}] = multires_curv2decomp(RF_c_s_o{3},residual_c_s{3},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+                
+            [RF_c] = get_IDWT(loaded_struct,RF_c_s_o,residuals);
             
             %from opponent to color (depending on flag)
             [RF_c] = get_opp2rgb(loaded_struct,RF_c);
@@ -198,8 +203,8 @@ function [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,
 end
 function [curvs,residuals] = get_DWT(run_flags,loaded_struct,folder_props,image_props,C,gaze_idx,input_image)
             
-        curvs = cell(1,C);
-        residuals = cell(1,C);
+        curvs = cell(C,1);
+        residuals = cell(C,1);
             for c=1:C
                 if run_flags.load_WavCurv_mats(gaze_idx)==1 && run_flags.load_WavResidual_mats(gaze_idx)==1
                     [curv] = load(get_mat_name('w',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); curv = curv.matrix_in;
@@ -245,7 +250,7 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
             
         if run_flags.load_iFactor_mats(gaze_idx)==1 && run_flags.load_struct(gaze_idx)==1
             iFactor = load(get_mat_name('iFactor',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); iFactor = iFactor.matrix_in;
-            iFactor = iFactor(~cellfun('isempty',iFactor)); %clean void cells
+            %iFactor = iFactor(~cellfun('isempty',iFactor)); %clean void cells
         else
             t_ini = tic;
             switch loaded_struct.compute_params.model
@@ -283,12 +288,13 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
             
             
             
-            % save computed iFactor
-            save_mat('iFactor',iFactors{c},folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c});
+           
         end
         
         iFactors{c} = iFactor;
-            
+        
+        % save computed iFactor
+        save_mat('iFactor',iFactors{c},folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c});
         
     
     end
@@ -336,9 +342,15 @@ function [RF_c_s_o,residual_c_s] = get_maxRF(loaded_struct,RF_s_o_c,residual_s_c
                 RF_c_s_o{1} = RF_s_o;
                 RF_c_s_o{2} = RF_s_o;
                 RF_c_s_o{3} = RF_s_o;
+                
+                %%max residual
                 residual_c_s{1} = residual_s;
                 residual_c_s{2} = residual_s;
                 residual_c_s{3} = residual_s;
+                
+                %%same residual
+                %residual_c_s = sc2cs(residual_s_c,loaded_struct.color_params.nchannels,loaded_struct.wave_params.n_scales);
+                
             case 'pmaxc'
                 [RF_s_o,residual_s] = get_RF_max_t_o(RF_s_o_c,residual_s_c,loaded_struct);  
                 %[RF_s_o_c{1},RF_s_o_c{2},RF_s_o_c{3}] = separate_channels(RF_s_o,loaded_struct);
@@ -347,23 +359,29 @@ function [RF_c_s_o,residual_c_s] = get_maxRF(loaded_struct,RF_s_o_c,residual_s_c
                 RF_c_s_o{1} = RF_s_o;
                 RF_c_s_o{2} = RF_s_o;
                 RF_c_s_o{3} = RF_s_o;
+                
+                
+                %%max residual
                 residual_c_s{1} = residual_s;
                 residual_c_s{2} = residual_s;
                 residual_c_s{3} = residual_s;
+                
+                %%same residual
+                %residual_c_s = sc2cs(residual_s_c,loaded_struct.color_params.nchannels,loaded_struct.wave_params.n_scales);
+
             otherwise
                 RF_c_s_o = soc2cso(RF_s_o_c,loaded_struct.color_params.nchannels,loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
                 residual_c_s = sc2cs(residual_s_c,loaded_struct.color_params.nchannels,loaded_struct.wave_params.n_scales);
                 
-                
 
         end
 end
-function [RF_c] = get_IDWT(loaded_struct,RF_s_o_c,residual_s_c)
+function [RF_c] = get_IDWT(loaded_struct,RF_c_s_o,residual_c_s)
             
 
-            RF_c(:,:,1) = multires_inv_dispatcher(RF_s_o_c{1},residual_s_c{1},loaded_struct.wave_params.multires,loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
-            RF_c(:,:,2) = multires_inv_dispatcher(RF_s_o_c{2},residual_s_c{2},loaded_struct.wave_params.multires,loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
-            RF_c(:,:,3) = multires_inv_dispatcher(RF_s_o_c{3},residual_s_c{3},loaded_struct.wave_params.multires,loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            RF_c(:,:,1) = multires_inv_dispatcher(RF_c_s_o{1},residual_c_s{1},loaded_struct.wave_params.multires,loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            RF_c(:,:,2) = multires_inv_dispatcher(RF_c_s_o{2},residual_c_s{2},loaded_struct.wave_params.multires,loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            RF_c(:,:,3) = multires_inv_dispatcher(RF_c_s_o{3},residual_c_s{3},loaded_struct.wave_params.multires,loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
 end
             
             
@@ -420,16 +438,6 @@ function [smap] = get_normalize(loaded_struct,smap)
         case 3
 
             smap = normalize_Zp(smap);
-        case 4
-            smap = normalize_energy(smap);
-            smap = normalize_minmax(smap);
-
-        case 5
-            smap = normalize_Z(smap);
-            smap = normalize_minmax(smap);
-        case 6
-            smap = normalize_Zp(smap);
-            smap = normalize_minmax(smap);
 
         otherwise
             %do nothing
