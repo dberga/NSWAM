@@ -1,4 +1,4 @@
-function [  ] = confgen( folder)
+function [  ] = confgen_pre_nofov( folder)
 
 if nargin < 1
     folder = 'conf_default';
@@ -398,8 +398,8 @@ function [resize_params] = get_all_parameters_resize_NCZLd()
     resize_params.autoresize_ds = {0};
     %resize_params.updown={[1],[1,2]};
     %resize_params.updown=[1];
-    %resize_params.autoresize_nd = {0,10}; %proportion between image size and window size
-    resize_params.autoresize_nd = {0};
+    resize_params.autoresize_nd = {0,10}; %proportion between image size and window size
+    %resize_params.autoresize_nd = {0};
     resize_params.M = {0}; %auto
     resize_params.N = {0}; %auto
 end
@@ -464,8 +464,8 @@ function [zli_params] = get_all_parameters_zli_NCZLd()
     zli_params.scale2size_type={1};
     zli_params.scale2size_epsilon = {1.3}; zli_params.nepsilon={num2str(zli_params.scale2size_epsilon{1})};
     
-    %zli_params.bScaleDelta={0,1};
-    zli_params.bScaleDelta={1};
+    zli_params.bScaleDelta={0,1};
+    %zli_params.bScaleDelta={1};
     
     %zli_params.reduccio_JW=num2cell(0:0.25:4);
     zli_params.reduccio_JW={1};
@@ -515,8 +515,8 @@ function [zli_params] = get_all_parameters_zli_NCZLd()
     %zli_params.dedi(2,:)=0*3*3*ones(1,9);
     zli_params.dedi = {[3*3*ones(1,9); 0*3*3*ones(1,9)]};
     
-    %zli_params.shift={0, 1};
-    zli_params.shift={1};
+    zli_params.shift={0, 1};
+    %zli_params.shift={1};
 
 
 
@@ -577,7 +577,7 @@ function [cortex_params] = get_all_parameters_cortex_NCZLd()
         cortex_params.a={degtorad(0.77)};
         cortex_params.b={degtorad(150)};
         %cortex_params.lambda={12,18};
-        cortex_params.lambda={18};
+        cortex_params.lambda={12};
         cortex_params.isoPolarGrad={0.1821};
         cortex_params.eccWidth={0.7609};
         cortex_params.cortex_max_elong_mm = {120};
@@ -608,7 +608,7 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
         gaze_params.img_diag_angle = {degtorad(35.12)};
 
 
-    gaze_params.foveate = {1};
+    gaze_params.foveate = {0};
     %gaze_params.foveate = {0};
     %gaze_params.fov_type = {'cortical_xavi','cortical_xavi_mirrored','cortical', 'gaussian', 'fisheye'};
     gaze_params.fov_type = {'cortical'};
@@ -617,7 +617,7 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
     %gaze_params.redistort_periter = {1,0};
     gaze_params.redistort_periter = {0};
 
-    gaze_params.ngazes = {10};
+    gaze_params.ngazes = {1};
     %gaze_params.ngazes = {2,5,10};
     gaze_params.gaze_idx = {0};
 

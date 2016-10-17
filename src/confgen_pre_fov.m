@@ -1,4 +1,4 @@
-function [  ] = confgen( folder)
+function [  ] = confgen_pre_fov( folder)
 
 if nargin < 1
     folder = 'conf_default';
@@ -464,8 +464,8 @@ function [zli_params] = get_all_parameters_zli_NCZLd()
     zli_params.scale2size_type={1};
     zli_params.scale2size_epsilon = {1.3}; zli_params.nepsilon={num2str(zli_params.scale2size_epsilon{1})};
     
-    %zli_params.bScaleDelta={0,1};
-    zli_params.bScaleDelta={1};
+    zli_params.bScaleDelta={0,1};
+    %zli_params.bScaleDelta={1};
     
     %zli_params.reduccio_JW=num2cell(0:0.25:4);
     zli_params.reduccio_JW={1};
@@ -515,8 +515,8 @@ function [zli_params] = get_all_parameters_zli_NCZLd()
     %zli_params.dedi(2,:)=0*3*3*ones(1,9);
     zli_params.dedi = {[3*3*ones(1,9); 0*3*3*ones(1,9)]};
     
-    %zli_params.shift={0, 1};
-    zli_params.shift={1};
+    zli_params.shift={0, 1};
+    %zli_params.shift={1};
 
 
 
@@ -571,13 +571,13 @@ end
 
 function [cortex_params] = get_all_parameters_cortex_NCZLd()
 
-        %cortex_params.cm_method = {'schwartz_monopole','schwartz_dipole'};
-        cortex_params.cm_method = {'schwartz_monopole'};
+        cortex_params.cm_method = {'schwartz_monopole','schwartz_dipole'};
+        %cortex_params.cm_method = {'schwartz_monopole'};
         cortex_params.cortex_width = {128};
         cortex_params.a={degtorad(0.77)};
         cortex_params.b={degtorad(150)};
-        %cortex_params.lambda={12,18};
-        cortex_params.lambda={18};
+        cortex_params.lambda={12,18};
+        %cortex_params.lambda={12};
         cortex_params.isoPolarGrad={0.1821};
         cortex_params.eccWidth={0.7609};
         cortex_params.cortex_max_elong_mm = {120};
@@ -604,8 +604,8 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
         gaze_params.orig_height = {0}; %unknown on undistort
         gaze_params.fov_x = {0}; %auto
         gaze_params.fov_y = {0}; %auto
-        %gaze_params.img_diag_angle = {degtorad(35.12),degtorad(44.12)};
-        gaze_params.img_diag_angle = {degtorad(35.12)};
+        gaze_params.img_diag_angle = {degtorad(35.12),degtorad(44.12)};
+        %gaze_params.img_diag_angle = {degtorad(35.12)};
 
 
     gaze_params.foveate = {1};
@@ -614,8 +614,8 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
     gaze_params.fov_type = {'cortical'};
  
 
-    %gaze_params.redistort_periter = {1,0};
-    gaze_params.redistort_periter = {0};
+    gaze_params.redistort_periter = {1,0};
+    %gaze_params.redistort_periter = {1};
 
     gaze_params.ngazes = {10};
     %gaze_params.ngazes = {2,5,10};

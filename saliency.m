@@ -38,6 +38,11 @@ if conf_struct.gaze_params.fov_x == 0 && conf_struct.gaze_params.fov_y == 0
     conf_struct.gaze_params.fov_x =round(conf_struct.gaze_params.orig_width/2); 
 end
 
+%folders of mats separate or not? (to avoid overwriting)
+if ~conf_struct.file_params.unique_mats_folder
+    output_folder_mats = [output_folder_mats '/' conf_struct_path_name];
+end
+
 %%%%%%%%%%%%%%%%%%INITIALIZE OUTPUT
 [M,N,C] = size(input_image);
 smap = zeros(M,N);
@@ -82,6 +87,10 @@ if run_flags.run_all==1
             %%%%%%%%%%%%% 4. CORE, COMPUTE DYNAMICS
             [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,k,curvs,residuals);
 
+            if isempty(iFactors)
+                return;
+            end
+            
             %%%%%%%%%%%%% 5. FUSION
 
             %residual to zero?
@@ -254,9 +263,15 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
         else
             t_ini = tic;
             switch loaded_struct.compute_params.model
+                case -1
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    %%%%% empty, do not process anything %%%%%%%
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    iFactors = {};
+                    return;
                 case 0
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %%%%% NOTHING (only curv from DWT, dynamic = tmem copies) %%%%%%%
+                    %%%%% COPY (only curv from DWT, dynamic = tmem copies) %%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     iFactor = multires_decomp2dyndecomp(curvs{c},residuals{c},loaded_struct.zli_params.n_membr,loaded_struct.zli_params.n_iter,loaded_struct.wave_params.n_scales);
 
@@ -577,6 +592,7 @@ function [folder_props] = get_folder_properties(output_folder,conf_struct_path_n
     folder_props.output_folder_gaussian = [ folder_props.output_folder_scanpath '/' 'gaussian' '_' folder_props.output_subfolder];
     mkdir(folder_props.output_folder);
     mkdir(folder_props.output_path);
+    mkdir(folder_props.output_folder_mats);
     mkdir(folder_props.output_folder_scanpath);
     mkdir(folder_props.output_folder_mean);
     mkdir(folder_props.output_folder_gaussian);

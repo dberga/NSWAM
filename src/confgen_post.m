@@ -1,4 +1,4 @@
-function [  ] = confgen( folder)
+function [  ] = confgen_post( folder)
 
 if nargin < 1
     folder = 'conf_default';
@@ -311,8 +311,8 @@ end
 
 function [csf_params] = get_all_parameters_csf_NCZLd()
     %csf_params.nu_0 = num2cell(0.5:0.5:6);
-    %csf_params.nu_0 ={2.357,4}; 
-    csf_params.nu_0 ={4};
+    csf_params.nu_0 ={2.357,4}; 
+    %csf_params.nu_0 ={4};
     
     
     profile1.params_intensity.fOffsetMax=0.;
@@ -362,11 +362,11 @@ function [csf_params] = get_all_parameters_csf_NCZLd()
     profile2.params_chromatic.fOffsetMin=1.059210;
     
     
-    %csf_params.params_intensity = {profile1.params_intensity, profile2.params_intensity};
-    %csf_params.params_chromatic = {profile1.params_chromatic, profile2.params_chromatic};
+    csf_params.params_intensity = {profile1.params_intensity, profile2.params_intensity};
+    csf_params.params_chromatic = {profile1.params_chromatic, profile2.params_chromatic};
 
-    csf_params.params_intensity = {profile2.params_intensity};
-    csf_params.params_chromatic = {profile2.params_chromatic};
+    %csf_params.params_intensity = {profile2.params_intensity};
+    %csf_params.params_chromatic = {profile2.params_chromatic};
     
     
     
@@ -408,17 +408,17 @@ function [fusion_params] = get_all_parameters_fusion_NCZLd()
     %fusion_params.output_from_model={'M&w','M'};
     fusion_params.output_from_model={'M'};
     
-    %fusion_params.output_from_csf= {'iFactor','eCSF'};
-    fusion_params.output_from_csf= {'iFactor'};
+    fusion_params.output_from_csf= {'iFactor','eCSF'};
+    %fusion_params.output_from_csf= {'iFactor'};
     
-    %fusion_params.residual_wave= {0,1,2};
-    fusion_params.residual_wave= {0};
+    fusion_params.residual_wave= {0,1,2};
+    %fusion_params.residual_wave= {0};
 
-    %fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','wta'};
-    fusion_params.smethod= {'pmax2'};
+    fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','wta'};
+    %fusion_params.smethod= {'pmax2'};
 
-    %fusion_params.fusion= {1,2,3};
-    fusion_params.fusion= {3};
+    fusion_params.fusion= {1,2,3};
+    %fusion_params.fusion= {3};
 
     %fusion_params.tmem_res = {'mean','max'}; %temporal mean of iFactor or temporal max?
     fusion_params.tmem_res = {'mean'}; 
@@ -439,7 +439,7 @@ function [file_params] = get_all_parameters_file_NCZLd()
     %file_params.delete_mats= {0,1};
     file_params.delete_mats= {0};
     
-    file_params.unique_mats_folder= {0};
+    file_params.unique_mats_folder= {1};
 end
 
 
@@ -454,8 +454,8 @@ function [zli_params] = get_all_parameters_zli_NCZLd()
     zli_params.prec = {0.1};
     
     %zli_params.n_frames.promig=num2cell(1:1:10);
-    %zli_params.n_frames_promig={7,10};
-    zli_params.n_frames_promig={10};
+    zli_params.n_frames_promig={7,10};
+    %zli_params.n_frames_promig={10};
     
     %zli_params.dist_type={'eucl', 'manh'}; 
     zli_params.dist_type={'eucl'};
@@ -537,7 +537,7 @@ end
 
 function [compute_params] = get_all_parameters_compute_NCZLd()
 
-    compute_params.model = {1}; %matlab
+    compute_params.model = {-1};
     % Jobmanager
     compute_params.jobmanager={'xcerda-10'}; % 'penacchio'/'xotazu'/'xcerda'/'xcerda-10'
 
@@ -565,6 +565,14 @@ function [compute_params] = get_all_parameters_compute_NCZLd()
 
 
 
+    %%%%%model output, ecsf
+
+    
+    
+
+    
+    
+
 
 end
 
@@ -577,7 +585,7 @@ function [cortex_params] = get_all_parameters_cortex_NCZLd()
         cortex_params.a={degtorad(0.77)};
         cortex_params.b={degtorad(150)};
         %cortex_params.lambda={12,18};
-        cortex_params.lambda={18};
+        cortex_params.lambda={12};
         cortex_params.isoPolarGrad={0.1821};
         cortex_params.eccWidth={0.7609};
         cortex_params.cortex_max_elong_mm = {120};
@@ -615,10 +623,9 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
  
 
     %gaze_params.redistort_periter = {1,0};
-    gaze_params.redistort_periter = {0};
+    gaze_params.redistort_periter = {1};
 
-    gaze_params.ngazes = {10};
-    %gaze_params.ngazes = {2,5,10};
+    gaze_params.ngazes = {2,5,10};
     gaze_params.gaze_idx = {0};
 
 end
