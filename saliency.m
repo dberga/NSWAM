@@ -301,15 +301,15 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
             end
             
             
-            
+            % save computed iFactor
+            save_mat('iFactor',iFactor,folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c});
             
            
         end
         
         iFactors{c} = iFactor;
         
-        % save computed iFactor
-        save_mat('iFactor',iFactors{c},folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c});
+        
         
     
     end
@@ -835,6 +835,8 @@ function [veredict] = compare_structs(struct, loaded_struct)
        && loaded_struct.gaze_params.orig_height == struct.gaze_params.orig_height  ...
        && loaded_struct.gaze_params.img_diag_angle == struct.gaze_params.img_diag_angle   
    
+        veredict = 1;
+    elseif loaded_struct.compute_params.model == -1 %when not using model, do not compare
         veredict = 1;
     else
         veredict = 0;
