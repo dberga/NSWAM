@@ -1,0 +1,20 @@
+
+struct.gaze_params.orig_width = 300;
+struct.gaze_params.orig_height = 200;
+struct.gaze_params.fov_x = round(struct.gaze_params.orig_width/2);
+struct.gaze_params.fov_y = round(struct.gaze_params.orig_height/2);
+struct.gaze_params.img_diag_angle = degtorad(35);
+struct.gaze_params.ior_factor_ctt = 3;
+struct.gaze_params.ior_angle = degtorad(4);
+struct.zli_params.n_membr = 3;
+struct.zli_params.n_iter = 3;
+map_in = zeros(200,300);
+
+for t=1:struct.zli_params.n_membr
+    for i=1:struct.zli_params.n_iter
+        
+        figure,imagesc();
+    end
+end
+
+

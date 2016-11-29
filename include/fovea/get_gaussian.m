@@ -10,13 +10,13 @@ function [gaussian] = get_gaussian(M,N,sigma, factor, coordN, coordM)
         
         
 	gaussian = fspecial('Gaussian',[M N],sigma);
-	gaussian = normalize_map(gaussian,factor,0); %doubles go from 0 to 1 (factor = 1, floor_flag = 0)
-    gaussian = blankshift(gaussian,coordN, coordM);
+	gaussian = normalize_minmax(gaussian)*factor; %doubles go from 0 to 1 (factor = 1, floor_flag = 0)
+    %gaussian = blankshift(gaussian,coordN, coordM);
     
 end
 
 
-function [mat_out] = blankshift(mat_in,x,y) %x,y are rows, columns. be careful
+function [mat_out] = blankshift(mat_in,y,x) %y,x are rows, columns. be careful
     [M,N] = size(mat_in);
     rM = round(M/2);
     rN = round(N/2);
