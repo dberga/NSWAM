@@ -39,9 +39,10 @@ if conf_struct.gaze_params.fov_x == 0 && conf_struct.gaze_params.fov_y == 0
 end
 
 %folders of mats separate or not? (to avoid overwriting)
-if ~conf_struct.file_params.unique_mats_folder
+%if ~conf_struct.file_params.unique_mats_folder
     output_folder_mats = [output_folder_mats '/' conf_struct_path_name];
-end
+%end
+
 
 %%%%%%%%%%%%%%%%%%INITIALIZE OUTPUT
 [M,N,C] = size(input_image);
@@ -65,7 +66,8 @@ residuals = cell(1,3);
 if run_flags.run_all==1
     if run_flags.run_smaps
         for k=1:conf_struct.gaze_params.ngazes
-
+            disp(['Gaze :' int2str(k)]);
+            
             input_image = double(aux_input_image);
 
             %%%%%%%%%%%%% 1.foveate (or mapping)
@@ -160,12 +162,16 @@ if run_flags.run_all==1
     
     %smap from means of gazed smaps
     mean_smap = run_mean(run_flags,image_props,conf_struct,smaps);
-    smap = mean_smap;
     
     %smap from density of scanpath
-    mean_gaussian = run_gaussian(run_flags,image_props,conf_struct,scanpath);
+    saccades_gaussian = run_gaussian(run_flags,image_props,conf_struct,scanpath);
+    
+    %binary map from scanpath
+    saccades_bmap = run_bmap(run_flags,image_props,conf_struct,scanpath);
     
     
+    
+    smap = mean_smap;
 
 end
 
@@ -267,7 +273,6 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%% empty, do not process anything %%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    iFactors = {};
                     return;
                 case 0
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -318,8 +323,8 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
         %case grayscale
         iFactors{2} = iFactors{1};
         iFactors{3} = iFactors{1};
-        save_mat('iFactor',iFactors{2},folder_props,image_props,gaze_idx,conf_struct.color_params.channels{2});
-        save_mat('iFactor',iFactors{3},folder_props,image_props,gaze_idx,conf_struct.color_params.channels{3});
+        save_mat('iFactor',iFactors{2},folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2});
+        save_mat('iFactor',iFactors{3},folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3});
         
         end
 end
@@ -508,7 +513,8 @@ function [scanpath] = run_scanpath(run_flags,image_props,conf_struct,smaps)
     end
 end
 function [mean_smap] = run_mean(run_flags,image_props,conf_struct,smaps)
-    if run_flags.run_smap || run_flags.run_mean
+    if run_flags.run_mean 
+        
         for k=1:conf_struct.gaze_params.ngazes
            if run_flags.load_smap(k)
               smaps(:,:,k)=double(imread(image_props.output_image_paths{k})); 
@@ -516,42 +522,132 @@ function [mean_smap] = run_mean(run_flags,image_props,conf_struct,smaps)
               %we have already computed the smaps(k) on previous loop
            end
         end
-        part = 1:round(conf_struct.gaze_params.ngazes)*1; %all gazes
-        mean_smap = get_smaps_mean(smaps,part);
         
-        imwrite(mean_smap,[image_props.output_mean_path]);
+        if conf_struct.gaze_params.ngazes ==1
+        
+            mean_smap = smaps(:,:,1);
+            imwrite(mean_smap,[image_props.output_mean_path]);
+            
+        elseif conf_struct.gaze_params.ngazes ==2
+            part = 2:2; %all gazes except first
+            mean_smap = get_smaps_mean(smaps,part);
+            imwrite(mean_smap,[image_props.output_mean_path_nobaseline]);
+
+            part = 1:2; %all gazes
+            mean_smap = get_smaps_mean(smaps,part);
+            imwrite(mean_smap,[image_props.output_mean_path]);
+        else
+            
+            part = 1:3; %first 2 gazes
+            mean_smap = get_smaps_mean(smaps,part);
+            imwrite(mean_smap,[image_props.output_mean_path_first2]);
+
+            part = 2:3; %first 2 gazes except first
+            mean_smap = get_smaps_mean(smaps,part);
+            imwrite(mean_smap,[image_props.output_mean_path_first2_nobaseline]);
+
+            part = 2:round(conf_struct.gaze_params.ngazes)*1; %all gazes except first
+            mean_smap = get_smaps_mean(smaps,part);
+            imwrite(mean_smap,[image_props.output_mean_path_nobaseline]);
+
+            part = 1:round(conf_struct.gaze_params.ngazes)*1; %all gazes
+            mean_smap = get_smaps_mean(smaps,part);
+            imwrite(mean_smap,[image_props.output_mean_path]);
+    
+        end
+        
         imwrite(mean_smap,[image_props.output_image_path]);
         
+        
     else
-        mean_smap = imread(image_props.output_mean_path); 
+         mean_smap = imread(image_props.output_mean_path); 
+        
     end
 end
 function [gaussian_smap] = run_gaussian(run_flags,image_props,conf_struct,scanpath)
-    if run_flags.run_smap || run_flags.run_gaussian
-    gaussian_smap = get_smaps_gaussian(scanpath,conf_struct);
-    imwrite(gaussian_smap,[image_props.output_gaussian_path]);
-    
+    if run_flags.run_gaussian
+        
+        if conf_struct.gaze_params.ngazes <=1
+            aux_scanpath = scanpath(2:2,:); %all gazes except first
+            gaussian_smap = get_smaps_gaussian(aux_scanpath,conf_struct);
+            imwrite(gaussian_smap,[image_props.output_gaussian_path_nobaseline]);
+
+            aux_scanpath = scanpath(1:2,:); %all gazes
+            gaussian_smap = get_smaps_gaussian(aux_scanpath,conf_struct);
+            imwrite(gaussian_smap,[image_props.output_gaussian_path]);
+        else
+            
+            aux_scanpath = scanpath(1:3,:); %first 2 gazes
+            gaussian_smap = get_smaps_gaussian(aux_scanpath,conf_struct);
+            imwrite(gaussian_smap,[image_props.output_gaussian_path_first2]);
+
+            aux_scanpath = scanpath(2:3,:); %first 2 gazes except first
+            gaussian_smap = get_smaps_gaussian(aux_scanpath,conf_struct);
+            imwrite(gaussian_smap,[image_props.output_gaussian_path_first2_nobaseline]);
+
+            aux_scanpath = scanpath(2:round(conf_struct.gaze_params.ngazes)*1,:); %all gazes except first
+            gaussian_smap = get_smaps_gaussian(aux_scanpath,conf_struct);
+            imwrite(gaussian_smap,[image_props.output_gaussian_path_nobaseline]);
+
+            aux_scanpath = scanpath(:,:); %all gazes
+            gaussian_smap = get_smaps_gaussian(aux_scanpath,conf_struct);
+            imwrite(gaussian_smap,[image_props.output_gaussian_path]);
+        end
+        
     else
        gaussian_smap = imread(image_props.output_gaussian_path); 
+    end
+end
+
+function [bmap] = run_bmap(run_flags,image_props,conf_struct,scanpath)
+    if run_flags.run_bmap
+        
+        if conf_struct.gaze_params.ngazes <=1
+            aux_scanpath = scanpath(2:2,:); %all gazes except first
+            bmap = get_smaps_bmap(aux_scanpath,conf_struct);
+            imwrite(bmap,[image_props.output_bmap_path_nobaseline]);
+
+            aux_scanpath = scanpath(1:2,:); %all gazes
+            bmap = get_smaps_bmap(aux_scanpath,conf_struct);
+            imwrite(bmap,[image_props.output_bmap_path]);
+        else
+            
+            aux_scanpath = scanpath(1:3,:); %first 2 gazes
+            bmap = get_smaps_bmap(aux_scanpath,conf_struct);
+            imwrite(bmap,[image_props.output_bmap_path_first2]);
+
+            aux_scanpath = scanpath(2:3,:); %first 2 gazes except first
+            bmap = get_smaps_bmap(aux_scanpath,conf_struct);
+            imwrite(bmap,[image_props.output_bmap_path_first2_nobaseline]);
+
+            aux_scanpath = scanpath(2:round(conf_struct.gaze_params.ngazes)*1,:); %all gazes except first
+            bmap = get_smaps_bmap(aux_scanpath,conf_struct);
+            imwrite(bmap,[image_props.output_bmap_path_nobaseline]);
+
+            aux_scanpath = scanpath(:,:); %all gazes
+            bmap = get_smaps_bmap(aux_scanpath,conf_struct);
+            imwrite(bmap,[image_props.output_bmap_path]);
+        end
+        
+    else
+       bmap = imread(image_props.output_bmap_path); 
     end
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SUB_PROCEDURES
 
 function [scanpath] = get_scanpath(smaps,conf_struct)
+
+        scanpath(1,2) = round(conf_struct.gaze_params.orig_height/2);
+        scanpath(1,1) = round(conf_struct.gaze_params.orig_width/2);
+           
         for k=1:conf_struct.gaze_params.ngazes
-           scanpath(k,2) = conf_struct.gaze_params.fov_y;
-           scanpath(k,1) = conf_struct.gaze_params.fov_x;
-           
-           
             smap = smaps(:,:,k);
             [maxval, maxidx] = max(smap(:));
             [conf_struct.gaze_params.fov_y, conf_struct.gaze_params.fov_x] = ind2sub(size(smap),maxidx); %x,y
                 %cuidado con el size(smap), tiene que ser fov de imagen original
             scanpath(k+1,2) = conf_struct.gaze_params.fov_y;
             scanpath(k+1,1) = conf_struct.gaze_params.fov_x;
-           
-        
         end
     
 end
@@ -566,14 +662,18 @@ function [mean_smap] = get_smaps_mean(smaps,part)
 end
 
 function [gaussian_smap] = get_smaps_gaussian(scanpath,conf_struct)
-    bmap = scanpath2bmap(scanpath, conf_struct.gaze_params.ngazes+1,[conf_struct.gaze_params.orig_height conf_struct.gaze_params.orig_width]);
+    bmap = scanpath2bmap(scanpath, size(scanpath,1),[conf_struct.gaze_params.orig_height conf_struct.gaze_params.orig_width]);
     gaussian_smap = bmap2gaussian(bmap);
     gaussian_smap = normalize_minmax(gaussian_smap);   
     
 end
 
 
-
+function [bmap] = get_smaps_bmap(scanpath,conf_struct)
+    bmap = scanpath2bmap(scanpath, size(scanpath,1),[conf_struct.gaze_params.orig_height conf_struct.gaze_params.orig_width]);
+  
+    
+end
 
 
 
@@ -584,18 +684,42 @@ function [folder_props] = get_folder_properties(output_folder,conf_struct_path_n
     %get folder properties
     folder_props.output_folder = output_folder ;
     folder_props.output_subfolder = conf_struct_path_name ;
+    
     folder_props.output_path = [folder_props.output_folder '/' folder_props.output_subfolder];
     folder_props.output_folder_mats = output_folder_mats ;
     folder_props.output_extension = output_extension ;
     folder_props.output_folder_scanpath = [ folder_props.output_path '/' 'scanpath'];
+    
     folder_props.output_folder_mean = [ folder_props.output_folder_scanpath '/' 'mean' '_' folder_props.output_subfolder];
+    folder_props.output_folder_mean_first2 = [ folder_props.output_folder_scanpath '/' 'mean_first2' '_' folder_props.output_subfolder];
+    folder_props.output_folder_mean_first2_nobaseline = [ folder_props.output_folder_scanpath '/' 'mean_first2_nobaseline' '_' folder_props.output_subfolder];
+    folder_props.output_folder_mean_nobaseline = [ folder_props.output_folder_scanpath '/' 'mean_nobaseline' '_' folder_props.output_subfolder];
     folder_props.output_folder_gaussian = [ folder_props.output_folder_scanpath '/' 'gaussian' '_' folder_props.output_subfolder];
-    mkdir(folder_props.output_folder);
-    mkdir(folder_props.output_path);
-    mkdir(folder_props.output_folder_mats);
-    mkdir(folder_props.output_folder_scanpath);
-    mkdir(folder_props.output_folder_mean);
-    mkdir(folder_props.output_folder_gaussian);
+    folder_props.output_folder_gaussian_first2 = [ folder_props.output_folder_scanpath '/' 'gaussian_first2' '_' folder_props.output_subfolder];
+    folder_props.output_folder_gaussian_first2_nobaseline = [ folder_props.output_folder_scanpath '/' 'gaussian_first2_nobaseline' '_' folder_props.output_subfolder];
+    folder_props.output_folder_gaussian_nobaseline = [ folder_props.output_folder_scanpath '/' 'gaussian_nobaseline' '_' folder_props.output_subfolder];
+    folder_props.output_folder_bmap = [ folder_props.output_folder_scanpath '/' 'bmap' '_' folder_props.output_subfolder];
+    folder_props.output_folder_bmap_first2 = [ folder_props.output_folder_scanpath '/' 'bmap_first2' '_' folder_props.output_subfolder];
+    folder_props.output_folder_bmap_first2_nobaseline = [ folder_props.output_folder_scanpath '/' 'bmap_first2_nobaseline' '_' folder_props.output_subfolder];
+    folder_props.output_folder_bmap_nobaseline = [ folder_props.output_folder_scanpath '/' 'bmap_nobaseline' '_' folder_props.output_subfolder];
+    
+    if ~exist(folder_props.output_folder,'dir') mkdir(folder_props.output_folder); end
+    if ~exist(folder_props.output_path,'dir') mkdir(folder_props.output_path); end
+    if ~exist(folder_props.output_folder_mats,'dir') mkdir(folder_props.output_folder_mats); end
+    if ~exist(folder_props.output_folder_scanpath,'dir') mkdir(folder_props.output_folder_scanpath); end
+    
+    if ~exist(folder_props.output_folder_mean,'dir') mkdir(folder_props.output_folder_mean); end
+    if ~exist(folder_props.output_folder_mean_first2,'dir') mkdir(folder_props.output_folder_mean_first2); end
+    if ~exist(folder_props.output_folder_mean_first2_nobaseline,'dir') mkdir(folder_props.output_folder_mean_first2_nobaseline); end
+    if ~exist(folder_props.output_folder_mean_nobaseline,'dir') mkdir(folder_props.output_folder_mean_nobaseline); end
+    if ~exist(folder_props.output_folder_gaussian,'dir') mkdir(folder_props.output_folder_gaussian); end
+    if ~exist(folder_props.output_folder_gaussian_first2,'dir') mkdir(folder_props.output_folder_gaussian_first2); end
+    if ~exist(folder_props.output_folder_gaussian_first2_nobaseline,'dir') mkdir(folder_props.output_folder_gaussian_first2_nobaseline); end
+    if ~exist(folder_props.output_folder_gaussian_nobaseline,'dir') mkdir(folder_props.output_folder_gaussian_nobaseline); end
+    if ~exist(folder_props.output_folder_bmap,'dir') mkdir(folder_props.output_folder_bmap); end
+    if ~exist(folder_props.output_folder_bmap_first2,'dir') mkdir(folder_props.output_folder_bmap_first2); end
+    if ~exist(folder_props.output_folder_bmap_first2_nobaseline,'dir') mkdir(folder_props.output_folder_bmap_first2_nobaseline); end
+    if ~exist(folder_props.output_folder_bmap_nobaseline,'dir') mkdir(folder_props.output_folder_bmap_nobaseline); end
 
 end
 
@@ -614,7 +738,21 @@ function [image_props] = get_image_properties(input_image,image_name,folder_prop
     end
     
     image_props.output_mean_path = [folder_props.output_folder_mean '/' image_props.image_name_noext '.' folder_props.output_extension];
+    image_props.output_mean_path_first2 = [folder_props.output_folder_mean_first2 '/' image_props.image_name_noext '.' folder_props.output_extension];
+    image_props.output_mean_path_first2_nobaseline = [folder_props.output_folder_mean_first2_nobaseline '/' image_props.image_name_noext '.' folder_props.output_extension];
+    image_props.output_mean_path_nobaseline = [folder_props.output_folder_mean_nobaseline '/' image_props.image_name_noext '.' folder_props.output_extension];
+    
+    
     image_props.output_gaussian_path = [folder_props.output_folder_gaussian '/' image_props.image_name_noext '.' folder_props.output_extension];
+    image_props.output_gaussian_path_first2 = [folder_props.output_folder_gaussian_first2 '/' image_props.image_name_noext '.' folder_props.output_extension];
+    image_props.output_gaussian_path_first2_nobaseline = [folder_props.output_folder_gaussian_first2_nobaseline '/' image_props.image_name_noext '.' folder_props.output_extension];
+    image_props.output_gaussian_path_nobaseline = [folder_props.output_folder_gaussian_nobaseline '/' image_props.image_name_noext '.' folder_props.output_extension];
+    
+    image_props.output_bmap_path = [folder_props.output_folder_bmap '/' image_props.image_name_noext '.' folder_props.output_extension];
+    image_props.output_bmap_path_first2 = [folder_props.output_folder_bmap_first2 '/' image_props.image_name_noext '.' folder_props.output_extension];
+    image_props.output_bmap_path_first2_nobaseline = [folder_props.output_folder_bmap_first2_nobaseline '/' image_props.image_name_noext '.' folder_props.output_extension];
+    image_props.output_bmap_path_nobaseline = [folder_props.output_folder_bmap_nobaseline '/' image_props.image_name_noext '.' folder_props.output_extension];
+    
 
 end
 
@@ -678,6 +816,11 @@ function [run_flags] = get_run_flags(image_props,mat_props,conf_struct)
      else
         run_flags.run_gaussian = 1;
     end
+    if exist(image_props.output_bmap_path, 'file') 
+        run_flags.run_bmap = 0;
+     else
+        run_flags.run_bmap = 1;
+    end
     
     if exist(image_props.output_mean_path, 'file') 
         run_flags.run_mean = 0;
@@ -694,7 +837,8 @@ function [run_flags] = get_run_flags(image_props,mat_props,conf_struct)
     if exist(image_props.output_image_path, 'file') ...
             && exist(image_props.output_scanpath_path, 'file') ...
             && exist(image_props.output_mean_path, 'file') ...
-            && exist(image_props.output_gaussian_path, 'file') 
+            && exist(image_props.output_gaussian_path, 'file') ...
+            && exist(image_props.output_bmap_path, 'file') 
         run_flags.run_all = 0;
      else
         run_flags.run_all = 1;
@@ -836,7 +980,7 @@ function [veredict] = compare_structs(struct, loaded_struct)
        && loaded_struct.gaze_params.img_diag_angle == struct.gaze_params.img_diag_angle   
    
         veredict = 1;
-    elseif loaded_struct.compute_params.model == -1 %when not using model, do not compare
+    elseif struct.compute_params.model == -1 %when not using model, do not compare
         veredict = 1;
     else
         veredict = 0;

@@ -9,7 +9,7 @@ for c=1:n_channels
            RF_c_s_o{c}{s}{o}(:,:) = RF_s_o_c{s}{o}(:,:,c);
         end
     end
-    RF_c_s_o{c}{n_scales}{1}(:,:) = RF_s_o_c{n_scales}{1}(:,:,c);
+    %RF_c_s_o{c}{n_scales}{1}(:,:) = RF_s_o_c{n_scales}{1}(:,:,c);
 end
 
 

@@ -1,5 +1,5 @@
 
-function [map_out] = normalize_minmax(map_in,min_in, max_in)
+function [map_out] = normalize_minmaxp(map_in,min_in, max_in)
 
 
 if nargin < 2
@@ -9,7 +9,7 @@ end
 
 map_out    = (map_in - min_in)/(max_in - min_in);
 
-
+map_out(find(map_out<0))=0;
 
 
 end

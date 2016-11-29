@@ -4,9 +4,10 @@ function [ im_out ] = distort_gaussian( im_in, gaussian)
     if nargin < 2
         M=size(im_in,1);
         N=size(im_in,2);
-        SQ=sqrt(size(im_in,1)*size(im_in,2));
+        %SQ=sqrt(size(im_in,1)*size(im_in,2));
+        SQ=sqrt(size(im_in,1)*size(im_in,1)+size(im_in,2)*size(im_in,2));
         factor=1;
-        gaussian = get_gaussian(M,N,SQ, factor,round(M/2),round(N/2));
+        gaussian = get_gaussian(M,N,100, factor,round(N/2),round(M/2));
     end
     
     %im_out = im_in;

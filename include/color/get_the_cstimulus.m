@@ -6,9 +6,9 @@ if (ndims(tmp)==2) % Imatge B/N
 	tmp2(:,:,1)=kk;
 	tmp2(:,:,2)=kk;
 	tmp2(:,:,3)=kk;
-	disp('Imatge en B/N');
+	%disp('Imatge en B/N');
 else
-	disp('Imatge en color');
+	%disp('Imatge en color');
     tmp2 = rgb2opponent_new(tmp,gamma,srgb_flag);
 end
 

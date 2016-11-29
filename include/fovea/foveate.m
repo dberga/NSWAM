@@ -33,10 +33,10 @@ function [im_out] = foveate(im_in, flag, struct )
 
     if ~exist('struct','var')
         cortex_params.cm_method = 'schwartz_monopole';
-        cortex_params.cortex_width = 400;
+        cortex_params.cortex_width = 128;
         cortex_params.a=degtorad(0.77);
         cortex_params.b=degtorad(150);
-        cortex_params.lambda=12;
+        cortex_params.lambda=18;
         cortex_params.isoPolarGrad=0.1821;
         cortex_params.eccWidth=0.7609;
         cortex_params.cortex_max_elong_mm = 120;
@@ -79,6 +79,16 @@ function [im_out] = foveate(im_in, flag, struct )
                 case 'cortical'
                     for c=1:size(im_in,3)
                         im_out(:,:,c) = mapCortex2Image(im_in(:,:,c),cortex_params,gaze_params);
+                    end
+                otherwise
+                   %nada
+            end
+        case 2 %distort, then undistort
+            switch gaze_params.fov_type
+                case 'cortical'
+                    for c=1:size(im_in,3)
+                        cortex(:,:,c) = mapImage2Cortex(im_in(:,:,c),cortex_params,gaze_params);
+                        im_out(:,:,c) = mapCortex2Image(cortex(:,:,c),cortex_params,gaze_params);
                     end
                 otherwise
                    %nada
