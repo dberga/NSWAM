@@ -287,7 +287,7 @@ end
 function [] = store_superstruct(superstruct_n,folder)
     for ss=1:numel(superstruct_n)
         matrix_in = superstruct_n{ss};
-        save([folder '/' 'config_' int2str(ss)],'matrix_in');
+        save([folder '/' 'config_' int2str(ss) '.mat'],'matrix_in');
     end
 end
 
@@ -606,6 +606,10 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
         gaze_params.fov_y = {0}; %auto
         %gaze_params.img_diag_angle = {degtorad(35.12),degtorad(44.12)};
         gaze_params.img_diag_angle = {degtorad(35.12)};
+        gaze_params.gaze_params.ior = {1};
+        gaze_params.ior_factor_ctt = {2};
+        gaze_params.ior_slope_ctt = {1};
+        gaze_params.ior_angle = {degtorad(4)};
 
 
     gaze_params.foveate = {1};

@@ -17,7 +17,8 @@ if strcmp(conf_struct_path,'')==0
     
     [conf_struct] = load(conf_struct_path); conf_struct = conf_struct.matrix_in;
 else
-    [conf_struct] = get_default_parameters();
+    confgen();
+    [conf_struct] = load('conf_default/config_1.mat'); conf_struct = conf_struct.matrix_in;
 end
 
 %discriminate if no foveation
