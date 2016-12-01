@@ -21,19 +21,19 @@ switch mode
         for i=1:N_files
             disp(files(i).name); %files array with names
             img = imread(files(i).name);
-            feval(process,img, files(i).name,args{1},args{2},args{3},args{4});
+            feval(process, files(i).name,img,args{1},args{2},args{3},args{4});
         end
     case 1
         parfor i=1:N_files
             disp(files(i).name); %files array with names
             img = imread(files(i).name);
-            feval(process,img, files(i).name,args{1},args{2},args{3},args{4});
+            feval(process, files(i).name,img,args{1},args{2},args{3},args{4});
         end
     otherwise
         for i=1:N_files
             disp(files(i).name); %files array with names
             img = imread(files(i).name);
-            feval(process,img, files(i).name,args{1},args{2},args{3},args{4});
+            feval(process, files(i).name,img,args{1},args{2},args{3},args{4});
         end
         
 end

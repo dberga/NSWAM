@@ -2,9 +2,9 @@ function [ mat_out ] = rf2mat( cell_in )
     
     
     
-    n_scales = numel(cell_in); 
-    n_orient = numel(cell_in{1});
-    [M,N,C] = size(cell_in{1}{1});
+    n_scales = length(cell_in); 
+    n_orient = length(cell_in{1});
+    [M,N,~] = size(cell_in{1}{1});
     
     mat_out = zeros(M,N,n_scales,n_orient);
     

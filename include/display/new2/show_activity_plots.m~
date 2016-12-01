@@ -24,7 +24,7 @@ function [ h ] = show_activity_plots( activity )
                 end
             end
             
-            h = montage(mosaic/255, 'Size',[total_s total_o]);
+            figure; h = montage(mosaic, 'Size',[total_s total_o]);
             %h = gcf;
             
         

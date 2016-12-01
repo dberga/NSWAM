@@ -1,5 +1,5 @@
 
-function [ RFmean , RFmeanmean, RFmax, RFmaxmax, RFsum,RFsumsum ] = show_activity( matrix, tinit, tfinal, iterinit, iterfinal, sinit, sfinal, oinit, ofinal )
+function [ RFmean , RFmeanmean, RFmax, RFmaxmax, RFsum,RFsumsum , RFsingle] = show_activity( matrix, tinit, tfinal, iterinit, iterfinal, sinit, sfinal, oinit, ofinal )
             
             total_t = tfinal-tinit+1;
             total_iter = iterfinal-iterinit+1;
@@ -13,6 +13,7 @@ function [ RFmean , RFmeanmean, RFmax, RFmaxmax, RFsum,RFsumsum ] = show_activit
             RFmaxmax = zeros(total_t*total_iter);
             RFsum = zeros(total_s,total_o,total_t*total_iter);
             RFsumsum = zeros(total_t*total_iter);
+            RFsingle = zeros(total_t*total_iter); X = round(size(matrix{tinit}{iterinit}(:,:,sinit,oinit),2)/2); Y = round(size(matrix{tinit}{iterinit}(:,:,sinit,oinit),1)/2);
             for t=tinit:tfinal
                 for iter=iterinit:iterfinal
                     %set(gcf, 'Position', get(0,'Screensize'));
@@ -27,6 +28,7 @@ function [ RFmean , RFmeanmean, RFmax, RFmaxmax, RFsum,RFsumsum ] = show_activit
                     RFmaxmax(count) = max(max(RFmax(:,:,count)));
                     RFsum(:,:,count) = sum_RF( matrix, t, iter, sinit, sfinal, oinit, ofinal );
                     RFsumsum(count) = sum(sum(RFsum(:,:,count)));
+                    RFsingle(count) = matrix{t}{iter}{sinit}{oinit}(Y,X);
                     count = count+1;
                 end
             end

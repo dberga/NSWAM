@@ -492,8 +492,16 @@ for t_membr=1:n_membr  % membrane time
 			x_ee=zeros(M,N,n_scales,K);
 			x_ei=zeros(M,N,n_scales,K);
 			y_ie=zeros(M,N,n_scales,K);
-			
-			
+            I_norm=zeros(M,N,n_scales,K);	
+            %I_ior=I_ior*exp(prec*log(struct.gaze_params.ior_factor_ctt)); %same as I_ior = I_ior*struct.gaze_params.ior_factor_ctt^(prec);
+            
+% 			if struct.gaze_params.ior == 1
+%                 if struct.gaze_params.foveate == 1
+%                     I_ior = foveate(apply_ior(t_membr,t_iter,struct),0,struct);
+%                 else
+%                     I_ior(:,:,:,:) = apply_ior(t_membr,t_iter,struct);
+%                 end
+%             end
             
 			%%%%%%%%%%%%%% preparatory terms %%%%%%%%%%%%%%%%%%%%%%%%%%
 		
@@ -501,9 +509,7 @@ for t_membr=1:n_membr  % membrane time
 			
 			for oc=1:K  % loop over the central (reference) orientation
 				
-                if struct.gaze_params.ior == 1
-                    y_ie(:,:,s,oc) = apply_ior(y_ie(:,:,s,o),t_membr,t_iter,struct);
-                end
+                
 				
 				% excitatory-inhibitory term (no existia):   x_ei
 				% influence of the neighboring scales first
@@ -514,8 +520,8 @@ for t_membr=1:n_membr  % membrane time
 				restr_sum_scale_newgy_toroidal_y=sum_scale_newgy_toroidal_y(:,:,radius_sc+1:radius_sc+n_scales,:); % restriction over scales
 				w=zeros(1,1,1,K);w(1,1,1,:)=PsiDtheta(oc,:);
 				
-% 				x_ei(:,:,:,oc)=x_ei(:,:,:,oc)+sum(restr_sum_scale_newgy_toroidal_y.*repmat(w,[M,N,n_scales,1]),4)-restr_sum_scale_newgy_toroidal_y(:,:,:,oc);
-				x_ei(:,:,:,oc)=x_ei(:,:,:,oc)+sum(restr_sum_scale_newgy_toroidal_y.*repmat(w,[M,N,n_scales,1]),4);
+% 				x_ei(:,:,:,oc)=sum(restr_sum_scale_newgy_toroidal_y.*repmat(w,[M,N,n_scales,1]),4)-restr_sum_scale_newgy_toroidal_y(:,:,:,oc);
+				x_ei(:,:,:,oc)=sum(restr_sum_scale_newgy_toroidal_y.*repmat(w,[M,N,n_scales,1]),4);
 				
 				
 				% convolucio amb una "barreta" de dimensio 1 donada per Psi
@@ -584,8 +590,8 @@ for t_membr=1:n_membr  % membrane time
 					
 				end
 				
-				x_ee(:,:,:,oc)=x_ee(:,:,:,oc)+sum(x_ee_conv_tmp,4);
-				y_ie(:,:,:,oc)=y_ie(:,:,:,oc)+sum(y_ie_conv_tmp,4);
+				x_ee(:,:,:,oc)=sum(x_ee_conv_tmp,4);
+				y_ie(:,:,:,oc)=sum(y_ie_conv_tmp,4);
 				
 				
 				
@@ -608,7 +614,7 @@ for t_membr=1:n_membr  % membrane time
 		% over all the scales within a given hypercolumn (cf. p209, where she
 		% already sums over all the orientations) 
         % 		sum_newgx_toroidal_x=cell(n_scales,1);
-		I_norm=zeros(M,N,n_scales,K);		
+	
 
         if XOP_DEBUG
             disp('Compte!!!!!!! No calculem I_norm incloent les escales !!!!!');

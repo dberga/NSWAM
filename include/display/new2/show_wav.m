@@ -9,7 +9,7 @@ function [ h ] = show_wav( matrix, sinit,sfinal,oinit,ofinal )
             count = 1;
             for s=sinit:sfinal
                 for o=oinit:ofinal
-                    mosaic(:,:,1,count) = mat(:,:,s,o);
+                    mosaic(:,:,1,count) = normalize_minmax(mat(:,:,s,o)); 
                     count = count+1;
                 end
             end
