@@ -199,18 +199,17 @@
 	output coords of fixations
 	output of smaps
 	output of image with fixation points, with scanpath in order (dibuix)
--2. parse GT datasets of scanpath
--3. make code for metrics/evaluation of scanpath
-
+    output of density maps of scanpath
+2. read and write files with cleaned code
 
 
 -----v19 version 19
 
+1. inhibition of return
 -2. dynamic saliency with videos
--3. multilayer (input other values on other RF)
-	-motion
-	-disparity
-	-recognition
+3. motion cells
+4. disparity cells
+5. multilayer (input other values on other RF) with specific top-down
 
 
 
