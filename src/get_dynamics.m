@@ -1,9 +1,13 @@
 function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,gaze_idx,curvs,residuals)
-                
+        
+    aux_ior_matrix = loaded_struct.gaze_params.ior_matrix;
+    
     iFactors = cell(1,C);
     for c=1:C
-            
-        if run_flags.load_iFactor_mats(gaze_idx)==1 && run_flags.load_struct(gaze_idx)==1
+        
+        loaded_struct.gaze_params.ior_matrix = aux_ior_matrix; %same for each channel, the last iteration (c=C) will save the last ior_matrix
+        
+        if run_flags.load_iFactor_mats(gaze_idx)==1
             iFactor = load(get_mat_name('iFactor',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); iFactor = iFactor.matrix_in;
             %iFactor = iFactor(~cellfun('isempty',iFactor)); %clean void cells
         else

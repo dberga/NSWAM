@@ -88,18 +88,21 @@ end
 %-------------------------------------------------------
 
 %Rmodelinduction uses n_scales without the last one, which is from curv
+aux_n_scales = struct.wave_params.n_scales;
 struct.wave_params.n_scales = struct.wave_params.fin_scale;
 
 % choose the algorithm (separated, abs, quadratic) 
 switch(struct.zli_params.ON_OFF)
     case 0 % separated
         
-        
-        
+            aux_ior_matrix = struct.gaze_params.ior_matrix;
+            
             % positius +++++++++++++++++++++++++++++++++++++++++++++++++++
             %%% MAIN PROCESS %%%
             [xFactor_ON_t_fi,yFactor_ON_t_fi,xFactor_ON_t_i,yFactor_ON_t_i]=Rmodelinductiond(curv_ON, struct, 'ON', channel); % note: iFactor is called "gx_final" at the core of the process
             %%% END MAIN PROCESS %%%
+            
+            struct.gaze_params.ior_matrix = aux_ior_matrix; %same for ON and OFF, the (OFF) will save the last ior_matrix
             
             % negatius ----------------------------------------------------
             %%% MAIN PROCESS %%%
@@ -138,7 +141,7 @@ switch(struct.zli_params.ON_OFF)
             dades{t_membr}=abs(curv{t_membr});
         end
         
-        [xFactor_t_fi,yFactor_t_fi,xFactor_t_i,yFactor_t_i]=Rmodelinductiond(dades, struct);
+        [xFactor_t_fi,yFactor_t_fi,xFactor_t_i,yFactor_t_i,struct]=Rmodelinductiond(dades, struct);
         
         for t_membr=1:n_membr
             for it=1:n_iter
@@ -152,7 +155,7 @@ switch(struct.zli_params.ON_OFF)
             dades{t_membr}=curv{t_membr}.*curv{t_membr};
         end
         
-        [xFactor_t_fi,yFactor_t_fi,xFactor_t_i,yFactor_t_i]=Rmodelinductiond(dades, struct);
+        [xFactor_t_fi,yFactor_t_fi,xFactor_t_i,yFactor_t_i,struct]=Rmodelinductiond(dades, struct);
         
         for t_membr=1:n_membr
             for it=1:n_iter
@@ -175,7 +178,7 @@ for ff=1:n_membr
     end
 end
 
-
+struct.wave_params.n_scales = aux_n_scales;
 
 
 end

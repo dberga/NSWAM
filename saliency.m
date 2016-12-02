@@ -40,6 +40,10 @@ if conf_struct.gaze_params.fov_x == 0 && conf_struct.gaze_params.fov_y == 0
     conf_struct.gaze_params.fov_x =round(conf_struct.gaze_params.orig_width/2); 
 end
 
+%set inhibition of return at zeros
+conf_struct.gaze_params.ior_matrix = zeros(conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width);
+
+ 
 %folders of mats separate or not? (to avoid overwriting)
 %if ~conf_struct.file_params.unique_mats_folder
     output_folder_mats = [output_folder_mats '/' conf_struct_path_name];
@@ -70,30 +74,39 @@ if run_flags.run_all==1
         for k=1:conf_struct.gaze_params.ngazes
             disp(['Gaze :' int2str(k)]);
             
+            conf_struct.gaze_params.gaze_idx = k-1; %starting at 0
+            
             input_image = double(aux_input_image);
                     get_fig_opp(normalize_minmax(input_image,0,255),'img',folder_props,image_props,conf_struct);
             
             %%%%%%%%%%%%% 1.im2opponent
             input_image = get_rgb2opp(input_image,conf_struct); %! (depending on flag)
                     get_fig_opp(input_image,'opp',folder_props,image_props,conf_struct);
-                
-            %%%%%%%%%%%%% 2.foveate (or mapping)
+            
+            %%%%%%%%%%%%% 2.foveate (or cortical mapping)
             [input_image] = get_foveate(input_image,conf_struct);
-                    %get_fig_opp(input_image,'fov',folder_props,image_props,conf_struct);
-
+            ior_matrix_unfoveated = conf_struct.gaze_params.ior_matrix;
+            conf_struct.gaze_params.ior_matrix = get_foveate(conf_struct.gaze_params.ior_matrix,conf_struct);
+                    get_fig_opp(input_image,'fov',folder_props,image_props,conf_struct);
+            
+            
             %%%%%%%%%%%%% resize (if foveated, do not resize)
             [input_image] = get_resize(input_image,conf_struct);
             [conf_struct.resize_params.M, conf_struct.resize_params.N] = size(input_image);
             [conf_struct.resize_params.fov_x,conf_struct.resize_params.fov_y] = movecoords( conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y , conf_struct.resize_params.M, conf_struct.resize_params.N); 
             
+            %it has been resized or foveated (new image size), get new n_scales here
+            [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(input_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
+            [conf_struct.wave_params.n_orient] = calc_norient(input_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);
+            
             %%%%%%%%%%%%% save loaded struct properties
-            [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,image_props,mat_props,conf_struct,input_image,k);
-
+            [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,image_props,mat_props,conf_struct,k);
+            
             %%%%%%%%%%%%% 3. DWT
             [curvs,residuals] = get_DWT(run_flags,loaded_struct,folder_props,image_props,C,k,input_image);
-                    %get_fig_wav(curvs{1},'wav_c1',folder_props,image_props,conf_struct);
-                    %get_fig_wav(curvs{2},'wav_c2',folder_props,image_props,conf_struct);
-                    %get_fig_wav(curvs{3},'wav_c3',folder_props,image_props,conf_struct);
+                    get_fig_wav(curvs{1},'wav_c1',folder_props,image_props,conf_struct);
+                    get_fig_wav(curvs{2},'wav_c2',folder_props,image_props,conf_struct);
+                    get_fig_wav(curvs{3},'wav_c3',folder_props,image_props,conf_struct);
 
             %%%%%%%%%%%%% 4. CORE, COMPUTE DYNAMICS
             [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,k,curvs,residuals);
@@ -162,10 +175,14 @@ if run_flags.run_all==1
             %delete files
             run_delete_files(folder_props,image_props,loaded_struct,k);
             
-            
             %update fov_x and fov_y
             [maxval, maxidx] = max(smap(:));
             [conf_struct.gaze_params.fov_y, conf_struct.gaze_params.fov_x] = ind2sub(size(smap),maxidx); %x,y
+            
+            %set inhibition of return on current gaze (update and add)
+            conf_struct.gaze_params.ior_matrix = get_ior_matrix_newgaze(ior_matrix_unfoveated, conf_struct); 
+                get_fig_single(conf_struct.gaze_params.ior_matrix,'ior',folder_props,image_props,conf_struct);
+            
             
             %iterate
             smaps(:,:,k) = smap;

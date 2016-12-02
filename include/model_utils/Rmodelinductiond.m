@@ -430,6 +430,8 @@ for t_membr=1:n_membr  % membrane time
 % 		if XOP_DEBUG
 % 			imagesc(x(:,:,1,1));colormap('gray');
 % 		end
+
+        
 		
 		toroidal_x=cell(n_scales+2*radius_sc,1);
 		toroidal_y=cell(n_scales+2*radius_sc,1);
@@ -493,16 +495,11 @@ for t_membr=1:n_membr  % membrane time
 			x_ei=zeros(M,N,n_scales,K);
 			y_ie=zeros(M,N,n_scales,K);
             I_norm=zeros(M,N,n_scales,K);	
-            %I_ior=I_ior*exp(prec*log(struct.gaze_params.ior_factor_ctt)); %same as I_ior = I_ior*struct.gaze_params.ior_factor_ctt^(prec);
-            
-% 			if struct.gaze_params.ior == 1
-%                 if struct.gaze_params.foveate == 1
-%                     I_ior = foveate(apply_ior(t_membr,t_iter,struct),0,struct);
-%                 else
-%                     I_ior(:,:,:,:) = apply_ior(t_membr,t_iter,struct);
-%                 end
-%             end
-            
+            I_ior=zeros(M,N,n_scales,K);	
+            if struct.gaze_params.ior == 1
+                I_ior=repmat(struct.gaze_params.ior_matrix,[1 1 n_scales K]); 
+            end
+
 			%%%%%%%%%%%%%% preparatory terms %%%%%%%%%%%%%%%%%%%%%%%%%%
 		
 			
@@ -677,6 +674,7 @@ for t_membr=1:n_membr  % membrane time
 			y=y+prec*(-alphay*y...     % decay
 				+newgx(x)...
 				+y_ie...
+                +I_ior...
 				+1.0...     % spontaneous firing rate
                 +var_noise*(rand(M,N,n_scales,K))-0.5);  % neural noise (comment for speed
 
@@ -691,15 +689,19 @@ for t_membr=1:n_membr  % membrane time
 				+0.85...             % spontaneous firing rate
                 +var_noise*(rand(M,N,n_scales,K))-0.5);   % neural noise (comment for speed)
 
-    if struct.gaze_params.foveate == 1 && struct.gaze_params.redistort_periter == 1
-        for s=1:struct.wave_params.fin_scale
-            for o=1:struct.wave_params.n_orient
-                x_und = foveate(x(:,:,s,o),1,struct);
-                x(:,:,s,o) = foveate(x_und,0,struct);
+        %redistort
+        if struct.gaze_params.foveate == 1 && struct.gaze_params.redistort_periter == 1
+            for s=1:struct.wave_params.fin_scale
+                for o=1:struct.wave_params.n_orient
+                    x_und = foveate(x(:,:,s,o),1,struct);
+                    x(:,:,s,o) = foveate(x_und,0,struct);
+                end
             end
         end
-    end
-    
+
+        %update inhibition
+        struct.gaze_params.ior_matrix = struct.gaze_params.ior_matrix.*exp(prec.*log(struct.gaze_params.ior_factor_ctt)); %same as I_ior = struct.gaze_params.ior_matrix.*struct.gaze_params.ior_factor_ctt.^(prec);
+
     
         % store I_norm
         vector_I_norm(:,(t_membr-1)*n_iter+t_iter)=[min(I_norm(:));max(I_norm(:));mean(I_norm(:))];
