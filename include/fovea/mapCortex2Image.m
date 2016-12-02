@@ -47,7 +47,7 @@ i = round((coord_i_cortex*cortex_az2pix_mm)+cortex_height_2+1);
 coord_cortex = [i;j];
 
 coord_cortex_min_limit = repmat([1 1],[numel(img) 1]);
-coord_cortex_max_limit = repmat([gaze_params.orig_height gaze_params.orig_width],[numel(img) 1]);
+coord_cortex_max_limit = repmat([cortex_params.cortex_height cortex_params.cortex_width],[numel(img) 1]);
 
 inside_cortex = inside(coord_cortex',coord_cortex_max_limit );
 all_inside_cortex = all(inside_cortex,2)';
