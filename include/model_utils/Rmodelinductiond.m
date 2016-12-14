@@ -1,4 +1,10 @@
-function [gx_final,gy_final,gx_final_per_iter,gy_final_per_iter] = Rmodelinductiond(Iitheta,struct,type, channel)
+function [gx_final,gy_final,gx_final_per_iter,gy_final_per_iter, x, y] = Rmodelinductiond(Iitheta,struct,type, channel, x_in, y_in)
+
+
+if nargin < 4
+    x_in = zeros(size(Iitheta{1}));
+    y_in = zeros(size(Iitheta{1}));
+end
 
 % from NCZLd_channel_ON_OFF_v1_1.m to all the functions for implementing Li
 % 1999
@@ -395,6 +401,10 @@ y=zeros(M,N,n_scales,K);
 % preallocate for speed
 % J_conv_tmp=zeros(M+2*Delta(s),N+2*Delta(s),n_scales+2*radius_sc,K);
 % W_conv_tmp=zeros(M+2*Delta(s),N+2*Delta(s),n_scales+2*radius_sc,K);
+
+x=x+x_in;
+y=y+y_in;
+
 
 if XOP_DEBUG
 			for s=1:min(3,n_scales)
