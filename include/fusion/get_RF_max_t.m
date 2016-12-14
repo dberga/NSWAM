@@ -4,7 +4,7 @@
 
 
 
-function [RFmax_s, residualmax_s] = get_RF_max_t(RF_s_o_c,residual_s_c,struct)
+function [RFmax_s, residualmax_s, max_s, max_o, max_c, max_x, max_y] = get_RF_max_t(RF_s_o_c,residual_s_c,struct)
 
 	
 	RFmax_s = cell(struct.wave_params.n_scales,1);
@@ -20,13 +20,19 @@ function [RFmax_s, residualmax_s] = get_RF_max_t(RF_s_o_c,residual_s_c,struct)
         
         %look for max for each frame and scale
         for o=1:struct.wave_params.n_orient
-            for c=1:3
+            for c=1:struct.color_params.nchannels
                 values = RF_s_o_c{s}{o}(:,:,c); 
-                for x=1:size(RF_s_o_c{s}{o},1)
-                    for y=1:size(RF_s_o_c{s}{o},2)
-                        if values(x,y) > RFmax(x,y)
-                            RFmax(x,y) = values(x,y);
-                            RFresidual(x,y) = residual_s_c{s}(x,y,c);
+                for y=1:size(RF_s_o_c{s}{o},1)
+                    for x=1:size(RF_s_o_c{s}{o},2)
+                        if values(y,x) > RFmax(y,x)
+                            RFmax(y,x) = values(y,x);
+                            RFresidual(y,x) = residual_s_c{s}(y,x,c);
+                            
+                            max_s = s;
+                            max_o = o;
+                            max_c = c;
+                            max_x = x;
+                            max_y = y;
                         end
                     end
                 end
