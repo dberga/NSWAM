@@ -11,7 +11,7 @@ function [gaussian] = get_gaussian(M,N,sigma, factor, coordN, coordM)
         
 	gaussian = fspecial('Gaussian',[M N],sigma);
 	gaussian = normalize_minmax(gaussian)*factor; %doubles go from 0 to 1 (factor = 1, floor_flag = 0)
-    gaussian = blankshift(gaussian,coordN, coordM);
+    gaussian = blankshift(gaussian, coordM,coordN);
     
 end
 

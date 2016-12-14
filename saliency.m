@@ -141,7 +141,7 @@ if run_flags.run_all==1
             [RF_s_o_c] = get_eCSF(loaded_struct,RF_s_o_c);
             
             % max of RF (orientation and channel), copy afterwards
-            [RF_c_s_o,~] = get_maxRF(loaded_struct,RF_s_o_c,residual_s_c);
+            [RF_c_s_o,residual_c_s,max_s, max_o, max_c, max_x, max_y] = get_maxRF(loaded_struct,RF_s_o_c,residual_s_c);
                 
                 
             %IDWT
@@ -180,8 +180,8 @@ if run_flags.run_all==1
             [conf_struct.gaze_params.fov_y, conf_struct.gaze_params.fov_x] = ind2sub(size(smap),maxidx); %x,y
             
             %set inhibition of return on current gaze (update and add)
-            conf_struct.gaze_params.ior_matrix = get_ior_matrix_newgaze(ior_matrix_unfoveated, conf_struct); 
-                get_fig_single(conf_struct.gaze_params.ior_matrix,'ior',folder_props,image_props,conf_struct);
+            conf_struct.gaze_params.ior_matrix = get_ior_matrix_newgaze(ior_matrix_unfoveated, max_s,conf_struct); 
+                get_fig_single(normalize_minmax(conf_struct.gaze_params.ior_matrix,0,1),'ior',folder_props,image_props,conf_struct);
             
             
             %iterate
@@ -207,6 +207,7 @@ else
     scanpath = load(image_props.output_scanpath_path); scanpath = scanpath.scanpath;
 end
 
+    
 end
 
 

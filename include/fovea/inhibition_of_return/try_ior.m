@@ -31,7 +31,10 @@ inhibition_factor = zeros(struct.gaze_params.orig_height,struct.gaze_params.orig
 
 figure(1);
 for k=1:n_scans
-    gaussian_inhibition = get_ior_gaussian(struct.gaze_params.fov_x, struct.gaze_params.fov_y, 1, struct.gaze_params.ior_angle, struct.gaze_params.orig_height, struct.gaze_params.orig_width, struct.gaze_params.img_diag_angle);
+    max_s = round(rand(1)*5);
+    %ior_angle = struct.gaze_params.ior_angle * (2^(max_s-1));
+    ior_angle = 5/max_s;
+    gaussian_inhibition = get_ior_gaussian(struct.gaze_params.fov_x, struct.gaze_params.fov_y, 1, ior_angle, struct.gaze_params.orig_height, struct.gaze_params.orig_width, struct.gaze_params.img_diag_angle);
     inhibition_factor = inhibition_factor+gaussian_inhibition;
     for t=1:struct.zli_params.n_membr
         for i=1:struct.zli_params.n_iter
