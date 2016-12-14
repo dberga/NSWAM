@@ -610,6 +610,8 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
         gaze_params.ior_factor_ctt = {2};
         gaze_params.ior_slope_ctt = {1};
         gaze_params.ior_angle = {degtorad(4)};
+        gaze_params.ior_matrix = 0;
+        gaze_params.conserve_dynamics = 0;
 
     gaze_params.foveate = {1};
     %gaze_params.foveate = {0};
