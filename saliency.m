@@ -89,15 +89,16 @@ if run_flags.run_all==1
             conf_struct.gaze_params.ior_matrix = get_foveate(conf_struct.gaze_params.ior_matrix,conf_struct);
                     get_fig_opp(input_image,'fov',folder_props,image_props,conf_struct);
             
-            
             %%%%%%%%%%%%% resize (if foveated, do not resize)
             [input_image] = get_resize(input_image,conf_struct);
-            [conf_struct.resize_params.M, conf_struct.resize_params.N] = size(input_image);
+            [conf_struct.resize_params.M, conf_struct.resize_params.N, ~] = size(input_image);
             [conf_struct.resize_params.fov_x,conf_struct.resize_params.fov_y] = movecoords( conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y , conf_struct.resize_params.M, conf_struct.resize_params.N); 
             
             %it has been resized or foveated (new image size), get new n_scales here
             [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(input_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
             [conf_struct.wave_params.n_orient] = calc_norient(input_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);
+            
+            [conf_struct.gaze_params.height,conf_struct.gaze_params.width, ~] = size(input_image);
             
             %%%%%%%%%%%%% save loaded struct properties
             [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,image_props,mat_props,conf_struct,k);

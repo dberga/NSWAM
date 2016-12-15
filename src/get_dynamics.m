@@ -43,19 +43,23 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
                     %%%%% COPY (only curv from DWT, dynamic = tmem copies) %%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     iFactor = multires_decomp2dyndecomp(curvs{c},residuals{c},loaded_struct.zli_params.n_membr,loaded_struct.zli_params.n_iter,loaded_struct.wave_params.n_scales);
+                        
 
                 case 1
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%% NEURODYNAMIC IN MATLAB %%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            
+                    
                     [iFactor, ~, ~, ~, ~, last_xon, last_xoff, last_yon, last_yoff, ~, ~] =NCZLd_channel_ON_OFF(curvs{c},loaded_struct,loaded_struct.color_params.channels{c},last_xon, last_xoff, last_yon, last_yoff);
-
+   
+                    [~, ~, ~, ~, ~, last_xon, last_xoff, last_yon, last_yoff, ~, ~] =NCZLd_channel_ON_OFF_rest(loaded_struct,loaded_struct.color_params.channels{c},last_xon, last_xoff, last_yon, last_yoff);
+                    
                 case 2
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%% NEURODYNAMIC IN C++ %%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     [iFactor_single,iFactor] = NCZLd_periter_mex(curvs{c},loaded_struct); %iFactor_single has mean of memtime and iter (scale and orientation dimensions)
+                    
 
             end
             toc(t_ini);
