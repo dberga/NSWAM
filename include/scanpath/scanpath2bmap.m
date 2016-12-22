@@ -1,9 +1,9 @@
-function [ bmap ] = scanpath2bmap( scanpath , nscans,size)
+function [ bmap ] = scanpath2bmap( scanpath ,sizee)
 
-M = size(1);
-N = size(2);
+M = sizee(1);
+N = sizee(2);
 bmap = zeros(M,N);
-for k=1:nscans
+for k=1:size(scanpath,1)
     bmap(scanpath(k,2),scanpath(k,1)) = 1;
 end
 

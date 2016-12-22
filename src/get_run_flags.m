@@ -18,22 +18,30 @@ function [run_flags] = get_run_flags(image_props,mat_props,conf_struct)
      else
         run_flags.run_smap = 1;
     end
-    if exist(image_props.output_gaussian_path, 'file') 
-        run_flags.run_gaussian = 0;
+    
+    if exist(image_props.output_image_paths{conf_struct.gaze_params.ngazes}, 'file')
+        run_flags.run_images = 0;
      else
-        run_flags.run_gaussian = 1;
-    end
-    if exist(image_props.output_bmap_path, 'file') 
-        run_flags.run_bmap = 0;
-     else
-        run_flags.run_bmap = 1;
+        run_flags.run_images = 1;
     end
     
-    if exist(image_props.output_mean_path, 'file') 
+    if exist(image_props.output_mean_path{conf_struct.gaze_params.ngazes}, 'file') 
         run_flags.run_mean = 0;
      else
         run_flags.run_mean = 1;
     end
+    
+    if exist(image_props.output_gaussian_path{conf_struct.gaze_params.ngazes}, 'file') 
+        run_flags.run_gaussian = 0;
+     else
+        run_flags.run_gaussian = 1;
+    end
+    if exist(image_props.output_bmap_path{conf_struct.gaze_params.ngazes}, 'file') 
+        run_flags.run_bmap = 0;
+     else
+        run_flags.run_bmap = 1;
+    end
+
     
     if exist(image_props.output_scanpath_path, 'file') 
         run_flags.run_scanpath = 0;
@@ -41,14 +49,14 @@ function [run_flags] = get_run_flags(image_props,mat_props,conf_struct)
         run_flags.run_scanpath = 1;
     end
     
-    if exist(image_props.output_image_path, 'file') ...
-            && exist(image_props.output_scanpath_path, 'file') ...
-            && exist(image_props.output_mean_path, 'file') ...
-            && exist(image_props.output_gaussian_path, 'file') ...
-            && exist(image_props.output_bmap_path, 'file') 
-        run_flags.run_all = 0;
-     else
+    if run_flags.run_smap ...
+            || run_flags.run_mean ...
+            || run_flags.run_gaussian ...
+            || run_flags.run_bmap ...
+            || run_flags.run_images
         run_flags.run_all = 1;
+     else
+        run_flags.run_all = 0;
     end
     
      for k=1:conf_struct.gaze_params.ngazes

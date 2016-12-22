@@ -63,7 +63,6 @@ mexPrintf("Going into mex NCZLd_mex routine ... \n");
     //BOOLS
     bool foveate;
     bool redistort_periter;
-    bool ior;
 
 
         mxArray *fPtr;
@@ -74,7 +73,6 @@ mexPrintf("Going into mex NCZLd_mex routine ... \n");
         int *int_realPtr2;
         char *char_realPtr2;
         bool *bool_realPtr2;
-        IMG<TYPE> *IMG_realPtr2;
 
         fPtr = mxGetField(prhs[1],0,"zli_params");
                 fPtr2 = mxGetField(fPtr,0,"n_membr"); double_realPtr2 = (double *) mxGetPr(fPtr2); n_membr = double_realPtr2[0]; //mexPrintf("n_membr=%d\n",n_membr);
@@ -108,15 +106,7 @@ mexPrintf("Going into mex NCZLd_mex routine ... \n");
                 fPtr2 = mxGetField(fPtr,0,"fov_x"); int_realPtr2 = (int *) mxGetPr(fPtr2); strParamGZ.fov_x = int_realPtr2[0];
                 fPtr2 = mxGetField(fPtr,0,"fov_y"); int_realPtr2 = (int *) mxGetPr(fPtr2); strParamGZ.fov_y = int_realPtr2[0];
                 fPtr2 = mxGetField(fPtr,0,"img_diag_angle"); double_realPtr2 = (double *) mxGetPr(fPtr2); strParamGZ.img_diag_angle = double_realPtr2[0];
-                fPtr2 = mxGetField(fPtr,0,"ior");  bool_realPtr2 = (bool *) mxGetPr(fPtr2); ior = bool_realPtr2[0];
-                fPtr2 = mxGetField(fPtr,0,"ior_factor_ctt"); double_realPtr2 = (double *) mxGetPr(fPtr2); strParamGZ.ior_factor_ctt = double_realPtr2[0];
-                //fPtr2 = mxGetField(fPtr,0,"ior_angle"); double_realPtr2 = (double *) mxGetPr(fPtr2); strParamGZ.ior_angle = double_realPtr2[0];
-                fPtr2 = mxGetField(fPtr,0,"ior_matrix");
-                strParamGZ.ior_matrix = IMG<TYPE>(); strParamGZ.ior_matrix.Alloc(128,64); for (int i=0; i< strParamGZ.ior_matrix.NPix(); i++) strParamGZ.ior_matrix[i] = 0.5;
-                //for (int i=0; i< strParamGZ.ior_matrix.NPix(); i++) printf("%f",strParamGZ.ior_matrix[i]); std::cout << std::endl;
-
                 strParamGZ.update();
-                mexPrintf("leido bien\n");
 
             fPtr = mxGetField(prhs[1],0,"cortex_params");
                 fPtr2 = mxGetField(fPtr,0,"cm_method");  char_realPtr2 = (char *) mxGetPr(fPtr2); if ( strcmp(char_realPtr2, "schwartz_monopole") == 0 ) strParamCX.method = SCHWARTZ_MONOPOLE; else if ( strcmp(char_realPtr2, "schwartz_dipole") == 0 ) strParamCX.method = SCHWARTZ_DIPOLE; else strParamCX.method = SCHWARTZ_MONOPOLE;
@@ -172,31 +162,26 @@ mexPrintf("Going into mex NCZLd_mex routine ... \n");
 
 		delete [] pTmpImg;	// delete data allocated by Matlab2IMAGE
 	}
-
+    mexPrintf("a2\n");
         ATROUS_ORIENT<IMG<TYPE>,IMG<TYPE>> ATrousOrient;
         ATrousOrient.vvW = vvLGN;
 
 
 	T_LGN_ON<TYPE> LGN_ON;
 	T_LGN_OFF<TYPE> LGN_OFF;
-    T_LGN<TYPE> p_INH_Control; //T_LGN == ARRAY<ARRAY<IMG<T>> >
-
 
 	LGN_ON.Alloc(nScales);
 	LGN_OFF.Alloc(nScales);
-	p_INH_Control.Alloc(nScales);
 
 	for(int s=0;s<nScales;++s)
 	{
 		LGN_ON[s].Alloc(nOrient);
 		LGN_OFF[s].Alloc(nOrient);
-		p_INH_Control[s].Alloc(nOrient);
 
 		for(int o=0;o<nOrient;++o)
 		{
 			StripPosAndNeg(ATrousOrient.vvW[s][o],&LGN_ON[s][o],&LGN_OFF[s][o]);
 			LGN_OFF[s][o] *= -1.0;
-
 		}
 	}
     strParam.strParamZLiNetwork.pMultires=&ATrousOrient;
@@ -253,22 +238,8 @@ mexPrintf("Going into mex NCZLd_mex routine ... \n");
 					for(int iter=0;iter<nIter;++iter)
 					{
 						std::cout << "iter: " << iter << std::endl;
-                        if (ior == true){
-                            //prepare multires from Inhibition from ior
-                            TYPE precision = 1/nIter;
-                            for(int s=0;s<nScales;++s){
-                                for(int o=0;o<nOrient;++o){
-                                    p_INH_Control[s][o]=strParamGZ.ior_matrix * exp(precision *log(strParamGZ.ior_factor_ctt));
-                                }
-                            }
 
-                            V1.Solve(&LGN_ON,&LGN_OFF,&p_INH_Control);
-                            //V1.Solve(&LGN_ON,&LGN_OFF);
-						}else{
-                            V1.Solve(&LGN_ON,&LGN_OFF);
-						}
-
-
+						V1.Solve(&LGN_ON,&LGN_OFF);
 
 						if(membrt >= n_membr_ini_mean)
 							FiringRate_Mean += FiringRate;
@@ -279,8 +250,6 @@ mexPrintf("Going into mex NCZLd_mex routine ... \n");
                             magnifier.lgn_cortex2image(FiringRate, FiringRate, nScales, nOrient);
                             magnifier.lgn_image2cortex(FiringRate, FiringRate, nScales, nOrient);
 						}
-
-
 					}
 				}
 

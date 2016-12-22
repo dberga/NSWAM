@@ -54,6 +54,7 @@ for ff=1:n_membr
 end
 
 
+
 if nargin < 4 || struct.gaze_params.conserve_dynamics == 0
    x_on = zeros(size(curv{1}));
    y_on = zeros(size(curv{1}));

@@ -12,9 +12,21 @@ function [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,
                 save_mat('struct',conf_struct,folder_props,image_props,gaze_idx);
             end
             
+            %for old configs, put default stuff here
+            if ~isfield(loaded_struct.gaze_params,'conserve_dynamics') loaded_struct.gaze_params.conserve_dynamics = 0; end
+            if ~isfield(loaded_struct.gaze_params,'conserve_dynamics_rest') loaded_struct.gaze_params.conserve_dynamics_rest = 0; end
+            if ~isfield(loaded_struct.gaze_params,'ior') loaded_struct.gaze_params.ior = 0; end;
+            if ~isfield(loaded_struct.gaze_params,'ior_factor_ctt') loaded_struct.gaze_params.ior_factor_ctt = 0; end;
+            if ~isfield(loaded_struct.gaze_params,'ior_matrix') loaded_struct.gaze_params.ior_matrix = 0; end;
+            
+            %loaded struct gazing ovewrites
             conf_struct.gaze_params = loaded_struct.gaze_params;
+            
+            %conf struct fusion ovewrites 
             loaded_struct.fusion_params = conf_struct.fusion_params;
             loaded_struct.csf_params = conf_struct.csf_params;
+            
+            
             
             
 end

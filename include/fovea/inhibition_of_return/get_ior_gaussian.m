@@ -10,7 +10,7 @@ function [ gaussian ] = get_ior_gaussian( fov_x, fov_y, ior_factor, ior_angle, M
 %gaussian = get_gaussian(M,N,sigma,ior_factor,fov_x,fov_y);
 
 %method2
-bmap = scanpath2bmap([fov_x fov_y],1,[M N]);
+bmap = scanpath2bmap([fov_x fov_y],[M N]);
 gaussian = ior_factor .* normalize_minmax(antonioGaussian(bmap,ior_angle));
 
 

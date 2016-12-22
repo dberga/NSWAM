@@ -21,8 +21,8 @@ function [RF_c_s_o,residual_c_s,max_s, max_o, max_c, max_x, max_y] = get_maxRF(l
                 
             otherwise
                 
-                RF_c_s_o = soc2cso(RF_s_o_c,loaded_struct.color_params.nchannels,loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
-                residual_c_s = sc2cs(residual_s_c,loaded_struct.color_params.nchannels,loaded_struct.wave_params.n_scales);
+                RF_c_s_o = soc2cso(RF_s_o_c,3,loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+                residual_c_s = sc2cs(residual_s_c,3,loaded_struct.wave_params.n_scales);
                 
                 [~,~,max_s, max_o, max_c, max_x, max_y] = get_RF_max_t(RF_s_o_c,residual_s_c,loaded_struct);
         end

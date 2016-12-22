@@ -8,26 +8,19 @@ function [image_props] = get_image_properties(input_image,image_name,folder_prop
     
     image_props.output_image_paths = cell(1,conf_struct.gaze_params.ngazes);
     for k=1:conf_struct.gaze_params.ngazes
-        image_props.output_image_paths{k} = [folder_props.output_path '/' image_props.image_name_noext '_gaze' num2str(k) '.' folder_props.output_extension];
+        image_props.output_image_paths{k} = [folder_props.output_folder_gazes{k} '/' image_props.image_name_noext '.' folder_props.output_extension];
+    end
+    
+    
+    for i=1:conf_struct.gaze_params.ngazes %ngazes
+        image_props.output_mean_path{i} = [folder_props.output_folder_mean{i} '/' image_props.image_name_noext '.' folder_props.output_extension];
+        image_props.output_mean_nobaseline_path{i} = [folder_props.output_folder_mean_nobaseline{i} '/' image_props.image_name_noext '.' folder_props.output_extension];
+        image_props.output_gaussian_path{i} = [folder_props.output_folder_gaussian{i} '/' image_props.image_name_noext '.' folder_props.output_extension];
+        image_props.output_gaussian_nobaseline_path{i} = [folder_props.output_folder_gaussian_nobaseline{i} '/' image_props.image_name_noext '.' folder_props.output_extension];
+        image_props.output_bmap_path{i} = [folder_props.output_folder_bmap{i} '/' image_props.image_name_noext '.' folder_props.output_extension];
+        image_props.output_bmap_nobaseline_path{i} = [folder_props.output_folder_bmap_nobaseline{i} '/' image_props.image_name_noext '.' folder_props.output_extension];
         
     end
     
-    image_props.output_mean_path = [folder_props.output_folder_mean '/' image_props.image_name_noext '.' folder_props.output_extension];
-    image_props.output_mean_path_first2 = [folder_props.output_folder_mean_first2 '/' image_props.image_name_noext '.' folder_props.output_extension];
-    image_props.output_mean_path_first2_nobaseline = [folder_props.output_folder_mean_first2_nobaseline '/' image_props.image_name_noext '.' folder_props.output_extension];
-    image_props.output_mean_path_nobaseline = [folder_props.output_folder_mean_nobaseline '/' image_props.image_name_noext '.' folder_props.output_extension];
-    
-    
-    image_props.output_gaussian_path = [folder_props.output_folder_gaussian '/' image_props.image_name_noext '.' folder_props.output_extension];
-    image_props.output_gaussian_path_first2 = [folder_props.output_folder_gaussian_first2 '/' image_props.image_name_noext '.' folder_props.output_extension];
-    image_props.output_gaussian_path_first2_nobaseline = [folder_props.output_folder_gaussian_first2_nobaseline '/' image_props.image_name_noext '.' folder_props.output_extension];
-    image_props.output_gaussian_path_nobaseline = [folder_props.output_folder_gaussian_nobaseline '/' image_props.image_name_noext '.' folder_props.output_extension];
-    
-    image_props.output_bmap_path = [folder_props.output_folder_bmap '/' image_props.image_name_noext '.' folder_props.output_extension];
-    image_props.output_bmap_path_first2 = [folder_props.output_folder_bmap_first2 '/' image_props.image_name_noext '.' folder_props.output_extension];
-    image_props.output_bmap_path_first2_nobaseline = [folder_props.output_folder_bmap_first2_nobaseline '/' image_props.image_name_noext '.' folder_props.output_extension];
-    image_props.output_bmap_path_nobaseline = [folder_props.output_folder_bmap_nobaseline '/' image_props.image_name_noext '.' folder_props.output_extension];
-    
-
 end
 

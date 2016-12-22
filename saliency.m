@@ -60,7 +60,7 @@ iFactors = cell(1,3);
 curvs = cell(1,3);
 residuals = cell(1,3);
 %%%%%%%%%%%%%%%%%%get folder_props and image_props
-[folder_props] = get_folder_properties(output_folder,conf_struct_path_name,output_folder_mats,output_extension);
+[folder_props] = get_folder_properties(output_folder,conf_struct_path_name,output_folder_mats,output_extension,conf_struct);
 [image_props] = get_image_properties(input_image,image_name,folder_props,conf_struct);
 [mat_props] = get_mat_properties(folder_props,image_props,conf_struct);
 

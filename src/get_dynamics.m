@@ -1,5 +1,7 @@
 function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,gaze_idx,curvs,residuals)
-        
+    
+    
+    
     aux_ior_matrix = loaded_struct.gaze_params.ior_matrix;
     
     iFactors = cell(1,C);
@@ -52,18 +54,18 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
                     
                     [iFactor, ~, ~, ~, ~, last_xon, last_xoff, last_yon, last_yoff, ~, ~] =NCZLd_channel_ON_OFF(curvs{c},loaded_struct,loaded_struct.color_params.channels{c},last_xon, last_xoff, last_yon, last_yoff);
    
-                    [~, ~, ~, ~, ~, last_xon, last_xoff, last_yon, last_yoff, ~, ~] =NCZLd_channel_ON_OFF_rest(loaded_struct,loaded_struct.color_params.channels{c},last_xon, last_xoff, last_yon, last_yoff);
+                    [ last_xon, last_xoff, last_yon, last_yoff] =NCZLd_channel_ON_OFF_rest(loaded_struct,loaded_struct.color_params.channels{c},last_xon, last_xoff, last_yon, last_yoff);
                     
                 case 2
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%% NEURODYNAMIC IN C++ %%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    %loaded_struct.ior_matrix = rand(64,128); disp(loaded_struct.ior_matrix);
                     [iFactor_single,iFactor] = NCZLd_periter_mex(curvs{c},loaded_struct); %iFactor_single has mean of memtime and iter (scale and orientation dimensions)
                     
 
             end
             toc(t_ini);
-            
             
         
             %change its cell dimensions format
