@@ -182,7 +182,7 @@ if run_flags.run_all==1
             
             %set inhibition of return on current gaze (update and add)
             conf_struct.gaze_params.ior_matrix = get_ior_matrix_newgaze(ior_matrix_unfoveated, max_s,conf_struct); 
-                %get_fig_single(normalize_minmax(conf_struct.gaze_params.ior_matrix,0,1),'ior',folder_props,image_props,conf_struct);
+                get_fig_single(normalize_minmax(conf_struct.gaze_params.ior_matrix,0,1),'ior',folder_props,image_props,conf_struct);
             
             
             %iterate
@@ -204,7 +204,7 @@ if run_flags.run_all==1
     saccades_bmap = run_bmap(run_flags,image_props,conf_struct,scanpath);
     
     system(['ln -s ' folder_props.output_path '/mean' ' ' folder_props.output_path '/gbg']);
-    %system(['ln -s ' folder_props.output_path '/gazes' ' ' folder_props.output_path '/gbg']);
+    %system(['ln -s ' folder_props.output_path '/gazes' ' gbg']);
 else
     smap = imread(image_props.output_mean_path); 
     scanpath = load(image_props.output_scanpath_path); scanpath = scanpath.scanpath;

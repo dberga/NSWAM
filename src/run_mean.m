@@ -17,7 +17,7 @@ function [mean_smap] = run_mean(run_flags,image_props,conf_struct,smaps)
         elseif conf_struct.gaze_params.ngazes ==2
             part = 2:2; %all gazes except first
             mean_smap = get_smaps_mean(smaps,part);
-            imwrite(mean_smap,[image_props.output_mean_path_nobaseline{1}]);
+            imwrite(mean_smap,[image_props.output_mean_nobaseline_path{1}]);
 
             part = 1:2; %all gazes
             mean_smap = get_smaps_mean(smaps,part);
