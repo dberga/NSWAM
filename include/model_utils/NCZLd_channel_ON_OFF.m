@@ -1,4 +1,4 @@
-function [iFactor_out, iFactor_ON, iFactor_OFF, jFactor_ON, jFactor_OFF, x_ON,x_OFF, y_ON, y_OFF, x_out, y_out] = NCZLd_channel_ON_OFF(w,struct,channel, x_on, x_off, y_on, y_off)
+function [iFactor_single,iFactor_out, x_ON,x_OFF, y_ON, y_OFF] = NCZLd_channel_ON_OFF(w,struct, x_on, x_off, y_on, y_off)
 
 
 
@@ -113,14 +113,14 @@ switch(struct.zli_params.ON_OFF)
             
             % positius +++++++++++++++++++++++++++++++++++++++++++++++++++
             %%% MAIN PROCESS %%%
-            [xFactor_ON_t_fi,yFactor_ON_t_fi,xFactor_ON_t_i,yFactor_ON_t_i,x_ON, y_ON]=Rmodelinductiond(curv_ON, struct, 'ON', channel,x_on,y_on); % note: iFactor is called "gx_final" at the core of the process
+            [xFactor_ON_t_fi,yFactor_ON_t_fi,xFactor_ON_t_i,yFactor_ON_t_i,x_ON, y_ON]=Rmodelinductiond(curv_ON, struct, 'ON',x_on,y_on); % note: iFactor is called "gx_final" at the core of the process
             %%% END MAIN PROCESS %%%
             
             struct.gaze_params.ior_matrix = aux_ior_matrix; %same for ON and OFF, the (OFF) will save the last ior_matrix
             
             % negatius ----------------------------------------------------
             %%% MAIN PROCESS %%%
-            [xFactor_OFF_t_fi,yFactor_OFF_t_fi,xFactor_OFF_t_i,yFactor_OFF_t_i,x_OFF, y_OFF]=Rmodelinductiond(curv_OFF, struct,  'OFF', channel, x_off, y_off); % note: iFactor is called "gx_final" at the core of the process
+            [xFactor_OFF_t_fi,yFactor_OFF_t_fi,xFactor_OFF_t_i,yFactor_OFF_t_i,x_OFF, y_OFF]=Rmodelinductiond(curv_OFF, struct,  'OFF', x_off, y_off); % note: iFactor is called "gx_final" at the core of the process
 
             for t_membr=1:n_membr
                 for it=1:n_iter
@@ -189,7 +189,7 @@ for ff=1:n_membr
         for s=1:fin_scale
             for o=1:n_orient
                 iFactor_out{ff}{it}{s}(:,:,o)=iFactor{ff}{it}(:,:,s,o);
-                
+                iFactor_single{s}(:,:,o) = iFactor{ff}{it}(:,:,s,o);
             end
         end
         %last scale es la approximada

@@ -129,7 +129,7 @@ if run_flags.run_all==1
             [residuals{2}] = get_residual_updated(loaded_struct,residuals{2});
             [residuals{3}] = get_residual_updated(loaded_struct,residuals{3});
             
-            residual_s_c = cs2sc(residuals,loaded_struct.color_params.nchannels,loaded_struct.wave_params.n_scales);
+            residual_s_c = cs2sc(residuals,3,loaded_struct.wave_params.n_scales);
             
             %change its cell dimensions back to its format
             RF_ti_s_o_c = unify_channels_ti(iFactors{1},iFactors{2},iFactors{3},loaded_struct);
@@ -203,10 +203,10 @@ if run_flags.run_all==1
     %binary map from scanpath
     saccades_bmap = run_bmap(run_flags,image_props,conf_struct,scanpath);
     
-    system(['ln -s ' folder_props.output_path '/mean' ' ' folder_props.output_path '/gbg']);
-    %system(['ln -s ' folder_props.output_path '/gazes' ' ' folder_props.output_path '/gbg']);
+    if ~exist([folder_props.output_path '/gbg'],'file') system(['ln -s ' 'mean' ' ' folder_props.output_path '/gbg']); end
+    if ~exist([folder_props.output_path '/gbgs'],'file') system(['ln -s ' 'gazes' ' ' folder_props.output_path '/gbgs']); end
 else
-    smap = imread(image_props.output_mean_path); 
+    smap = imread(image_props.output_image_path); 
     scanpath = load(image_props.output_scanpath_path); scanpath = scanpath.scanpath;
 end
 

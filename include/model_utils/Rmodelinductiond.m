@@ -1,4 +1,4 @@
-function [gx_final,gy_final,gx_final_per_iter,gy_final_per_iter, x, y] = Rmodelinductiond(Iitheta,struct,type, channel, x_in, y_in)
+function [gx_final,gy_final,gx_final_per_iter,gy_final_per_iter, x, y] = Rmodelinductiond(Iitheta,struct,type, x_in, y_in)
 
 
 if nargin < 4
