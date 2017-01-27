@@ -20,6 +20,8 @@ function [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,
             if ~isfield(loaded_struct.gaze_params,'ior_matrix') loaded_struct.gaze_params.ior_matrix = 0; end;
             
             %loaded struct gazing ovewrites
+            loaded_struct.gaze_params.height = conf_struct.gaze_params.height;
+            loaded_struct.gaze_params.width = conf_struct.gaze_params.width;
             conf_struct.gaze_params = loaded_struct.gaze_params;
             
             %conf struct fusion ovewrites 

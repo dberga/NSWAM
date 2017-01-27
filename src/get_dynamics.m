@@ -1,17 +1,13 @@
 function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,gaze_idx,curvs,residuals)
     
-    
-    
-    aux_ior_matrix = loaded_struct.gaze_params.ior_matrix;
-    
+
     iFactors = cell(1,C);
 
     
     for c=1:C
         
-        loaded_struct.gaze_params.ior_matrix = aux_ior_matrix; %same for each channel, the last iteration (c=C) will save the last ior_matrix
-        
-        if run_flags.load_iFactor_mats(gaze_idx)==1 && run_flags.load_xon_mats(gaze_idx)==1 && run_flags.load_xoff_mats(gaze_idx)==1 && run_flags.load_yon_mats(gaze_idx)==1 && run_flags.load_yoff_mats(gaze_idx)==1
+
+        if run_flags.load_iFactor_mats(gaze_idx)==1 %&& run_flags.load_xon_mats(gaze_idx)==1 && run_flags.load_xoff_mats(gaze_idx)==1 && run_flags.load_yon_mats(gaze_idx)==1 && run_flags.load_yoff_mats(gaze_idx)==1
             iFactor = load(get_mat_name('iFactor',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); iFactor = iFactor.matrix_in;
             %iFactor = iFactor(~cellfun('isempty',iFactor)); %clean void cells
 
@@ -21,7 +17,7 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
             %last_yoff = load(get_mat_name('yoff',folder_props,image_props,gaze_idx-1,loaded_struct.color_params.channels{c})); last_yoff = last_yoff.matrix_in;
 
         else
-            if gaze_idx ==1
+            if gaze_idx <=1 || loaded_struct.gaze_params.conserve_dynamics == 0 || loaded_struct.compute_params.model ~= 1
                 last_xon = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),size(curvs{c},1),size(curvs{c}{1},3)); %M,N,S,O
                 last_xoff = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),size(curvs{c},1),size(curvs{c}{1},3)); %M,N,S,O
                 last_yon = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),size(curvs{c},1),size(curvs{c}{1},3)); %M,N,S,O
@@ -52,18 +48,20 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
                     %%%%% NEURODYNAMIC IN MATLAB %%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     
-                    [iFactor, ~, ~, ~, ~, last_xon, last_xoff, last_yon, last_yoff, ~, ~] =NCZLd_channel_ON_OFF(curvs{c},loaded_struct,loaded_struct.color_params.channels{c},last_xon, last_xoff, last_yon, last_yoff);
+                    [~,iFactor, last_xon, last_xoff, last_yon, last_yoff] =NCZLd_channel_ON_OFF(curvs{c},loaded_struct,last_xon, last_xoff, last_yon, last_yoff);
    
-                    [ last_xon, last_xoff, last_yon, last_yoff] =NCZLd_channel_ON_OFF_rest(loaded_struct,loaded_struct.color_params.channels{c},last_xon, last_xoff, last_yon, last_yoff);
+                    %let the dynamics rest for 3 tmem before next saccade
+                    [~,~, last_xon, last_xoff, last_yon, last_yoff] =NCZLd_channel_ON_OFF_rest(loaded_struct,last_xon, last_xoff, last_yon, last_yoff);
                     
                 case 2
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     %%%%% NEURODYNAMIC IN C++ %%%%%%%
                     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-                    %loaded_struct.ior_matrix = rand(64,128); disp(loaded_struct.ior_matrix);
-                    [iFactor_single,iFactor] = NCZLd_periter_mex(curvs{c},loaded_struct); %iFactor_single has mean of memtime and iter (scale and orientation dimensions)
                     
-
+                    [~,iFactor, last_xon, last_xoff, last_yon, last_yoff] = NCZLd_channel_ON_OFF_cpp(curvs{c},loaded_struct,last_xon, last_xoff, last_yon, last_yoff); %iFactor_single has mean of memtime and iter (scale and orientation dimensions)
+                    
+                    %let the dynamics rest for 3 tmem before next saccade
+                    [~,~, last_xon, last_xoff, last_yon, last_yoff] =NCZLd_channel_ON_OFF_rest_cpp(loaded_struct,last_xon, last_xoff, last_yon, last_yoff);
             end
             toc(t_ini);
             
@@ -94,16 +92,30 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
             
         if C < 2
             %case grayscale
+            
+            
             iFactors{2} = iFactors{1};
             iFactors{3} = iFactors{1};
-            save_mat('iFactor',iFactors{2},folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2});
-            save_mat('iFactor',iFactors{3},folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3});
-
+            
+            
+            save_mat('iFactor',iFactors{1},folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2});
+            save_mat('iFactor',iFactors{1},folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3});
+                        
+            save_mat('xon',last_xon,folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2});
+            save_mat('xon',last_xon,folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3});
+            
+            save_mat('yon',last_yon,folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2});
+            save_mat('yon',last_yon,folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3});
+            
+            save_mat('xoff',last_xoff,folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2});
+            save_mat('xoff',last_xoff,folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3});
+            
+            save_mat('yoff',last_yoff,folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2});
+            save_mat('yoff',last_yoff,folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3});
 
         end
     
     end
-    
-        
+ 
 end
 
