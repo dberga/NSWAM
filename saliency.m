@@ -203,8 +203,8 @@ if run_flags.run_all==1
     %binary map from scanpath
     saccades_bmap = run_bmap(run_flags,image_props,conf_struct,scanpath);
     
-    if ~exist([folder_props.output_path '/gbg'],'file') system(['ln -s ' 'mean' ' ' folder_props.output_path '/gbg']); end
-    if ~exist([folder_props.output_path '/gbgs'],'file') system(['ln -s ' 'gazes' ' ' folder_props.output_path '/gbgs']); end
+    if exist([folder_props.output_path '/gbg'],'file') system(['rm' ' ' folder_props.output_path '/gbg']); end; system(['ln -s ' 'mean' ' ' folder_props.output_path '/gbg']); 
+    if exist([folder_props.output_path '/gbgs'],'file') system(['rm' ' ' folder_props.output_path '/gbgs']); end; system(['ln -s ' 'gazes' ' ' folder_props.output_path '/gbgs']);
 else
     smap = imread(image_props.output_image_path); 
     scanpath = load(image_props.output_scanpath_path); scanpath = scanpath.scanpath;
