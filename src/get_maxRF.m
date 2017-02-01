@@ -2,7 +2,7 @@ function [RF_c_s_o,residual_c_s,max_s, max_o, max_c, max_x, max_y] = get_maxRF(l
         switch (loaded_struct.fusion_params.smethod)
             case 'pmax2'
                 [RF_s,residual_s,max_s, max_o, max_c, max_x, max_y] = get_RF_max_t(RF_s_o_c,residual_s_c,3,loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);        
-                RF_s_o = repicate_orient(RF_s,loaded_struct);
+                RF_s_o = repicate_orient(RF_s,loaded_struct.wave_params.n_scales);
                 
                 for c=1:3
                     RF_c_s_o{c} = RF_s_o;
