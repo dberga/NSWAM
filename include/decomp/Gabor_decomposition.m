@@ -1,4 +1,4 @@
-function [curv,n_scales]=Gabor_decomposition(img);
+function [curv,n_scales]=Gabor_decomposition(img)
 
 tic
 % parameters from the thorough study by Serre et al. 

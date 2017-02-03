@@ -12,8 +12,8 @@ function [ ior_matrix ] = get_ior_matrix_newgaze( ior_matrix,max_s, struct )
     
     %add new gaussian (with reescaled sigma upon winner scale)
     %ior_angle = struct.gaze_params.ior_angle / (2.^(max_s-1));
-    ior_angle = 2^(round(struct.wave_params.fin_scale/max_s));
-    gaussian_inhibition = get_ior_gaussian(struct.gaze_params.fov_x, struct.gaze_params.fov_y, 1, ior_angle, struct.gaze_params.orig_height, struct.gaze_params.orig_width, struct.gaze_params.img_diag_angle);
+    %ior_angle = 2^(round(struct.wave_params.fin_scale/max_s));
+    gaussian_inhibition = get_ior_gaussian(struct.gaze_params.fov_x, struct.gaze_params.fov_y, 1, max_s, struct.gaze_params.orig_height, struct.gaze_params.orig_width, struct.gaze_params.img_diag_angle);
     
     %sum gaussian to the current ior
     ior_matrix = ior_matrix + gaussian_inhibition;

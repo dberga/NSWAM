@@ -3,7 +3,7 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
 
     iFactors = cell(1,C);
 
-    
+
     for c=1:C
         
 

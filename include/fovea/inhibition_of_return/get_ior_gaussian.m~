@@ -16,9 +16,9 @@ function [ gaussian ] = get_ior_gaussian( fov_x, fov_y, ior_factor, ior_angle, M
 %method3
 bmap = scanpath2bmap([fov_x fov_y],[M N]);
 n = max([M N]);
-%n_scales = floor(log((n-1)/mida_min)/log(2))+3-1;
-nn = 2^(get_closer_2exp(n));
-sigma = get_closer_size(nn,ior_angle+3);
+n_scales = floor(log((n-1)/mida_min)/log(2))+3-1;
+exponent = get_closer_2exp(n); 
+sigma = n/(2^ior_angle);
 fc = n*sqrt(log(2)/(2*(pi^2)*(sigma^2)));
 gaussian = ior_factor .* normalize_minmax(antonioGaussian_mod(bmap,fc));
 
