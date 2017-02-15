@@ -25,9 +25,11 @@ addpath('src_mex');
 conf_mats= dir(fullfile(conf_dir, ['*.mat']));
 conf_mats=unsort_array(conf_mats);
 
-delete(gcp);
-parpool('local',2);
-for i=1:length(conf_mats)
+
+ %delete(gcp);
+ %parpool('local',4);
+
+for i=1:length(conf_mats) %parfor i=1:length(conf_mats)
     conf_path = [conf_dir '/' conf_mats(i).name];
     disp([conf_path ':']);
     args = {conf_path, output_dir, mats_dir, output_extension};

@@ -1,4 +1,4 @@
-function [ multidim ] = multires_decomp2multidim( w,c, n_scales, n_orient )
+function [ multidim , residual] = multires_decomp2multidim( w,c, n_scales, n_orient )
     
 
     residual = c;

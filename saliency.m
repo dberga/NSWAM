@@ -138,29 +138,12 @@ if run_flags.run_all==1
             %temporal mean for RF
             RF_s_o_c = timatrix_to_matrix(RF_ti_s_o_c,loaded_struct);
 
-            %eCSF
+            %eCSF  (depending on flag)
             [RF_s_o_c] = get_eCSF(loaded_struct,RF_s_o_c);
             
-            % max of RF (orientation and channel), copy afterwards
-            [RF_c_s_o,residual_c_s,max_s, max_o, max_c, max_x, max_y] = get_maxRF(loaded_struct,RF_s_o_c,residual_s_c);
-                
-                
-            %IDWT
-            RF_c_s_o{1} = so2s_o(RF_c_s_o{1},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
-            RF_c_s_o{2} = so2s_o(RF_c_s_o{2},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
-            RF_c_s_o{3} = so2s_o(RF_c_s_o{3},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
-            %[RF_c_s_o{1},residual_c_s{1}] = multires_curv2decomp(RF_c_s_o{1},residual_c_s{1},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
-            %[RF_c_s_o{2},residual_c_s{2}] = multires_curv2decomp(RF_c_s_o{2},residual_c_s{2},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
-            %[RF_c_s_o{3},residual_c_s{3}] = multires_curv2decomp(RF_c_s_o{3},residual_c_s{3},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
-                
-            [RF_c] = get_IDWT(loaded_struct,RF_c_s_o,residuals);
+            %fusion
+            [smap,max_s,max_o,max_c] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
             
-            %from opponent to color (depending on flag)
-            [RF_c] = get_opp2rgb(loaded_struct,RF_c);
-
-            %combine channels
-            [smap] = get_combine_channels(loaded_struct,RF_c);
-
             %undistort
             smap = get_undistort(loaded_struct,smap);
             

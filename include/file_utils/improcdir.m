@@ -16,23 +16,23 @@ files = dir(fullfile(directory, ['*.' format]));        %read files names
 addpath(directory);                                     %add folder dir path
 N_files = size(files,1);                                %readed number of files
 
-switch mode
-    case 1
+%switch mode
+    %case 1
+    %    
+    %    parfor i=1:N_files %parfor i=1:N_files
+    %        disp(files(i).name); %files array with names
+    %        img = imread(files(i).name);
+    %        feval(process, files(i).name,img,args{1},args{2},args{3},args{4});
+    %    end
         
-        parfor i=1:N_files %parfor i=1:N_files
-            disp(files(i).name); %files array with names
-            img = imread(files(i).name);
-            feval(process, files(i).name,img,args{1},args{2},args{3},args{4});
-        end
-        
-    otherwise
+    %otherwise
         for i=1:N_files
             disp(files(i).name); %files array with names
             img = imread(files(i).name);
             feval(process, files(i).name,img,args{1},args{2},args{3},args{4});
         end
         
-end
+%end
 
 
 

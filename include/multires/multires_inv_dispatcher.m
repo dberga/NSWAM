@@ -14,7 +14,8 @@ function [img_out] = multires_inv_dispatcher(w,c,method,n_scales,n_orient)
     img_size = [size(w{1}(:,:,1),1) size(w{1}(:,:,1),2)];
     img_out=zeros(img_size(1),img_size(2));
     %img_out=zeros(size(img_in));
-    
+    w=w(~cellfun('isempty',w));
+    c=c(~cellfun('isempty',c));
     
     switch (method)
        case 'curv'
