@@ -10,6 +10,10 @@ function [iFactor_single, iFactor_out, x_on,x_off, y_on, y_off] = NCZLd_channel_
 
                 [iFactor_single,iFactor_out, x_on,x_off, y_on, y_off] = NCZLd_channel_ON_OFF_cpp(zeros_curv,struct, x_on, x_off, y_on, y_off);
                   
+            else
+               iFactor_single=0; 
+               iFactor_out =0;
             end
+            
 end
 
