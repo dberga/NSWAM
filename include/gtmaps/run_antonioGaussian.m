@@ -6,9 +6,14 @@
 
 function [BF, gf] = run_antonioGaussian(img, sigma)
 
+if nargin < 2, dvapix=40; sigma = (dvapix/(2*sqrt(2*log(2)))); end
+
 [sn, sm, c]=size(img);
 n=max([sn sm]);
 
 fc = n*sqrt(log(2)/(2*(pi^2)*(sigma^2)));
 
-[BF, gf]=antonioGaussian(img, fc);
+[BF, gf]=antonioGaussian_mod(img, fc);
+
+
+end
