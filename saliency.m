@@ -186,14 +186,7 @@ if run_flags.run_all==1
     %binary map from scanpath
     saccades_bmap = run_bmap(run_flags,image_props,conf_struct,scanpath);
     
-    if exist([folder_props.output_path '/gbg'],'file') system(['rm' ' ' folder_props.output_path '/gbg']); end; system(['ln -s ' 'mean' ' ' folder_props.output_path '/gbg']); 
-    if exist([folder_props.output_path '/gbgs'],'file') system(['rm' ' ' folder_props.output_path '/gbgs']); end; system(['ln -s ' 'gazes' ' ' folder_props.output_path '/gbgs']);
     
-    if exist(['copy_mean_2gazes_' folder_props.output_path],'file') system(['rm' ' ' 'copy_mean_2gazes_' folder_props.output_path]); end; system(['ln -s ' 'mean/2' ' ' 'copy_mean_2gazes_' folder_props.output_path]);
-    if exist(['copy_mean_4gazes_' folder_props.output_path],'file') system(['rm' ' ' 'copy_mean_4gazes_' folder_props.output_path]); end; system(['ln -s ' 'mean/4' ' ' 'copy_mean_4gazes_' folder_props.output_path]);
-    if exist(['copy_gaussian_2gazes_' folder_props.output_path],'file') system(['rm' ' ' 'copy_gaussian_2gazes_' folder_props.output_path]); end; system(['ln -s ' 'gaussian/2' ' ' 'copy_gaussian_2gazes_' folder_props.output_path]);
-    if exist(['copy_gaussian_4gazes_' folder_props.output_path],'file') system(['rm' ' ' 'copy_gaussian_4gazes_' folder_props.output_path]); end; system(['ln -s ' 'gaussian/4' ' ' 'copy_gaussian_4gazes_' folder_props.output_path]);
-    if exist(['copy_gaussian_10gazes_' folder_props.output_path],'file') system(['rm' ' ' 'copy_gaussian_10gazes_' folder_props.output_path]); end; system(['ln -s ' 'gaussian/10' ' ' 'copy_gaussian_10gazes_' folder_props.output_path]);
     
 else
     smap = imread(image_props.output_image_path); 
@@ -201,6 +194,15 @@ else
 end
 
     
+if exist([folder_props.output_path '/gbg'],'file') system(['rm' ' ' folder_props.output_path '/gbg']); end; system(['ln -s ' 'mean' ' ' folder_props.output_path '/gbg']); 
+    if exist([folder_props.output_path '/gbgs'],'file') system(['rm' ' ' folder_props.output_path '/gbgs']); end; system(['ln -s ' 'gazes' ' ' folder_props.output_path '/gbgs']);
+    
+    if exist(['copy_mean_2gazes_' folder_props.output_path],'file') system(['rm' ' ' 'copy_mean_2gazes_' folder_props.output_path]); end; system(['ln -s ' 'mean/2' ' ' 'copy_mean_2gazes_' folder_props.output_path]);
+    if exist(['copy_mean_4gazes_' folder_props.output_path],'file') system(['rm' ' ' 'copy_mean_4gazes_' folder_props.output_path]); end; system(['ln -s ' 'mean/4' ' ' 'copy_mean_4gazes_' folder_props.output_path]);
+    if exist(['copy_gaussian_2gazes_' folder_props.output_path],'file') system(['rm' ' ' 'copy_gaussian_2gazes_' folder_props.output_path]); end; system(['ln -s ' 'gaussian/2' ' ' 'copy_gaussian_2gazes_' folder_props.output_path]);
+    if exist(['copy_gaussian_4gazes_' folder_props.output_path],'file') system(['rm' ' ' 'copy_gaussian_4gazes_' folder_props.output_path]); end; system(['ln -s ' 'gaussian/4' ' ' 'copy_gaussian_4gazes_' folder_props.output_path]);
+    if exist(['copy_gaussian_10gazes_' folder_props.output_path],'file') system(['rm' ' ' 'copy_gaussian_10gazes_' folder_props.output_path]); end; system(['ln -s ' 'gaussian/10' ' ' 'copy_gaussian_10gazes_' folder_props.output_path]);
+
 end
 
 
