@@ -11,7 +11,10 @@ switch option
 
     case 3 %ImgSalGaussian
         dmap = imgSalGaussian( bmap );
-        
+
+    case 4 %inverse distance transform
+	dmap = normalize_minmax(imcomplement(bwdist(bmap)));
+
 end
 
 end
