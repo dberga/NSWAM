@@ -41,7 +41,6 @@ function [mean_smap] = run_mean(run_flags,image_props,conf_struct,smaps)
         
         
         
-        
     else
          mean_smap = imread(image_props.output_mean_path{conf_struct.gaze_params.ngazes}); 
         

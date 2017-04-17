@@ -150,9 +150,12 @@ if run_flags.run_all==1
             %deresize to original size
             smap = get_deresize(loaded_struct,smap);
             
+            %set smooth smap (depending on a fusion factor)
+            smap=get_smooth(smap,conf_struct);
+            
             %normalize
             smap = get_normalize(loaded_struct,smap);
-
+            
             %save
             imwrite(smap, image_props.output_image_paths{k});
 
@@ -166,7 +169,6 @@ if run_flags.run_all==1
             %set inhibition of return on current gaze (update and add)
             conf_struct.gaze_params.ior_matrix = get_ior_matrix_newgaze(ior_matrix_unfoveated, max_s,conf_struct); 
                 %get_fig_single(normalize_minmax(conf_struct.gaze_params.ior_matrix,0,1),'ior',folder_props,image_props,conf_struct);
-            
             
             %iterate
             smaps(:,:,k) = smap;
