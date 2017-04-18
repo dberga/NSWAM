@@ -186,7 +186,11 @@ if run_flags.run_all==1
     scanpath = run_scanpath(run_flags,image_props,conf_struct,smaps);
     
     %smap from means of gazed smaps
-    mean_smap = run_mean(run_flags,image_props,conf_struct,smaps);
+        if conf_struct.fusion_params.tmem_res == 'max'
+            mean_smap = run_max(run_flags,image_props,conf_struct,smaps);
+        else
+            mean_smap = run_mean(run_flags,image_props,conf_struct,smaps);
+        end
     smap = mean_smap;
     
     %smap from density of scanpath
