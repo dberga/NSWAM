@@ -44,7 +44,7 @@ function [w, c] = multires_dispatcher(img, method,n_scales,n_orient)
     
     %wav and gabor are decimated, undecimate by upsampling to image size
     w=undecimate(w,M,N);
-    c=undecimate(w,M,N);
+    c=undecimate(c,M,N);
     
     
     
