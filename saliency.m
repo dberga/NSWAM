@@ -210,18 +210,18 @@ end
     mean4_path=[pwd '/' folder_props.output_path '/mean/4/'];
     mean2_ln_path=[pwd '/' folder_props.output_folder '/mean_2gazes_' folder_props.output_subfolder];
     mean4_ln_path=[pwd '/' folder_props.output_folder '/mean_4gazes_' folder_props.output_subfolder];
-    if exist(mean2_ln_path,'file') system(['rm -rf' ' ' mean2_ln_path]); end;
+    if exist(mean2_ln_path,'file') system(['rm -f' ' ' mean2_ln_path]); end;
     system(['ln -s ' mean2_path ' ' mean2_ln_path]); 
-    if exist(mean4_ln_path,'file') system(['rm -rf' ' ' mean4_ln_path]); end;
+    if exist(mean4_ln_path,'file') system(['rm -f' ' ' mean4_ln_path]); end;
     system(['ln -s ' mean4_path ' ' mean4_ln_path]);  
     
     gaussian2_path=[pwd '/' folder_props.output_path '/gaussian/2/'];
     gaussian4_path=[pwd '/' folder_props.output_path '/gaussian/4/'];
     gaussian2_ln_path=[pwd '/' folder_props.output_folder '/gaussian_2gazes_' folder_props.output_subfolder];
     gaussian4_ln_path=[pwd '/' folder_props.output_folder '/gaussian_4gazes_' folder_props.output_subfolder];
-    if exist(gaussian2_ln_path,'file') system(['rm -rf' ' ' gaussian2_ln_path]); end;
+    if exist(gaussian2_ln_path,'file') system(['rm -f' ' ' gaussian2_ln_path]); end;
     system(['ln -s ' gaussian2_path ' ' gaussian2_ln_path]); 
-    if exist(gaussian4_ln_path,'file') system(['rm -rf' ' ' gaussian4_ln_path]); end;
+    if exist(gaussian4_ln_path,'file') system(['rm -f' ' ' gaussian4_ln_path]); end;
     system(['ln -s ' gaussian4_path ' ' gaussian4_ln_path]);  
     
 end
