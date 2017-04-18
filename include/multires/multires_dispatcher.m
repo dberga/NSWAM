@@ -2,6 +2,7 @@ function [w, c] = multires_dispatcher(img, method,n_scales,n_orient)
 
     w = cell(n_scales-1,1); %output {s}(:,:,o)
     c = cell(n_scales-1,1); %residual {s}(:,:)
+    [M,N,C]=size(img);
     
     %w = cell(n_scales,1); %output {s}(:,:,o)
     %c = cell(n_scales,1); %residual {s}(:,:)
@@ -40,6 +41,11 @@ function [w, c] = multires_dispatcher(img, method,n_scales,n_orient)
           devlog('ERROR: No valid multiresolution decomposition method',4);
           return;
     end
+    
+    %wav and gabor are decimated, undecimate by upsampling to image size
+    w=undecimate(w,M,N);
+    c=undecimate(w,M,N);
+    
     
     
     % induce artificila activity to a given neuron population (Rossi and Paradiso, 1999, Figure 2.3)
