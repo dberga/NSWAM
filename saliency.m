@@ -206,21 +206,24 @@ end
     if exist([folder_props.output_path '/gbg'],'file') system(['rm' ' ' folder_props.output_path '/gbg']); end; system(['ln -s ' 'mean' ' ' folder_props.output_path '/gbg']); 
     if exist([folder_props.output_path '/gbgs'],'file') system(['rm' ' ' folder_props.output_path '/gbgs']); end; system(['ln -s ' 'gazes' ' ' folder_props.output_path '/gbgs']);
     
-    mean2_path=[pwd '/' folder_props.output_path '/mean/2/']
-    mean4_path=[pwd '/' folder_props.output_path '/mean/4/']
-    mean2_ln_path=[pwd '/' folder_props.output_folder '/mean_2gazes_' folder_props.output_subfolder]
-    mean4_ln_path=[pwd '/' folder_props.output_folder '/mean_4gazes_' folder_props.output_subfolder]
+    mean2_path=[pwd '/' folder_props.output_path '/mean/2/'];
+    mean4_path=[pwd '/' folder_props.output_path '/mean/4/'];
+    mean2_ln_path=[pwd '/' folder_props.output_folder '/mean_2gazes_' folder_props.output_subfolder];
+    mean4_ln_path=[pwd '/' folder_props.output_folder '/mean_4gazes_' folder_props.output_subfolder];
     if exist(mean2_ln_path,'file') system(['rm -rf' ' ' mean2_ln_path]); end;
     system(['ln -s ' mean2_path ' ' mean2_ln_path]); 
     if exist(mean4_ln_path,'file') system(['rm -rf' ' ' mean4_ln_path]); end;
     system(['ln -s ' mean4_path ' ' mean4_ln_path]);  
     
-    %if exist([folder_props.output_folder '/copy_mean_2gazes_' folder_props.output_subfolder],'file') system(['rm' ' ' folder_props.output_folder '/copy_mean_2gazes_' folder_props.output_subfolder]); end; if exist([folder_props.output_path '/mean/2'],'file') system(['ln -s ' 'mean/2' ' ' folder_props.output_folder '/copy_mean_2gazes_' folder_props.output_subfolder]); end;
-    %if exist([folder_props.output_folder '/copy_mean_4gazes_' folder_props.output_subfolder],'file') system(['rm' ' ' folder_props.output_folder '/copy_mean_4gazes_' folder_props.output_subfolder]); end; if exist([folder_props.output_path '/mean/4'],'file') system(['ln -s ' 'mean/4' ' ' folder_props.output_folder '/copy_mean_4gazes_' folder_props.output_subfolder]); end;
-    %if exist([folder_props.output_folder '/copy_gaussian_2gazes_' folder_props.output_subfolder],'file') system(['rm' ' ' folder_props.output_folder '/copy_gaussian_2gazes_' folder_props.output_subfolder]); end; if exist([folder_props.output_path '/gaussian/2'],'file') system(['ln -s ' 'gaussian/2' ' ' folder_props.output_folder '/copy_gaussian_2gazes_' folder_props.output_subfolder]); end;
-    %if exist([folder_props.output_folder '/copy_gaussian_4gazes_' folder_props.output_subfolder],'file') system(['rm' ' ' folder_props.output_folder '/copy_gaussian_4gazes_' folder_props.output_subfolder]); end; if exist([folder_props.output_path '/gaussian/4'],'file') system(['ln -s ' 'gaussian/4' ' ' folder_props.output_folder '/copy_gaussian_4gazes_' folder_props.output_subfolder]); end;
-    %if exist([folder_props.output_folder '/copy_gaussian_10gazes_' folder_props.output_subfolder],'file') system(['rm' ' ' folder_props.output_folder '/copy_gaussian_10gazes_' folder_props.output_subfolder]); end; if exist([folder_props.output_path '/gaussian/10'],'file') system(['ln -s ' 'gaussian/10' ' ' folder_props.output_folder '/copy_gaussian_10gazes_' folder_props.output_subfolder]); end;
-
+    gaussian2_path=[pwd '/' folder_props.output_path '/gaussian/2/'];
+    gaussian4_path=[pwd '/' folder_props.output_path '/gaussian/4/'];
+    gaussian2_ln_path=[pwd '/' folder_props.output_folder '/gaussian_2gazes_' folder_props.output_subfolder];
+    gaussian4_ln_path=[pwd '/' folder_props.output_folder '/gaussian_4gazes_' folder_props.output_subfolder];
+    if exist(gaussian2_ln_path,'file') system(['rm -rf' ' ' gaussian2_ln_path]); end;
+    system(['ln -s ' gaussian2_path ' ' gaussian2_ln_path]); 
+    if exist(gaussian4_ln_path,'file') system(['rm -rf' ' ' gaussian4_ln_path]); end;
+    system(['ln -s ' gaussian4_path ' ' gaussian4_ln_path]);  
+    
 end
 
 
