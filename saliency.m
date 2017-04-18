@@ -150,6 +150,20 @@ if run_flags.run_all==1
             %deresize to original size
             smap = get_deresize(loaded_struct,smap);
             
+            %update fov_x and fov_y
+            [maxval, maxidx] = max(smap(:));
+            [conf_struct.gaze_params.fov_y, conf_struct.gaze_params.fov_x] = ind2sub(size(smap),maxidx); %x,y
+            
+            %set inhibition of return on current gaze (update and add)
+            conf_struct.gaze_params.ior_matrix = get_ior_matrix_newgaze(ior_matrix_unfoveated, max_s,conf_struct); 
+                %get_fig_single(normalize_minmax(conf_struct.gaze_params.ior_matrix,0,1),'ior',folder_props,image_props,conf_struct);
+            
+            %set ior smap (depending on a fusion factor)
+            if ~exist('conf_struct.fusion_params.ior_smap','var'), conf_struct.fusion_params.ior_smap=0;  end
+            if conf_struct.fusion_params.ior_smap
+                smap=get_ior_gaussian(conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y, 1, max_s, conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.img_diag_angle);
+            end
+            
             %set smooth smap (depending on a fusion factor)
             smap=get_smooth(smap,conf_struct);
             
@@ -162,13 +176,6 @@ if run_flags.run_all==1
             %delete files
             run_delete_files(folder_props,image_props,loaded_struct,k);
             
-            %update fov_x and fov_y
-            [maxval, maxidx] = max(smap(:));
-            [conf_struct.gaze_params.fov_y, conf_struct.gaze_params.fov_x] = ind2sub(size(smap),maxidx); %x,y
-            
-            %set inhibition of return on current gaze (update and add)
-            conf_struct.gaze_params.ior_matrix = get_ior_matrix_newgaze(ior_matrix_unfoveated, max_s,conf_struct); 
-                %get_fig_single(normalize_minmax(conf_struct.gaze_params.ior_matrix,0,1),'ior',folder_props,image_props,conf_struct);
             
             %iterate
             smaps(:,:,k) = smap;
