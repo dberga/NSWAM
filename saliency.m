@@ -206,12 +206,14 @@ end
     if exist([folder_props.output_path '/gbg'],'file') system(['rm' ' ' folder_props.output_path '/gbg']); end; system(['ln -s ' 'mean' ' ' folder_props.output_path '/gbg']); 
     if exist([folder_props.output_path '/gbgs'],'file') system(['rm' ' ' folder_props.output_path '/gbgs']); end; system(['ln -s ' 'gazes' ' ' folder_props.output_path '/gbgs']);
     
-    mean2_path=[folder_props.output_folder '/mean_2gazes_' folder_props.output_subfolder]
-    mean4_path=[folder_props.output_folder '/mean_4gazes_' folder_props.output_subfolder]
-    if exist(mean2_path,'file') system(['rm' ' ' mean2_path]); end;
-    system(['ln -s ' 'mean/2/' ' ' mean2_path]); 
-    if exist(mean4_path,'file') system(['rm' ' ' mean4_path]); end;
-    system(['ln -s ' 'mean/4/' ' ' mean4_path]); 
+    mean2_path=[folder_props.output_path '/mean/2/']
+    mean4_path=[folder_props.output_path '/mean/4/']
+    mean2_ln_path=[folder_props.output_folder '/mean_2gazes_' folder_props.output_subfolder]
+    mean4_ln_path=[folder_props.output_folder '/mean_4gazes_' folder_props.output_subfolder]
+    if exist(mean2_ln_path,'file') system(['rm' ' ' mean2_ln_path]); end;
+    system(['ln -s ' mean2_path ' ' mean2_ln_path]); 
+    if exist(mean4_ln_path,'file') system(['rm' ' ' mean4_ln_path]); end;
+    system(['ln -s ' mean4_path ' ' mean4_ln_path]);  
     
     %if exist([folder_props.output_folder '/copy_mean_2gazes_' folder_props.output_subfolder],'file') system(['rm' ' ' folder_props.output_folder '/copy_mean_2gazes_' folder_props.output_subfolder]); end; if exist([folder_props.output_path '/mean/2'],'file') system(['ln -s ' 'mean/2' ' ' folder_props.output_folder '/copy_mean_2gazes_' folder_props.output_subfolder]); end;
     %if exist([folder_props.output_folder '/copy_mean_4gazes_' folder_props.output_subfolder],'file') system(['rm' ' ' folder_props.output_folder '/copy_mean_4gazes_' folder_props.output_subfolder]); end; if exist([folder_props.output_path '/mean/4'],'file') system(['ln -s ' 'mean/4' ' ' folder_props.output_folder '/copy_mean_4gazes_' folder_props.output_subfolder]); end;
