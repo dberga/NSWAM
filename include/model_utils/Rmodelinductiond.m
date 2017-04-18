@@ -45,32 +45,33 @@ zli_params.kappay = zli_params.kappay/(zli_params.reduccio_JW*zli_params.reducci
 
 
 % Delta
-Delta=zeros(n_scales);
-switch (wave_params.multires)
-	case 'a_trous'
-		if struct.display_params.scale_interaction_debug==1
-			Delta=zli_params.Delta.*ones(1,n_scales);
-		else
-% 			Delta=zli_params.Delta*2.^((1:n_scales)-1);
-               if zli_params.bScaleDelta
-                    Delta=zli_params.Delta*scale2size(1:n_scales,zli_params.scale2size_type,zli_params.scale2size_epsilon);
-               else
-                   Delta=zli_params.Delta*ones(1,n_scales);
-               end
-		end
-	case 'a_trous_contrast'
-% 		Delta=zli_params.Delta*2.^((1:n_scales)-1);
-        if zli_params.bScaleDelta
-			Delta=zli_params.Delta*scale2size(1:n_scales,zli_params.scale2size_type,zli_params.scale2size_epsilon);
-        else
-            Delta=zli_params.Delta*ones(1,n_scales);
-        end
-    case 'gabor_HMAX'
-% 		Delta=zli_params.Delta*2.^((1:n_scales)-1);
-			Delta=zli_params.Delta*ones(1,n_scales);
-	otherwise
-		disp('ERRORRR!!!!!!!!!!!!!!!!!!!!!!!! no sabem com fer la Delta');
-end
+% Delta=zeros(n_scales);
+% switch (wave_params.multires)
+% 	case 'a_trous'
+% 		if struct.display_params.scale_interaction_debug==1
+% 			Delta=zli_params.Delta.*ones(1,n_scales);
+% 		else
+% % 			Delta=zli_params.Delta*2.^((1:n_scales)-1);
+%                if zli_params.bScaleDelta
+%                     Delta=zli_params.Delta*scale2size(1:n_scales,zli_params.scale2size_type,zli_params.scale2size_epsilon);
+%                else
+%                    Delta=zli_params.Delta*ones(1,n_scales);
+%                end
+% 		end
+% 	case 'a_trous_contrast'
+% % 		Delta=zli_params.Delta*2.^((1:n_scales)-1);
+%         if zli_params.bScaleDelta
+% 			Delta=zli_params.Delta*scale2size(1:n_scales,zli_params.scale2size_type,zli_params.scale2size_epsilon);
+%         else
+%             Delta=zli_params.Delta*ones(1,n_scales);
+%         end
+%     case 'gabor_HMAX'
+% % 		Delta=zli_params.Delta*2.^((1:n_scales)-1);
+% 			Delta=zli_params.Delta*ones(1,n_scales);
+% 	otherwise
+% 		disp('ERRORRR!!!!!!!!!!!!!!!!!!!!!!!! no sabem com fer la Delta');
+% end
+Delta=zli_params.Delta.*ones(1,n_scales);
 
 % normalization (I_norm)
 r=zli_params.normalization_power;
