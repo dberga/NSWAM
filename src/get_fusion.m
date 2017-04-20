@@ -43,7 +43,7 @@ function [smap,max_s,max_o,max_c] = get_fusion(RF_s_o_c, residual_s_c,loaded_str
      residual_c_s = residualmax_c_s;
      
     
-    if ~exist('loaded_struct.fusion_params.inverse') loaded_struct.fusion_params.inverse = 'IDWT'; end
+    if ~isfield(loaded_struct.fusion_params,'inverse') loaded_struct.fusion_params.inverse = 'multires_inv'; end
     switch loaded_struct.fusion_params.inverse
         case 'max'
             RF_c  = RFmax_c;
