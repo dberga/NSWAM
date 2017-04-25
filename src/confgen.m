@@ -1,7 +1,7 @@
 function [  ] = confgen( folder)
 
 if nargin < 1
-    folder = 'conf_default';
+    folder = 'conf_best';
 end
 
 % zli_params
@@ -304,7 +304,7 @@ function [wave_params] = get_all_parameters_wave_NCZLd()
     wave_params.fin_scale = {wave_params.ini_scale{1} + wave_params.fin_scale_offset{1}}; %auto
     wave_params.n_orient={0}; %auto
 
-    wave_params.mida_min={32}; wave_params.nmida_min = {num2str(wave_params.mida_min{1})};
+    wave_params.mida_min={8}; wave_params.nmida_min = {num2str(wave_params.mida_min{1})};
 
 
 end
@@ -415,13 +415,19 @@ function [fusion_params] = get_all_parameters_fusion_NCZLd()
     fusion_params.residual_wave= {0};
 
     %fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','wta'};
-    fusion_params.smethod= {'pmax2'};
+    fusion_params.smethod= {'pmax2','sqmean'};
 
     %fusion_params.fusion= {1,2,3};
-    fusion_params.fusion= {3};
+    fusion_params.fusion= {1,3};
 
     %fusion_params.tmem_res = {'mean','max'}; %temporal mean of iFactor or temporal max?
     fusion_params.tmem_res = {'mean'}; 
+    
+    %fusion_params.inverse = {'default','max'};
+    fusion_params.inverse={'default'};
+    
+    %fusion_params.gsp={0,n} smoothing parameter
+    fusion_params.gsp={0,1};
 end
 
 function [file_params] = get_all_parameters_file_NCZLd()
@@ -465,7 +471,7 @@ function [zli_params] = get_all_parameters_zli_NCZLd()
     zli_params.scale2size_epsilon = {1.3}; zli_params.nepsilon={num2str(zli_params.scale2size_epsilon{1})};
     
     %zli_params.bScaleDelta={0,1};
-    zli_params.bScaleDelta={1};
+    zli_params.bScaleDelta={0,1};
     
     %zli_params.reduccio_JW=num2cell(0:0.25:4);
     zli_params.reduccio_JW={1};
@@ -577,7 +583,7 @@ function [cortex_params] = get_all_parameters_cortex_NCZLd()
         cortex_params.a={degtorad(0.77)};
         cortex_params.b={degtorad(150)};
         %cortex_params.lambda={12,18};
-        cortex_params.lambda={18};
+        cortex_params.lambda={12,18};
         cortex_params.isoPolarGrad={0.1821};
         cortex_params.eccWidth={0.7609};
         cortex_params.cortex_max_elong_mm = {120};
@@ -606,11 +612,12 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
         gaze_params.fov_y = {0}; %auto
         %gaze_params.img_diag_angle = {degtorad(35.12),degtorad(44.12)};
         gaze_params.img_diag_angle = {degtorad(35.12)};
-        gaze_params.gaze_params.ior = {1};
-        gaze_params.ior_factor_ctt = {0.99};
+        gaze_params.ior = {1};
+        gaze_params.ior_factor_ctt = {0.985};
         gaze_params.ior_angle = {degtorad(4)};
-        gaze_params.ior_matrix = 0;
-        gaze_params.conserve_dynamics = 0;
+        gaze_params.ior_matrix = {0};
+        gaze_params.conserve_dynamics = {1};
+        gaze_params.conserve_dynamics_rest = {1};
 
     gaze_params.foveate = {1};
     %gaze_params.foveate = {0};
@@ -619,7 +626,7 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
  
 
     %gaze_params.redistort_periter = {1,0};
-    gaze_params.redistort_periter = {0};
+    gaze_params.redistort_periter = {1};
 
     gaze_params.ngazes = {10};
     %gaze_params.ngazes = {2,5,10};
