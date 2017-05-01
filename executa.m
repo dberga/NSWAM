@@ -23,7 +23,7 @@ addpath('src');
 addpath('src_mex');
 
 conf_mats= dir(fullfile(conf_dir, ['*.mat']));
-conf_mats=unsort_array(conf_mats);
+%conf_mats=unsort_array(conf_mats);
 
 
  %delete(gcp);
@@ -35,9 +35,9 @@ for i=1:length(conf_mats) %parfor i=1:length(conf_mats)
     args = {conf_path, output_dir, mats_dir, output_extension};
 	try
     improcdir(funcio,fileformat,1,input_dir,args);
-	catch
+	catch exc_general
 		fileID=fopen('errors.log','w');
-		fprintf(fileID,['Error en ' conf_mats(i).name]);
+		fprintf(fileID,['Error en ' conf_mats(i).name ':' getReport(exc_general)]);
 		fclose(fileID);
 	end
 end
