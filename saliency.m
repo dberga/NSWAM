@@ -143,14 +143,14 @@ if run_flags.run_all==1
             
             %fusion
             [smap,max_s,max_o,max_c] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
-            
-	    %update fov_x and fov_y
-            [maxval, maxidx] = max(smap(:));
-            [conf_struct.gaze_params.fov_y, conf_struct.gaze_params.fov_x] = ind2sub(size(smap),maxidx); %x,y
 
             %undistort
             smap = get_undistort(loaded_struct,smap);
             
+            %update fov_x and fov_y
+            [maxval, maxidx] = max(smap(:));
+            [conf_struct.gaze_params.fov_y, conf_struct.gaze_params.fov_x] = ind2sub(size(smap),maxidx); %x,y
+
             %deresize to original size
             smap = get_deresize(loaded_struct,smap);
             
