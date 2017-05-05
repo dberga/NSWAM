@@ -146,13 +146,13 @@ if run_flags.run_all==1
 
             %undistort
             smap = get_undistort(loaded_struct,smap);
-            
-            %update fov_x and fov_y
-            [maxval, maxidx] = max(smap(:));
-            [conf_struct.gaze_params.fov_y, conf_struct.gaze_params.fov_x] = ind2sub(size(smap),maxidx); %x,y
 
             %deresize to original size
             smap = get_deresize(loaded_struct,smap);
+
+	    %update fov_x and fov_y
+            [maxval, maxidx] = max(smap(:));
+            [conf_struct.gaze_params.fov_y, conf_struct.gaze_params.fov_x] = ind2sub(size(smap),maxidx); %x,y
             
             %set inhibition of return on current gaze (update and add)
             conf_struct.gaze_params.ior_matrix = get_ior_matrix_newgaze(ior_matrix_unfoveated, max_s,conf_struct); 
