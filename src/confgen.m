@@ -1,7 +1,7 @@
 function [  ] = confgen( folder)
 
 if nargin < 1
-    folder = 'conf_best';
+    folder = 'conf_best2';
 end
 
 % zli_params
@@ -612,7 +612,7 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
         gaze_params.fov_y = {0}; %auto
         %gaze_params.img_diag_angle = {degtorad(35.12),degtorad(44.12)};
         gaze_params.img_diag_angle = {degtorad(35.12)};
-        gaze_params.ior = {1};
+        gaze_params.ior = {0};
         gaze_params.ior_factor_ctt = {0.985};
         gaze_params.ior_angle = {degtorad(4)};
         gaze_params.ior_matrix = {0};
