@@ -164,11 +164,12 @@ if run_flags.run_all==1
                 smap=get_ior_gaussian(conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y, 1, max_s, conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.img_diag_angle);
             end
             
-            %set smooth smap (depending on a fusion factor)
-            smap=get_smooth(smap,conf_struct);
             
             %normalize
             smap = get_normalize(loaded_struct,smap);
+            
+            %set smooth smap (depending on a fusion factor)
+            smap=get_smooth(smap,conf_struct);
             
             %save
             imwrite(smap, image_props.output_image_paths{k});
