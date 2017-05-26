@@ -1,8 +1,0 @@
-function [ w ] = undecimate( w,M,N )
-    
-    for s=1:n_scales
-                for o=1:n_orient
-                end
-    end
-end
-
