@@ -20,4 +20,5 @@ switch(type)
     %    epsilon=1.1; % epsilon is a correcting factor for balancing assimilation and contrast
     %    siz=ceil((2*epsilon).^(s));  % note: we use ceil since siz entries should assume integer values    
 end
+
 end

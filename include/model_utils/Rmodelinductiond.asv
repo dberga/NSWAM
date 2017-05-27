@@ -43,6 +43,8 @@ zli_params.kappax = zli_params.kappax/(zli_params.reduccio_JW*zli_params.reducci
 zli_params.kappay = zli_params.kappay/(zli_params.reduccio_JW*zli_params.reduccio_JW);
 
 
+Delta_prop=(2*zli_params.Delta+1)/64; %Originally using images of max size 64 -> (30/64)
+
 % Delta
 Delta=zeros(n_scales);
 switch (wave_params.multires)
@@ -52,7 +54,7 @@ switch (wave_params.multires)
 		else
 % 			Delta=zli_params.Delta*2.^((1:n_scales)-1);
                if zli_params.bScaleDelta
-                    Delta=zli_params.Delta*ceil(scale2size(1-(log2(32)-log2(wave_params.mida_min)):n_scales-(log2(32)-log2(wave_params.mida_min)),zli_params.scale2size_type,zli_params.scale2size_epsilon));
+                    Delta=zli_params.Delta*ceil(scale2size(1:n_scales-(log2(32)-log2(mida_min)),zli_params.scale2size_type,zli_params.scale2size_epsilon)*(wave_params.mida_min/32));
                else
                    Delta=zli_params.Delta*ones(1,n_scales);
                end
@@ -60,7 +62,7 @@ switch (wave_params.multires)
 	case 'a_trous_contrast'
 % 		Delta=zli_params.Delta*2.^((1:n_scales)-1);
         if zli_params.bScaleDelta
-            Delta=zli_params.Delta*ceil(scale2size(1-(log2(32)-log2(wave_params.mida_min)):n_scales-(log2(32)-log2(wave_params.mida_min)),zli_params.scale2size_type,zli_params.scale2size_epsilon));
+            Delta=zli_params.Delta*ceil(scale2size(1-(log2(32)-log2(mida_min)):n_scales-(log2(32)-log2(mida_min)),zli_params.scale2size_type,zli_params.scale2size_epsilon)*(wave_params.mida_min/32));
         else
             Delta=zli_params.Delta*ones(1,n_scales);
         end

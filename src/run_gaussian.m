@@ -4,7 +4,7 @@ function [gaussian_smap] = run_gaussian(run_flags,image_props,conf_struct,scanpa
         if conf_struct.gaze_params.ngazes <=1
             aux_scanpath = scanpath(2:2,:); %all gazes except first
             gaussian_smap = get_smaps_gaussian(aux_scanpath,conf_struct);
-            imwrite(gaussian_smap,[image_props.output_gaussian_path_nobaseline{1}]);
+            imwrite(gaussian_smap,[image_props.output_gaussian_nobaseline_path{1}]);
 
             aux_scanpath = scanpath(1:2,:); %all gazes
             gaussian_smap = get_smaps_gaussian(aux_scanpath,conf_struct);

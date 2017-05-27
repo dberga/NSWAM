@@ -2,17 +2,14 @@
 
 function [] = executa(input_dir, conf_dir, output_dir, mats_dir, fileformat,output_extension, funcio)
 
-if nargin < 1
+if nargin < 1, input_dir = 'input';end
+if nargin < 2, conf_dir = 'conf_try'; end
+if nargin < 3, output_dir = 'output'; end
+if nargin < 4, mats_dir = 'mats'; end
+if nargin < 5, fileformat = 'jpg'; end
+if nargin < 6, output_extension = 'png'; end
+if nargin < 7, funcio = 'saliency'; end
 
-input_dir = 'input';
-output_dir = 'output';
-mats_dir = 'mats';
-conf_dir = 'conf';
-fileformat = 'jpg';
-output_extension = 'png';
-funcio = 'saliency';
-
-end
 
 %function dependencies
 addpath('include/file_utils');
@@ -30,9 +27,9 @@ conf_mats=unsort_array(conf_mats);
  %parpool('local',4);
 
 mkdir('logs');
-done_name=['logs/' 'done_' conf_mats(i).name];
 
 for i=1:length(conf_mats) %parfor i=1:length(conf_mats)
+    done_name=['logs/' 'done_' conf_mats(i).name];
     conf_path = [conf_dir '/' conf_mats(i).name];
     if ~exist(done_name,'file')
 	    disp([conf_path ':']);

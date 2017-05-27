@@ -1,4 +1,4 @@
-function [M_norm_conv,inv_den]=Fer_M_norm_conv(n_scales,dist_type,scale_type,epsilon,bScaleDelta)
+function [M_norm_conv,inv_den]=Fer_M_norm_conv(n_scales,dist_type,scale_type,epsilon,bScaleDelta,mida_min)
 
 M_norm_conv=cell(n_scales,1);
 inv_den=cell(n_scales,1);
@@ -10,7 +10,7 @@ for i=1:n_scales
 % 	radi=2^i;
 % 	factor_scale=(2^(i-1));
     if bScaleDelta
-        radi=scale2size(i+1,scale_type,epsilon);
+        radi=ceil(scale2size(i+1-(log2(32)-log2(mida_min)),scale_type,epsilon));
     else
         radi=2;
     end

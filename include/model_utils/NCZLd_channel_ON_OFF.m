@@ -2,18 +2,11 @@ function [iFactor_single,iFactor_out, x_ON,x_OFF, y_ON, y_OFF] = NCZLd_channel_O
 
 
 
+
+
+
 [curv] = multires_decomp2curv(w,[],struct.wave_params.n_scales,struct.wave_params.n_orient);
 [curv_in] = dyncopy_curv(curv,struct.zli_params.n_membr,struct.wave_params.n_scales,struct.wave_params.n_orient);
-
-
-
-
-% from NCZLd_channel_ON_OFF.m to Rmodelinductiond.m
-
-% separate ON and OFF channels
-% start the recovering at the level of the wavelet/Gabor responses
-
-
 
 n_iter=struct.zli_params.n_iter;
 n_membr=struct.zli_params.n_membr;
@@ -21,21 +14,6 @@ n_membr=struct.zli_params.n_membr;
 n_orient=size(struct.wave_params.n_orient);
 n_scales=struct.wave_params.n_scales;
 fin_scale=struct.wave_params.fin_scale;
-
-iFactor = cell(n_membr,n_iter);
-iFactor_ON = cell(n_membr,n_iter);
-iFactor_OFF = cell(n_membr,n_iter);
-jFactor = cell(n_membr,n_iter);
-jFactor_ON = cell(n_membr,n_iter);
-jFactor_OFF = cell(n_membr,n_iter);
-
-%-------------------------------------------------------
-% make the structure explicit/get the parameters
-
-
-
-
-
 
 
 %-------------------------------------------------------
@@ -53,21 +31,20 @@ for ff=1:n_membr
 	end
 end
 
+clearvars curv_in;
 
+% forced activation of a given neuron population
+% if struct.compute_params.XOP_activacio_neurona==1
+%     for ff=1:n_membr
+%         curv{ff}(64:66,64:66,1,1)=0.1;
+%     end
+% end
 
 if nargin < 4 || struct.gaze_params.conserve_dynamics == 0
    x_on = zeros(size(curv{1}));
    y_on = zeros(size(curv{1}));
    x_off = zeros(size(curv{1}));
    y_off = zeros(size(curv{1}));
-end
-
-
-% forced activation of a given neuron population
-if struct.compute_params.XOP_activacio_neurona==1
-    for ff=1:n_membr
-        curv{ff}(64:66,64:66,1,1)=0.1;
-    end
 end
 
 %-------------------------------------------------------
@@ -77,26 +54,12 @@ end
 % initialize input of ND
 curv_ON=cell(n_membr,1);
 curv_OFF=cell(n_membr,1);
-	 
-index_ON=cell(n_membr,1);
-index_OFF=cell(n_membr,1);
-
-curv_ON=curv;
-curv_OFF=curv;
-curv_ON_final=curv;
-curv_OFF_final=curv;
-
-% handle ON and OFF separately/together
-for t_membr=1:n_membr
-    index_OFF{t_membr} = find(curv{t_membr}<=0);  % was curv{orient}
-    index_ON{t_membr} = find(curv{t_membr}>=0);
-end
 
 for t_membr=1:n_membr
             curv_ON{t_membr} = curv{t_membr};
             curv_OFF{t_membr} = -curv{t_membr};
-            curv_OFF{t_membr}(index_ON{t_membr})=0;
-            curv_ON{t_membr}(index_OFF{t_membr})=0;
+            curv_OFF{t_membr}(find(curv{t_membr}>=0))=0;
+            curv_ON{t_membr}(find(curv{t_membr}<=0))=0;
 end
         
 %-------------------------------------------------------
@@ -108,7 +71,6 @@ struct.wave_params.n_scales = struct.wave_params.fin_scale;
 % choose the algorithm (separated, abs, quadratic) 
 switch(struct.zli_params.ON_OFF)
     case 0 % separated
-        
             aux_ior_matrix = struct.gaze_params.ior_matrix;
             
             % positius +++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -121,6 +83,7 @@ switch(struct.zli_params.ON_OFF)
             % negatius ----------------------------------------------------
             %%% MAIN PROCESS %%%
             [xFactor_OFF_t_fi,yFactor_OFF_t_fi,xFactor_OFF_t_i,yFactor_OFF_t_i,x_OFF, y_OFF]=Rmodelinductiond(curv_OFF, struct,  'OFF', x_off, y_off); % note: iFactor is called "gx_final" at the core of the process
+            %%% END MAIN PROCESS %%%
 
             for t_membr=1:n_membr
                 for it=1:n_iter
@@ -193,7 +156,7 @@ for ff=1:n_membr
             end
         end
         %last scale es la approximada
-        %iFactor_out{ff}{it}{n_scales}= curv_in{ff}{n_scales};
+        %iFactor_out{ff}{it}{n_scales}= curv{ff}{n_scales};
     end
 end
 
