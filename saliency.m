@@ -142,8 +142,13 @@ if run_flags.run_all==1
             [RF_s_o_c] = get_eCSF(loaded_struct,RF_s_o_c);
             
             %fusion
-            [smap,max_s,max_o,max_c] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
-
+            [smap,residualmax,maxscales, maxorients, maxchannels ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
+            [maxval,maxidx]=max(smap(:));
+            [maxval_r,maxidx_r]=max(residualmax(:));
+            [maxval_s,maxidx_s]=max(maxscales(:));
+            [maxval_o,maxidx_o]=max(maxorients(:));
+            [maxval_c,maxidx_c]=max(maxchannels(:));
+            
             %undistort
             smap = get_undistort(loaded_struct,smap);
 
@@ -151,19 +156,14 @@ if run_flags.run_all==1
             smap = get_deresize(loaded_struct,smap);
 
 	    %update fov_x and fov_y
-            [maxval, maxidx] = max(smap(:));
             [conf_struct.gaze_params.fov_y, conf_struct.gaze_params.fov_x] = ind2sub(size(smap),maxidx); %x,y
             
             %set inhibition of return on current gaze (update and add)
-            conf_struct.gaze_params.ior_matrix = get_ior_matrix_newgaze(ior_matrix_unfoveated, max_s,conf_struct); 
+            conf_struct.gaze_params.ior_matrix = get_ior_matrix_newgaze(ior_matrix_unfoveated, maxidx_s,conf_struct); 
                 %get_fig_single(normalize_minmax(conf_struct.gaze_params.ior_matrix,0,1),'ior',folder_props,image_props,conf_struct);
             
             %set ior smap (depending on a fusion factor)
-            if ~isfield(conf_struct.fusion_params,'ior_smap'), conf_struct.fusion_params.ior_smap=0;  end
-            if conf_struct.fusion_params.ior_smap
-                smap=get_ior_gaussian(conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y, 1, max_s, conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.img_diag_angle);
-            end
-            
+            gmap=get_ior_gaussian(conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y, 1, maxidx_s, conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.img_diag_angle);
             
             %normalize
             smap = get_normalize(loaded_struct,smap);
@@ -180,21 +180,31 @@ if run_flags.run_all==1
             
             %iterate
             smaps(:,:,k) = smap;
+            gmaps(:,:,k) = gmap;
         end
     end
+    
+    
+    %smap from means of gazed smaps
+    mean_smap = run_mean(run_flags,image_props,conf_struct,smaps);
+    
+    smap = mean_smap;
     
     %scanpath from files or from computed smaps(k)
     scanpath = run_scanpath(run_flags,image_props,conf_struct,smaps);
     
-    %smap from means of gazed smaps
-    mean_smap = run_mean(run_flags,image_props,conf_struct,smaps);
-    smap = mean_smap;
-    
-    %smap from density of scanpath
-    saccades_gaussian = run_gaussian(run_flags,image_props,conf_struct,scanpath);
-    
     %binary map from scanpath
     saccades_bmap = run_bmap(run_flags,image_props,conf_struct,scanpath);
+    
+    %smap from density of scanpath
+    if ~isfield(conf_struct.fusion_params,'ior_smap'), conf_struct.fusion_params.ior_smap=0;  end
+    if conf_struct.fusion_params.ior_smap
+        mean_gmap = run_mean(run_flags,image_props,conf_struct,gmaps);
+    else
+        mean_gmap = run_gaussian(run_flags,image_props,conf_struct,scanpath);
+    end
+    
+   
     
     
     

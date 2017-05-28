@@ -1,6 +1,6 @@
 function [ newimg ] = autoresize_maxdelta( img, n_scales, Delta,mida_min, max_Delta )
     if nargin < 5
-        max_Delta=64;
+        max_Delta=30;
     end
     scalemult=ceil(scale2size(1-(log2(32)-log2(mida_min)):n_scales-(log2(32)-log2(mida_min)),1,1.3));
     final_Delta_scaled=Delta*scalemult(end);

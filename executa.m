@@ -25,23 +25,28 @@ conf_mats=unsort_array(conf_mats);
 
  %delete(gcp);
  %parpool('local',4);
-
-mkdir('logs');
+ 
+ 
+diary_path='diary.txt';
+diary(diary_path);
 
 for i=1:length(conf_mats) %parfor i=1:length(conf_mats)
-    done_name=['logs/' 'done_' conf_mats(i).name];
+    done_name=[output_dir '/' 'log_' conf_mats(i).name '.txt'];
+    error_name=[output_dir '/' 'error_' conf_mats(i).name '.txt'];
     conf_path = [conf_dir '/' conf_mats(i).name];
     if ~exist(done_name,'file')
 	    disp([conf_path ':']);
 	    args = {conf_path, output_dir, mats_dir, output_extension};
-		%try
+		try
+            
 		    improcdir(funcio,fileformat,1,input_dir,args);
-		    save(done_name,'done_name');
-		%catch exc_general
-		%	fileID=fopen('errors.log','w');
-		%	fprintf(fileID,['Error en ' conf_mats(i).name ':' getReport(exc_general)]);
-		%	fclose(fileID);
-		%end
+            copyfile(diary_path,done_name);
+            clc;
+		    
+		catch exc_general
+            copyfile(diary_path,error_name);
+            clc;
+		end
      end
 
 
