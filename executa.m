@@ -24,36 +24,38 @@ addpath('src_mex');
 conf_mats= dir(fullfile(conf_dir, ['*.mat']));
 conf_mats=unsort_array(conf_mats);
 
-for i=1:1 %length(conf_mats) %parfor i=1:length(conf_mats)
+maxproc=1;
+proc=1;
+for i=1:length(conf_mats) %parfor i=1:length(conf_mats)
     log_name=[output_dir '/' 'log_' conf_mats(i).name '.txt'];
     done_name=[output_dir '/' 'done_' conf_mats(i).name '.txt'];
     error_name=[output_dir '/' 'error_' conf_mats(i).name '.txt'];
     
     conf_path = [conf_dir '/' conf_mats(i).name];
     
-    if ~exist(done_name,'file') && ~exist(log_name,'file') && ~exist(error_name,'file')
+    if proc<=maxproc && ~exist(done_name,'file') && ~exist(log_name,'file') && ~exist(error_name,'file')
 		try
             diary(log_name);
             diary on;
             
             disp([conf_path ':']);
             args = {conf_path, output_dir, mats_dir, output_extension};
-            
-            disp('hi');
-            aaaaa
+            aaa
 		    improcdir(funcio,fileformat,1,input_dir,args);
             
             diary off;
             copyfile(log_name,done_name);
             
             
-		catch exc_general
+		catch exc_process
             diary off;
             copyfile(log_name,error_name);
-            
-		end
+            append_text(error_name,getReport(exc_process,'basic'));
+        end
+        proc=proc+1;
+        delete(log_name);
     end
-    delete(log_name);
+    
 
 end
 
