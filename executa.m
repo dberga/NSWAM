@@ -40,7 +40,6 @@ for i=1:length(conf_mats) %parfor i=1:length(conf_mats)
             
             disp([conf_path ':']);
             args = {conf_path, output_dir, mats_dir, output_extension};
-            aaa
 		    improcdir(funcio,fileformat,1,input_dir,args);
             
             diary off;
