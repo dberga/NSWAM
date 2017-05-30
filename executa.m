@@ -10,7 +10,6 @@ if nargin < 5, fileformat = 'jpg'; end
 if nargin < 6, output_extension = 'png'; end
 if nargin < 7, funcio = 'saliency'; end
 
-
 %function dependencies
 addpath('include/file_utils');
 addpath(genpath('include'));
@@ -27,29 +26,35 @@ conf_mats=unsort_array(conf_mats);
  %parpool('local',4);
  
  
-diary_path='diary.txt';
-diary(diary_path);
-
-for i=1:length(conf_mats) %parfor i=1:length(conf_mats)
-    done_name=[output_dir '/' 'log_' conf_mats(i).name '.txt'];
+for i=1:1 %length(conf_mats) %parfor i=1:length(conf_mats)
+    log_name=[output_dir '/' 'log_' conf_mats(i).name '.txt'];
+    done_name=[output_dir '/' 'done_' conf_mats(i).name '.txt'];
     error_name=[output_dir '/' 'error_' conf_mats(i).name '.txt'];
+    
     conf_path = [conf_dir '/' conf_mats(i).name];
-    if ~exist(done_name,'file')
-	    disp([conf_path ':']);
-	    args = {conf_path, output_dir, mats_dir, output_extension};
+    
+    
+    if ~exist(done_name,'file') && ~exist(log_name,'file')
 		try
-            
+            diary(log_name);
+            diary on;
+    
+            disp([conf_path ':']);
+            args = {conf_path, output_dir, mats_dir, output_extension};
+        
+        
 		    improcdir(funcio,fileformat,1,input_dir,args);
-            copyfile(diary_path,done_name);
-            clc;
-		    
+            copyfile(log_name,done_name);
+            
+            
 		catch exc_general
-            copyfile(diary_path,error_name);
-            clc;
+            copyfile(log_name,error_name);
+            
+            
 		end
-     end
-
-
+    end
+    diary off;
+    delete(log_name);
 
 end
 
