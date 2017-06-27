@@ -73,11 +73,23 @@ function [run_flags] = get_run_flags(image_props,mat_props,conf_struct)
              run_flags.load_struct(k)=0;
          end
          
+         [ loaded_struct_equivalent , mfolder, folder_equivalent,iname_equivalent,k_equivalent] = get_samemat( mat_props.loaded_struct_path{k} );
+         op1_iFactor_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_iFactor_channel(' 'chromatic' ')_gaze' k_equivalent '.mat'];
+         op2_iFactor_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_iFactor_channel(' 'chromatic2' ')_gaze' k_equivalent '.mat'];
+         op3_iFactor_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_iFactor_channel(' 'intensity' ')_gaze' k_equivalent '.mat'];
          
          if (exist(mat_props.op1_iFactor_path{k}, 'file') ...
              && exist(mat_props.op2_iFactor_path{k}, 'file') ...
-             && exist(mat_props.op3_iFactor_path{k}, 'file')) 
+             && exist(mat_props.op3_iFactor_path{k}, 'file')) ...
+             || ...
+             (exist(op1_iFactor_path_equivalent, 'file') ...
+             && exist(op2_iFactor_path_equivalent, 'file') ...
+             && exist(op3_iFactor_path_equivalent, 'file'))
          
+         
+             
+             
+             
              run_flags.load_iFactor_mats(k)=1;
          else
              run_flags.load_iFactor_mats(k)=0;

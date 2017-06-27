@@ -79,77 +79,56 @@ if run_flags.run_all==1
             input_image = double(aux_input_image);
                     %get_fig_opp(normalize_minmax(input_image,0,255),'img',folder_props,image_props,conf_struct);
             
-            %%%%%%%%%%%%% 1.im2opponent
+            %%%%%%%%%%%%% 1.im2opponent  [IMAGE->RGC]
             input_image = get_rgb2opp(input_image,conf_struct); %! (depending on flag)
                     %get_fig_opp(input_image,'opp',folder_props,image_props,conf_struct);
             
-            %%%%%%%%%%%%% 2.foveate (or cortical mapping) before DWT
-            [input_image] = get_foveate(input_image,conf_struct);
-            ior_matrix_unfoveated = conf_struct.gaze_params.ior_matrix;
-            conf_struct.gaze_params.ior_matrix = get_foveate(conf_struct.gaze_params.ior_matrix,conf_struct);
-                    %get_fig_opp(input_image,'fov',folder_props,image_props,conf_struct);
+                    
             
-            %%%%%%%%%%%%% resize (if foveated, do not resize)
-            [input_image] = get_resize(input_image,conf_struct);
+            %%%%%%%%%%%%% 2 & 3.foveate (or cortical mapping) and DWT [RGC->LGN->CORTEX]
+            
+            ior_matrix_unfoveated = conf_struct.gaze_params.ior_matrix;    
+            
+            switch conf_struct.gaze_params.foveate
+                case 1 %foveate before DWT
+                    [input_image] = get_foveate(input_image,conf_struct);
+                    [input_image] = get_resize(input_image,conf_struct);
+                    [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(input_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
+                    [conf_struct.wave_params.n_orient] = calc_norient(input_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
+                    [curvs,residuals] = get_DWT(run_flags,conf_struct,folder_props,image_props,C,k,input_image);
+                
+                case 3 %foveate after DWT
+                    [input_image] = get_resize(input_image,conf_struct);
+                    [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(input_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
+                    [conf_struct.wave_params.n_orient] = calc_norient(input_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
+                    [curvs,residuals] = get_DWT(run_flags,conf_struct,folder_props,image_props,C,k,input_image);
+                    [curvs,residuals]=get_foveate_multires(curvs,residuals,conf_struct);
+                    
+                otherwise %do not foveate
+                    [input_image] = get_resize(input_image,conf_struct);
+                    [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(input_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
+                    [conf_struct.wave_params.n_orient] = calc_norient(input_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
+                    [curvs,residuals] = get_DWT(run_flags,conf_struct,folder_props,image_props,C,k,input_image);
+                
+            end
             
             [conf_struct.gaze_params.height,conf_struct.gaze_params.width, ~] = size(input_image);
             [conf_struct.resize_params.M, conf_struct.resize_params.N, ~] = size(input_image);
             [conf_struct.resize_params.fov_x,conf_struct.resize_params.fov_y] = movecoords( conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y , conf_struct.resize_params.M, conf_struct.resize_params.N); 
             
-            %it has been resized or foveated (new image size), get new n_scales here
-            [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(input_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
-            [conf_struct.wave_params.n_orient] = calc_norient(input_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);
-            
-            
-            %%%%%%%%%%%%% save loaded struct properties
             [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,image_props,mat_props,conf_struct,k);
             
-            %%%%%%%%%%%%% 3. DWT
-            [curvs_aux,residuals_aux] = get_DWT(run_flags,loaded_struct,folder_props,image_props,C,k,input_image);
-                    %get_fig_wav(curvs_aux{1},'wav_c1',folder_props,image_props,conf_struct);
-                    %get_fig_wav(curvs_aux{2},'wav_c2',folder_props,image_props,conf_struct);
-                    %get_fig_wav(curvs_aux{3},'wav_c3',folder_props,image_props,conf_struct);
+            conf_struct.gaze_params.ior_matrix = get_foveate(conf_struct.gaze_params.ior_matrix,conf_struct);
             
-            %%%%%%%%%%%%% foveate after DWT
-            clear curvs;
-            if conf_struct.gaze_params.foveate==3
-                for c=1:C
-                    for s=1:conf_struct.wave_params.n_scales-1
-                        for o=1:conf_struct.wave_params.n_orient
-                            curvs{c}{s}(:,:,o)=get_foveate(curvs_aux{c}{s}(:,:,o),conf_struct,1);
-                        end
-                        residuals{c}{s}=get_foveate(residuals_aux{c}{s},conf_struct,1);
-                    end
-                end
-                
-                
-                %ior_matrix_unfoveated = conf_struct.gaze_params.ior_matrix;
-                %conf_struct.gaze_params.ior_matrix = get_foveate(conf_struct.gaze_params.ior_matrix,conf_struct,1);
-                    %get_fig_opp(input_image,'fov',folder_props,image_props,conf_struct);
+            
+                %get_fig_opp(input_image,'fov',folder_props,image_props,conf_struct);
+                %get_fig_wav(curvs_aux{1},'wav_c1',folder_props,image_props,conf_struct);
+                %get_fig_wav(curvs_aux{2},'wav_c2',folder_props,image_props,conf_struct);
+                %get_fig_wav(curvs_aux{3},'wav_c3',folder_props,image_props,conf_struct);
                     
-                [conf_struct.gaze_params.height,conf_struct.gaze_params.width, ~] = size(input_image);
-                [conf_struct.resize_params.M, conf_struct.resize_params.N, ~] = size(input_image);
-                [conf_struct.resize_params.fov_x,conf_struct.resize_params.fov_y] = movecoords( conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y , conf_struct.resize_params.M, conf_struct.resize_params.N); 
-
-                %%%%%%%%%%%%% save loaded struct properties
-                [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,image_props,mat_props,conf_struct,k);
-                
-                %save_mat('w',curvs{1},folder_props,image_props,k,loaded_struct.color_params.channels{1});
-                %save_mat('w',curvs{2},folder_props,image_props,k,loaded_struct.color_params.channels{2});
-                %save_mat('w',curvs{3},folder_props,image_props,k,loaded_struct.color_params.channels{3});
-
-                %save_mat('c',residuals{1},folder_props,image_props,k,loaded_struct.color_params.channels{1});
-                %save_mat('c',residuals{2},folder_props,image_props,k,loaded_struct.color_params.channels{2});
-                %save_mat('c',residuals{3},folder_props,image_props,k,loaded_struct.color_params.channels{3});
-            
-                
-            else
-                curvs=curvs_aux;
-                residuals=residuals_aux;
-            end
             
              
-            %%%%%%%%%%%%% 4. CORE, COMPUTE DYNAMICS
+            %%%%%%%%%%%%% 4. CORE, COMPUTE DYNAMICS [CORTEX->CORTEX]
             [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,k,curvs,residuals);
                     %get_fig_ifactor(iFactors{1},'ifactor_c1',folder_props,image_props,conf_struct);
                     %get_fig_ifactor(iFactors{2},'ifactor_c2',folder_props,image_props,conf_struct);
@@ -162,7 +141,7 @@ if run_flags.run_all==1
                 return;
             end
             
-            %%%%%%%%%%%%% 5. FUSION
+            %%%%%%%%%%%%% 5. FUSION [CORTEX->MT]
 
             %residual to zero?
             [residuals{1}] = get_residual_updated(loaded_struct,residuals{1});
