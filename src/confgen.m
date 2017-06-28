@@ -414,7 +414,7 @@ function [fusion_params] = get_all_parameters_fusion_NCZLd()
     %fusion_params.residual_wave= {0,1,2};
     fusion_params.residual_wave= {0};
 
-    %fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','wta'};
+    %fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','ent'};
     fusion_params.smethod= {'pmax2','sqmean'};
 
     %fusion_params.fusion= {1,2,3};
@@ -471,7 +471,7 @@ function [zli_params] = get_all_parameters_zli_NCZLd()
     zli_params.scale2size_epsilon = {1.3}; zli_params.nepsilon={num2str(zli_params.scale2size_epsilon{1})};
     
     %zli_params.bScaleDelta={0,1};
-    zli_params.bScaleDelta={0,1};
+    zli_params.bScaleDelta={0};
     
     %zli_params.reduccio_JW=num2cell(0:0.25:4);
     zli_params.reduccio_JW={1};
@@ -583,7 +583,7 @@ function [cortex_params] = get_all_parameters_cortex_NCZLd()
         cortex_params.a={degtorad(0.77)};
         cortex_params.b={degtorad(150)};
         %cortex_params.lambda={12,18};
-        cortex_params.lambda={12,18};
+        cortex_params.lambda={12};
         cortex_params.isoPolarGrad={0.1821};
         cortex_params.eccWidth={0.7609};
         cortex_params.cortex_max_elong_mm = {120};
@@ -611,16 +611,16 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
         gaze_params.fov_x = {0}; %auto
         gaze_params.fov_y = {0}; %auto
         %gaze_params.img_diag_angle = {degtorad(35.12),degtorad(44.12)};
-        gaze_params.img_diag_angle = {degtorad(35.12)};
+        gaze_params.img_diag_angle = {degtorad(35.12)}; %not used
         gaze_params.ior = {0};
-        gaze_params.ior_factor_ctt = {0.985};
-        gaze_params.ior_angle = {degtorad(4)};
+        gaze_params.ior_factor_ctt = {nthroot(0.01,600)}; %ctt=nthroot(zerothreshold,niter) %ctt=zerothreshold^(1/(niter*precision)), 
+        gaze_params.ior_angle = {degtorad(4)}; %not used
         gaze_params.ior_matrix = {0};
         gaze_params.conserve_dynamics = {1};
         gaze_params.conserve_dynamics_rest = {1};
 
     gaze_params.foveate = {1};
-    %gaze_params.foveate = {0};
+    %gaze_params.foveate = {0,1,3};
     %gaze_params.fov_type = {'cortical_xavi','cortical_xavi_mirrored','cortical', 'gaussian', 'fisheye'};
     gaze_params.fov_type = {'cortical'};
  
