@@ -4,13 +4,12 @@ function [s_map] = channelwta(channels)
 [m n p] = size(channels);
 s_map = zeros(m,n);
 
-energies = zeros(1,p);
 
 for o=1:p
-	energies(o) = sum(sum(channels(:,:,o)));
+	maximums(o) = max(max(channels(:,:,o)));
 end
 
-[points, winner_channel] = max(energies);
+[points, winner_channel] = max(maximums);
 
 s_map = channels(:,:,winner_channel);
 

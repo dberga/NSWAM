@@ -6,19 +6,18 @@ function [smap,residualmax,maxscales, maxorients, maxchannels ] = get_fusion(RF_
     
     %get pointwise in all RF)
     [ RFmax, residualmax,maxscales, maxorients, maxchannels ] = get_wavet_max_t( RF_s_o_c, residual_s_c, loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient, 3 );
-    [ RFwta, residualwta,~, ~, ~ ] = get_wavet_wta_t( RF_s_o_c, residual_s_c, loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient, 3 );
+    [ RFmax, residualmax,maxscales, maxorients, maxchannels ] = get_wavet_max_t( RF_s_o_c, residual_s_c, loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient, 3 );
     
     %get pointwise in all RF, separate channels
     [ RFmax_c, ~, ~, ~, ~ ] = get_wavec_max_t( RF_s_o_c,residual_s_c,loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient,3 );
-    [ RFwta_c, ~, ~, ~, ~ ] = get_wavec_wta_t( RF_s_o_c,residual_s_c,loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient,3 );
     
     %get pointwise prepared for IDWT
      switch (loaded_struct.fusion_params.smethod)
          case 'wtac'
             %get wta in all RF, separate scales and channels (replicate orient)
-            [ RFmax_c_s_o{1},residualmax_c_s{1}, ~, ~, ~ ] = get_waves_wta_t( RF_c_s_o{1},residual_c_s{1},loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient,1);
-            [ RFmax_c_s_o{2},residualmax_c_s{2}, ~, ~, ~ ] = get_waves_wta_t( RF_c_s_o{2},residual_c_s{2},loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient,1);
-            [ RFmax_c_s_o{3},residualmax_c_s{3}, ~, ~, ~ ] = get_waves_wta_t( RF_c_s_o{3},residual_c_s{3},loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient,1);
+            [ RFmax_c_s_o{1},residualmax_c_s{1}, ~, ~, ~ ] = get_waves_max_t( RF_c_s_o{1},residual_c_s{1},loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient,1);
+            [ RFmax_c_s_o{2},residualmax_c_s{2}, ~, ~, ~ ] = get_waves_max_t( RF_c_s_o{2},residual_c_s{2},loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient,1);
+            [ RFmax_c_s_o{3},residualmax_c_s{3}, ~, ~, ~ ] = get_waves_max_t( RF_c_s_o{3},residual_c_s{3},loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient,1);
 
             RFmax_c_s_o{1} = repicate_orient(RFmax_c_s_o{1},loaded_struct.wave_params.n_scales);
             RFmax_c_s_o{2} = repicate_orient(RFmax_c_s_o{2},loaded_struct.wave_params.n_scales);
@@ -34,17 +33,6 @@ function [smap,residualmax,maxscales, maxorients, maxchannels ] = get_fusion(RF_
             RFmax_c_s_o{2} = repicate_orient(RFmax_c_s_o{2},loaded_struct.wave_params.n_scales);
             RFmax_c_s_o{3} = repicate_orient(RFmax_c_s_o{3},loaded_struct.wave_params.n_scales);
             
-        case 'wta2'
-            %get pointwise in all RF, separate scales (replicate orient)
-            [ RFmax_c_s_o{1},residualmax_c_s{1}, ~, ~, ~ ]=get_waves_wta_t( RF_s_o_c,residual_s_c,loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient,1 );
-            RFmax_c_s_o{2} = RFmax_c_s_o{1};
-            RFmax_c_s_o{3} = RFmax_c_s_o{1};
-            residualmax_c_s{2}=residualmax_c_s{1};
-            residualmax_c_s{3}=residualmax_c_s{1};
-            
-            RFmax_c_s_o{1} = repicate_orient(RFmax_c_s_o{1},loaded_struct.wave_params.n_scales);
-            RFmax_c_s_o{2} = repicate_orient(RFmax_c_s_o{2},loaded_struct.wave_params.n_scales);
-            RFmax_c_s_o{3} = repicate_orient(RFmax_c_s_o{3},loaded_struct.wave_params.n_scales);
             
          case 'pmax2'
             %get pointwise in all RF, separate scales (replicate orient)
@@ -70,8 +58,6 @@ function [smap,residualmax,maxscales, maxorients, maxchannels ] = get_fusion(RF_
     switch loaded_struct.fusion_params.inverse
         case 'max'
             RF_c  = RFmax_c;
-        case 'wta'
-            RF_c  = RFwta_c;
         otherwise
 
             RF_c_s_o{1} = so2s_o(RF_c_s_o{1},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
@@ -90,10 +76,8 @@ function [smap,residualmax,maxscales, maxorients, maxchannels ] = get_fusion(RF_
 
     %combine opponent channels
     switch (loaded_struct.fusion_params.smethod)
-        case 'wta' 
-            smap = channelwta(RF_c); %guanya nomes canal amb la neurona maxima
-        case 'wta2' 
-            smap = channelwta2(RF_c); %guanya nomes canal amb mes energia
+        case 'ent' 
+            smap = channelwta(RF_c); %guanya nomes canal amb mes energia
         case 'sqmean'
             smap = channelsqmean(RF_c);
         otherwise %pmax, pmaxc, pmax2

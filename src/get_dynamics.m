@@ -22,7 +22,7 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
             [ loaded_struct_equivalent_path , mfolder, folder_equivalent,iname_equivalent,k_equivalent] = get_samemat( loaded_struct_path );
             iFactor_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_iFactor_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
             
-            if exist(iFactor_path_equivalent,'file')
+            if exist(iFactor_path_equivalent,'file') %reuse other iFactor if struct parameters are equivalent
            
                 iFactor = load(iFactor_path_equivalent); iFactor = iFactor.matrix_in;
                 
