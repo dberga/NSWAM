@@ -218,7 +218,7 @@ if run_flags.run_all==1
     %smap from density of scanpath
     if ~isfield(conf_struct.fusion_params,'ior_smap'), conf_struct.fusion_params.ior_smap=0;  end
     if conf_struct.fusion_params.ior_smap
-        mean_gmap = run_mean(run_flags,image_props,conf_struct,gmaps);
+        mean_gmap = run_gmean(run_flags,image_props,conf_struct,gmaps);
     else
         mean_gmap = run_gaussian(run_flags,image_props,conf_struct,scanpath);
     end

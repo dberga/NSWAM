@@ -14,7 +14,7 @@ function [smap,residualmax,maxscales, maxorients, maxchannels ] = get_fusion(RF_
     
     %get pointwise prepared for IDWT
      switch (loaded_struct.fusion_params.smethod)
-         case 'wtac'
+         case 'wtamaxc'
             %get wta in all RF, separate scales and channels (replicate orient)
             [ RFmax_c_s_o{1},residualmax_c_s{1}, ~, ~, ~ ] = get_waves_wta_t( RF_c_s_o{1},residual_c_s{1},loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient,1);
             [ RFmax_c_s_o{2},residualmax_c_s{2}, ~, ~, ~ ] = get_waves_wta_t( RF_c_s_o{2},residual_c_s{2},loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient,1);
@@ -34,7 +34,7 @@ function [smap,residualmax,maxscales, maxorients, maxchannels ] = get_fusion(RF_
             RFmax_c_s_o{2} = repicate_orient(RFmax_c_s_o{2},loaded_struct.wave_params.n_scales);
             RFmax_c_s_o{3} = repicate_orient(RFmax_c_s_o{3},loaded_struct.wave_params.n_scales);
             
-        case 'wta2'
+        case 'wtamax2'
             %get pointwise in all RF, separate scales (replicate orient)
             [ RFmax_c_s_o{1},residualmax_c_s{1}, ~, ~, ~ ]=get_waves_wta_t( RF_s_o_c,residual_s_c,loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient,1 );
             RFmax_c_s_o{2} = RFmax_c_s_o{1};

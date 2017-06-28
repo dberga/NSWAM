@@ -414,20 +414,23 @@ function [fusion_params] = get_all_parameters_fusion_NCZLd()
     %fusion_params.residual_wave= {0,1,2};
     fusion_params.residual_wave= {0};
 
-    %fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','ent'};
+    %fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','wtamaxc','wtamax2'}; %fusion method
     fusion_params.smethod= {'pmax2','sqmean'};
 
-    %fusion_params.fusion= {1,2,3};
-    fusion_params.fusion= {1,3};
+    %fusion_params.fusion= {1,2,3,4,5}; %normalization
+    fusion_params.fusion= {3};
 
     %fusion_params.tmem_res = {'mean','max'}; %temporal mean of iFactor or temporal max?
     fusion_params.tmem_res = {'mean'}; 
     
-    %fusion_params.inverse = {'default','max'};
+    %fusion_params.inverse = {'default','max','wta','wta2'};
     fusion_params.inverse={'default'};
     
     %fusion_params.gsp={0,n} smoothing parameter
-    fusion_params.gsp={0,1};
+    fusion_params.gsp={1};
+    
+    %fusion_params.ior_smap={1,0}; %get gaussian map according to ior or fixed at 40 dva
+    fusion_params.ior_smap={1};
 end
 
 function [file_params] = get_all_parameters_file_NCZLd()
