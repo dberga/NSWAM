@@ -1,4 +1,4 @@
-function [ RFmax, residualmax,maxscales, maxorients, maxchannels ] = get_wavet_max_t( RF_s_o_c,residual_s_c, n_scales, n_orient, C )
+function [ RFmax, residualmax,max_s, max_o, max_c ] = get_wavet_max_t( RF_s_o_c,residual_s_c, n_scales, n_orient, C )
 
     RFmax = zeros(size(RF_s_o_c{1}{1}(:,:,1)));
     residualmax = zeros(size(residual_s_c{1}(:,:,1)));
@@ -13,9 +13,9 @@ function [ RFmax, residualmax,maxscales, maxorients, maxchannels ] = get_wavet_m
                         if values(y,x) >= RFmax(y,x)
                             RFmax(y,x) = values(y,x);
                             residualmax(y,x) = values_residual(y,x);
-                            maxscales(y,x)=s;
-                            maxorients(y,x)=o;
-                            maxchannels(y,x)=c;
+                            max_s=s;
+                            max_o=o;
+                            max_c=c;
                         end
                     end
                 end

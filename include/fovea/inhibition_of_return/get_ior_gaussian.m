@@ -1,4 +1,4 @@
-function [ gaussian ] = get_ior_gaussian( fov_x, fov_y, ior_factor, ior_angle, M, N, img_diag_angle)
+function [ gaussian ] = get_ior_gaussian( fov_x, fov_y, ior_factor, max_scale,ini_scale,fin_scale, M, N, img_diag_angle)
 
 
 
@@ -14,14 +14,36 @@ function [ gaussian ] = get_ior_gaussian( fov_x, fov_y, ior_factor, ior_angle, M
 %gaussian = ior_factor .* normalize_minmax(antonioGaussian(bmap,ior_angle));
 
 %method3
-bmap = scanpath2bmap([fov_x fov_y],[M N]);
-n = max([M N]);
-%n_scales = floor(log((n-1)/mida_min)/log(2))+3-1;
-nn = 2^(get_closer_2exp(n));
-sigma = get_closer_size(nn,ior_angle+3);
-fc = n*sqrt(log(2)/(2*(pi^2)*(sigma^2)));
-gaussian = ior_factor .* normalize_minmax(antonioGaussian_mod(bmap,fc));
+% bmap = scanpath2bmap([fov_x fov_y],[M N]);
+% n = max([M N]);
+% %n_scales = floor(log((n-1)/mida_min)/log(2))+3-1;
+% nn = 2^(get_closer_2exp(n));
+% sigma = get_closer_size(nn,ior_angle+3);
+% fc = n*sqrt(log(2)/(2*(pi^2)*(sigma^2)));
+% gaussian = ior_factor .* normalize_minmax(antonioGaussian_mod(bmap,fc));
 
+%method4
+%  bmap = scanpath2bmap([fov_x fov_y],[M N]);
+%  n = max([M N]);
+%      %ini_scale corresponds to pixels of 1º visual angle
+%      %fin_scale corresponds to maximum pixels of image
+%     %ior_angle_pixels=rad2deg(img_diag_angle)+(n-rad2deg(img_diag_angle))*((max_scale-ini_scale)/(fin_scale-ini_scale));
+%  gaussian = ior_factor .* normalize_minmax(zhong2012(bmap,ior_angle_pixels));
+ 
+ %method5 (minima escala=
+ bmap = scanpath2bmap([fov_x fov_y],[M N]);
+ n = max([M N]);
+ nn = 2^(get_closer_2exp(n));
+ for s=ini_scale:fin_scale
+    pyramid(s)=get_closer_size(nn,s);
+ end
+ pyramid=fliplr(pyramid);
+ nnn=pyramid(max_scale); 
+ ior_angle_pixels=(pyramid(end)-pyramid(1))*normalize_minmax(nnn,pyramid(1),pyramid(end)*2)+(pyramid(1));
+ gaussian = ior_factor .* normalize_minmax(zhong2012(bmap,ior_angle_pixels));
+ 
+ 
+ 
 
 end
 

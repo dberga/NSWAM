@@ -1,8 +1,0 @@
-function [ nnn ] = get_closer_size( nn, target_scale, n_scales )
-    nnn = nn;
-    for s=target_scale:
-        nnn = nnn/2;
-    end
-
-end
-

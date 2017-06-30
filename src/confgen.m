@@ -1,7 +1,7 @@
 function [  ] = confgen( folder)
 
 if nargin < 1
-    folder = 'conf_best2';
+    folder = 'conf_best3';
 end
 
 % zli_params
@@ -314,7 +314,7 @@ function [csf_params] = get_all_parameters_csf_NCZLd()
     %csf_params.nu_0 ={2.357,4}; 
     csf_params.nu_0 ={4};
     
-    
+    %xavi
     profile1.params_intensity.fOffsetMax=0.;
     profile1.params_intensity.fContrastMaxMax=1;
     profile1.params_intensity.fContrastMaxMin=0.;
@@ -338,7 +338,7 @@ function [csf_params] = get_all_parameters_csf_NCZLd()
     profile1.params_chromatic.fOffsetMin=2;
     
     
-    
+    %naila
     profile2.params_intensity.fOffsetMax=0.;
     profile2.params_intensity.fContrastMaxMax=4.981624;
     profile2.params_intensity.fContrastMaxMin=0.;
@@ -380,7 +380,7 @@ function [color_params] = get_all_parameters_color_NCZLd()
     
     %color_params.HDR={0}; % high dynamic range
     %color_params.orgb_flag= {1,0};
-    color_params.orgb_flag= {0};
+    color_params.orgb_flag= {0}; %put smap back to rgb
 
     %color_params.nchannels = 3;
     
@@ -412,22 +412,22 @@ function [fusion_params] = get_all_parameters_fusion_NCZLd()
     fusion_params.output_from_csf= {'iFactor'};
     
     %fusion_params.residual_wave= {0,1,2};
-    fusion_params.residual_wave= {0};
+    fusion_params.residual_wave= {0,1,2};
 
-    %fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','wtamaxc','wtamax2'}; %fusion method
-    fusion_params.smethod= {'pmax2','sqmean'};
+    %fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','wtamaxc','wtamax2','wta','wta2'}; %fusion method
+    fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','wtamaxc','wtamax2','wta','wta2'};
 
     %fusion_params.fusion= {1,2,3,4,5}; %normalization
-    fusion_params.fusion= {3};
+    fusion_params.fusion= {1,2,3,4,5};
 
     %fusion_params.tmem_res = {'mean','max'}; %temporal mean of iFactor or temporal max?
-    fusion_params.tmem_res = {'mean'}; 
+    fusion_params.tmem_res = {'mean','max'}; 
     
-    %fusion_params.inverse = {'default','max','wta','wta2'};
-    fusion_params.inverse={'default'};
+    %fusion_params.inverse = {'default','max','wta'};
+    fusion_params.inverse={'default','max','wta'};
     
     %fusion_params.gsp={0,n} smoothing parameter
-    fusion_params.gsp={1};
+    fusion_params.gsp={0,1};
     
     %fusion_params.ior_smap={1,0}; %get gaussian map according to ior or fixed at 40 dva
     fusion_params.ior_smap={1};
@@ -615,14 +615,14 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
         gaze_params.fov_y = {0}; %auto
         %gaze_params.img_diag_angle = {degtorad(35.12),degtorad(44.12)};
         gaze_params.img_diag_angle = {degtorad(35.12)}; %not used
-        gaze_params.ior = {0};
+        gaze_params.ior = {0,1};
         gaze_params.ior_factor_ctt = {nthroot(0.01,600)}; %ctt=nthroot(zerothreshold,niter) %ctt=zerothreshold^(1/(niter*precision)), 
         gaze_params.ior_angle = {degtorad(4)}; %not used
         gaze_params.ior_matrix = {0};
         gaze_params.conserve_dynamics = {1};
         gaze_params.conserve_dynamics_rest = {1};
 
-    gaze_params.foveate = {1};
+    gaze_params.foveate = {1,3};
     %gaze_params.foveate = {0,1,3};
     %gaze_params.fov_type = {'cortical_xavi','cortical_xavi_mirrored','cortical', 'gaussian', 'fisheye'};
     gaze_params.fov_type = {'cortical'};

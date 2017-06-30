@@ -1,6 +1,8 @@
 function [smap,scanpath] = saliency(image_name,input_image,conf_struct_path,output_folder,output_folder_mats,output_extension)
 
-
+addpath(genpath('include'));
+addpath(genpath('src'));
+addpath(genpath('src_mex'));
 
 %%%%%%%%%%%%%%%%%%default arguments (nargin)
 if ~exist('output_extension','var')    output_extension = 'png'; end
@@ -96,29 +98,30 @@ if run_flags.run_all==1
                     [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(input_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
                     [conf_struct.wave_params.n_orient] = calc_norient(input_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
                     [curvs,residuals] = get_DWT(run_flags,conf_struct,folder_props,image_props,C,k,input_image);
-                
+                    conf_struct.gaze_params.ior_matrix = get_foveate(conf_struct.gaze_params.ior_matrix,conf_struct,1);
+                    
                 case 3 %foveate after DWT
                     [input_image] = get_resize(input_image,conf_struct);
                     [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(input_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
                     [conf_struct.wave_params.n_orient] = calc_norient(input_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
                     [curvs,residuals] = get_DWT(run_flags,conf_struct,folder_props,image_props,C,k,input_image);
                     [curvs,residuals]=get_foveate_multires(curvs,residuals,conf_struct);
+                    conf_struct.gaze_params.ior_matrix = get_foveate(conf_struct.gaze_params.ior_matrix,conf_struct,1);
                     
                 otherwise %do not foveate
                     [input_image] = get_resize(input_image,conf_struct);
                     [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(input_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
                     [conf_struct.wave_params.n_orient] = calc_norient(input_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
                     [curvs,residuals] = get_DWT(run_flags,conf_struct,folder_props,image_props,C,k,input_image);
-                
+                    [conf_struct.gaze_params.ior_matrix] = get_resize(conf_struct.gaze_params.ior_matrix,conf_struct);
             end
             
-            [conf_struct.gaze_params.height,conf_struct.gaze_params.width, ~] = size(input_image);
             [conf_struct.resize_params.M, conf_struct.resize_params.N, ~] = size(input_image);
             [conf_struct.resize_params.fov_x,conf_struct.resize_params.fov_y] = movecoords( conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y , conf_struct.resize_params.M, conf_struct.resize_params.N); 
             
             [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,image_props,mat_props,conf_struct,k);
             
-            conf_struct.gaze_params.ior_matrix = get_foveate(conf_struct.gaze_params.ior_matrix,conf_struct);
+            
             
             
                 %get_fig_opp(input_image,'fov',folder_props,image_props,conf_struct);
@@ -161,12 +164,9 @@ if run_flags.run_all==1
             [RF_s_o_c] = get_eCSF(loaded_struct,RF_s_o_c);
             
             %fusion
-            [smap,residualmax,maxscales, maxorients, maxchannels ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
+            [smap,residualmax,maxidx_s, maxidx_o, maxidx_c ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
             [maxval,maxidx]=max(smap(:));
             [maxval_r,maxidx_r]=max(residualmax(:));
-            [maxval_s,maxidx_s]=max(maxscales(:));
-            [maxval_o,maxidx_o]=max(maxorients(:));
-            [maxval_c,maxidx_c]=max(maxchannels(:));
             
             %undistort
             smap = get_undistort(loaded_struct,smap);
@@ -178,11 +178,11 @@ if run_flags.run_all==1
             [conf_struct.gaze_params.fov_y, conf_struct.gaze_params.fov_x] = ind2sub(size(smap),maxidx); %x,y
             
             %set inhibition of return on current gaze (update and add)
-            conf_struct.gaze_params.ior_matrix = get_ior_matrix_newgaze(ior_matrix_unfoveated, maxidx_s,conf_struct); 
+            conf_struct.gaze_params.ior_matrix = get_ior_matrix_newgaze(ior_matrix_unfoveated, maxidx_s,conf_struct.wave_params.ini_scale,conf_struct.wave_params.fin_scale,conf_struct); 
                 %get_fig_single(normalize_minmax(conf_struct.gaze_params.ior_matrix,0,1),'ior',folder_props,image_props,conf_struct);
             
             %set ior smap (depending on a fusion factor)
-            gmap=get_ior_gaussian(conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y, 1, maxidx_s, conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.img_diag_angle);
+            gmap=get_ior_gaussian(conf_struct.resize_params.fov_x, conf_struct.resize_params.fov_y, 1, maxidx_s,conf_struct.wave_params.ini_scale,conf_struct.wave_params.fin_scale, conf_struct.resize_params.M, conf_struct.resize_params.N, conf_struct.gaze_params.img_diag_angle);
             
             %normalize
             smap = get_normalize(loaded_struct,smap);
@@ -216,7 +216,7 @@ if run_flags.run_all==1
     saccades_bmap = run_bmap(run_flags,image_props,conf_struct,scanpath);
     
     %smap from density of scanpath
-    if ~isfield(conf_struct.fusion_params,'ior_smap'), conf_struct.fusion_params.ior_smap=0;  end
+    if ~isfield(conf_struct.fusion_params,'ior_smap'), conf_struct.fusion_params.ior_smap=1;  end
     if conf_struct.fusion_params.ior_smap
         mean_gmap = run_gmean(run_flags,image_props,conf_struct,gmaps);
     else
@@ -245,18 +245,18 @@ end
     if exist(mean4_ln_path,'file') system(['rm -f' ' ' mean4_ln_path]); end;
     system(['ln -s ' mean4_path ' ' mean4_ln_path]);  
     
-%     gaussian2_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/2/'];
-%     gaussian4_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/4/'];
-%     gaussian10_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/10/'];
-%     gaussian2_ln_path=[pwd '/' folder_props.output_folder '/gaussian_2gazes_' folder_props.output_subfolder];
-%     gaussian4_ln_path=[pwd '/' folder_props.output_folder '/gaussian_4gazes_' folder_props.output_subfolder];
-%     gaussian10_ln_path=[pwd '/' folder_props.output_folder '/gaussian_10gazes_' folder_props.output_subfolder];
-%     if exist(gaussian2_ln_path,'file') system(['rm -f' ' ' gaussian2_ln_path]); end;
-%     system(['ln -s ' gaussian2_path ' ' gaussian2_ln_path]); 
-%     if exist(gaussian4_ln_path,'file') system(['rm -f' ' ' gaussian4_ln_path]); end;
-%     system(['ln -s ' gaussian4_path ' ' gaussian4_ln_path]);  
-%     if exist(gaussian10_ln_path,'file') system(['rm -f' ' ' gaussian10_ln_path]); end;
-%     system(['ln -s ' gaussian10_path ' ' gaussian10_ln_path]);
+    gaussian2_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/2/'];
+    gaussian4_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/4/'];
+    gaussian10_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/10/'];
+    gaussian2_ln_path=[pwd '/' folder_props.output_folder '/gaussian_2gazes_' folder_props.output_subfolder];
+    gaussian4_ln_path=[pwd '/' folder_props.output_folder '/gaussian_4gazes_' folder_props.output_subfolder];
+    gaussian10_ln_path=[pwd '/' folder_props.output_folder '/gaussian_10gazes_' folder_props.output_subfolder];
+    if exist(gaussian2_ln_path,'file') system(['rm -f' ' ' gaussian2_ln_path]); end;
+    system(['ln -s ' gaussian2_path ' ' gaussian2_ln_path]); 
+    if exist(gaussian4_ln_path,'file') system(['rm -f' ' ' gaussian4_ln_path]); end;
+    system(['ln -s ' gaussian4_path ' ' gaussian4_ln_path]);  
+    if exist(gaussian10_ln_path,'file') system(['rm -f' ' ' gaussian10_ln_path]); end;
+    system(['ln -s ' gaussian10_path ' ' gaussian10_ln_path]);
     
 end
 

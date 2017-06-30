@@ -1,7 +1,7 @@
 
-function [tempMax] = get_temporalMax(matrix_in,tinit,tfinal,iinit,ifinal,s,o,c) 
+function [tempMax] = get_temporaliterMax(matrix_in,tinit,tfinal,iinit,ifinal,s,o,c) 
     
-    tempMax = zeros(size(matrix_in{tinit}{s}{o}(:,:,c)));
+    tempMax = zeros(size(matrix_in{tinit}{iinit}{s}{o}(:,:,c)));
     
     for ff=tinit:tfinal
         for it=iinit:ifinal

@@ -18,10 +18,15 @@ function [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,
             if ~isfield(loaded_struct.gaze_params,'ior') loaded_struct.gaze_params.ior = 0; end;
             if ~isfield(loaded_struct.gaze_params,'ior_factor_ctt') loaded_struct.gaze_params.ior_factor_ctt = 0; end;
             if ~isfield(loaded_struct.gaze_params,'ior_matrix') loaded_struct.gaze_params.ior_matrix = 0; end;
+%             if ~isfield(loaded_struct.fusion_params,'gsp') loaded_struct.fusion_params.gsp = 0; end;
+%             if ~isfield(loaded_struct.fusion_params,'ior_smap') loaded_struct.fusion_params.ior_smap = 0; end;
+%             if ~isfield(loaded_struct.fusion_params,'inverse') loaded_struct.ior_smap.inverse = 'default'; end;
+            
             
             %loaded struct gazing ovewrites
-            loaded_struct.gaze_params.height = conf_struct.gaze_params.height;
-            loaded_struct.gaze_params.width = conf_struct.gaze_params.width;
+            loaded_struct.resize_params.M = conf_struct.resize_params.M;
+            loaded_struct.resize_params.N = conf_struct.resize_params.N;
+            conf_struct.resize_params = loaded_struct.resize_params;
             conf_struct.gaze_params = loaded_struct.gaze_params;
             
             %conf struct fusion ovewrites 
