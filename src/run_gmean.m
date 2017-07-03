@@ -1,5 +1,5 @@
-function [mean_smap] = run_mean(run_flags,image_props,conf_struct,smaps)
-    if run_flags.run_mean 
+function [mean_smap] = run_gmean(run_flags,image_props,conf_struct,smaps)
+    if run_flags.run_gaussian 
         
         for k=1:conf_struct.gaze_params.ngazes
            if run_flags.load_smap(k)
