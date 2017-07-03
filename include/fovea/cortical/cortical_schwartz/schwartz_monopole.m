@@ -12,7 +12,6 @@ Z = Z/angle2rad;
 
 W = lambda*log(Z+a);
 
-
 X = real(W);
 Y = imag(W);
 

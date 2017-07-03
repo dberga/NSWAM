@@ -1,6 +1,8 @@
 function [img] = mapCortex2Image(cortex,cortex_params,gaze_params)
 
-
+%upsample before conversion (to avoid low accuracy on high eccentricity)
+multiple=ceil(gaze_params.orig_width/cortex_params.cortex_max_elong_mm)*2;
+cortex=imresize(cortex,[cortex_params.cortex_max_az_mm cortex_params.cortex_max_elong_mm]*multiple,'bicubic');
 
 cortex_params.cortex_height = size(cortex,1); 
 cortex_params.cortex_width = size(cortex,2); 
@@ -8,7 +10,6 @@ cortex_width_2 = cortex_params.cortex_width/2;
 cortex_height_2 = cortex_params.cortex_height/2;
 
 img = zeros(gaze_params.orig_height,gaze_params.orig_width);
-
 
 cortex_elong2pix_mm = cortex_params.cortex_width/cortex_params.cortex_max_elong_mm;
 cortex_az2pix_mm = cortex_params.cortex_height/cortex_params.cortex_max_az_mm;
@@ -42,9 +43,9 @@ switch cortex_params.cm_method
         [coord_j_cortex,coord_i_cortex] = schwartz_monopole( (coord_i_img-fov_y)*eye_pix2az, (coord_j_img-fov_x)*eye_pix2elong,cortex_params.lambda,cortex_params.a);
 end
 
-j = round((coord_j_cortex*cortex_elong2pix_mm)+cortex_width_2+1);
-i = round((coord_i_cortex*cortex_az2pix_mm)+cortex_height_2+1); 
-coord_cortex = [i;j];
+j = (coord_j_cortex*cortex_elong2pix_mm)+cortex_width_2+1;
+i = (coord_i_cortex*cortex_az2pix_mm)+cortex_height_2+1; 
+coord_cortex = round([i;j]);
 
 coord_cortex_min_limit = repmat([1 1],[numel(img) 1]);
 coord_cortex_max_limit = repmat([cortex_params.cortex_height cortex_params.cortex_width],[numel(img) 1]);
