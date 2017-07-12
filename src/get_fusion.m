@@ -7,7 +7,9 @@ function [smap,residualmax,max_s, max_o, max_c ] = get_fusion(RF_s_o_c, residual
     %get pointwise in all RF)
     [ RFmax, residualmax,max_s, max_o, max_c ] = get_wavet_max_t( RF_s_o_c, residual_s_c, loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient, 3 );
     [ RFwta, residualwta,~, ~, ~ ] = get_wavet_wta_t( RF_s_o_c, residual_s_c, loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient, 3 );
-    
+    max_s
+    max_o
+    max_c
     %get pointwise in all RF, separate channels
     [ RFmax_c, ~, ~, ~, ~ ] = get_wavec_max_t( RF_s_o_c,residual_s_c,loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient,3 );
     [ RFwta_c, ~, ~, ~, ~ ] = get_wavec_wta_t( RF_s_o_c,residual_s_c,loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient,3 );

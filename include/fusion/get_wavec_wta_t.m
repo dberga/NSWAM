@@ -2,7 +2,7 @@ function [ RFmax_c,residualmax_c, max_s, max_o, max_c ] = get_wavec_wta_t( RF_s_
 
     RFmax_c = zeros(size(RF_s_o_c{1}{1}));
     residualmax_c = zeros(size(residual_s_c{1}));
-    
+    maxval=0;
     
     for c=1:C
         RFmax = zeros(size(RF_s_o_c{1}{1}(:,:,1)));
@@ -13,12 +13,15 @@ function [ RFmax_c,residualmax_c, max_s, max_o, max_c ] = get_wavec_wta_t( RF_s_
                 values_residual = residual_s_c{s}(:,:,c); 
                 for y=1:size(RF_s_o_c{s}{o},1)
                     for x=1:size(RF_s_o_c{s}{o},2)
-                        if values(y,x) > RFmax(y,x)
+                        if values(y,x) >= RFmax(y,x)
                             %RFmax(y,x) = values(y,x);
                             %residualmax(y,x) = values_residual(y,x);
-                            max_s=s;
-                            max_o=o;
-                            max_c=c;
+                        end
+                        if values(y,x) >= maxval
+                           maxval=values(y,x);
+                           max_s=s;
+                           max_o=o;
+                           max_c=c;
                         end
                     end
                 end

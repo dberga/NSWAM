@@ -36,7 +36,7 @@ function [im_out] = foveate(im_in, flag, struct )
         cortex_params.cortex_width = 128;
         cortex_params.a=degtorad(0.77);
         cortex_params.b=degtorad(150);
-        cortex_params.lambda=18;
+        cortex_params.lambda=12;
         cortex_params.isoPolarGrad=0.1821;
         cortex_params.eccWidth=0.7609;
         cortex_params.cortex_max_elong_mm = 120;
@@ -47,7 +47,7 @@ function [im_out] = foveate(im_in, flag, struct )
         gaze_params.orig_height = size(im_in,1); %unknown on undistort
         gaze_params.fov_x = round(gaze_params.orig_width/2);
         gaze_params.fov_y = round(gaze_params.orig_height/2);
-        gaze_params.img_diag_angle = degtorad(44.12);
+        gaze_params.img_diag_angle = degtorad(35.12);
         gaze_params.fov_type = 'cortical';
     else
         cortex_params = struct.cortex_params;
@@ -58,8 +58,7 @@ function [im_out] = foveate(im_in, flag, struct )
         end
         
     end
-
-    
+   
     switch flag
         case 0 %distort
             switch gaze_params.fov_type 

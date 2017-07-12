@@ -45,9 +45,9 @@ switch cortex_params.cm_method
 end
 
 
-img_cols = round(coord_j_eye*eye_elong2pix+gaze_params.fov_x);
-img_rows = round(coord_i_eye*eye_az2pix+gaze_params.fov_y);
-coord_img = [img_rows;img_cols];
+img_cols = coord_j_eye*eye_elong2pix+gaze_params.fov_x;
+img_rows = coord_i_eye*eye_az2pix+gaze_params.fov_y;
+coord_img = round([img_rows;img_cols]);
 
 coord_img_min_limit = repmat([1 1],[numel(cortex) 1]);
 coord_img_max_limit = repmat([gaze_params.orig_height gaze_params.orig_width],[numel(cortex) 1]);
