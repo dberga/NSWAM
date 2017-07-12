@@ -257,8 +257,8 @@ end
     if exist(mean4_ln_path,'file') system(['rm -f' ' ' mean4_ln_path]); end;
     system(['ln -s ' mean4_path ' ' mean4_ln_path]);  
     
-    gaussian2_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/2/'];
-    gaussian4_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/4/'];
+    gaussian2_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/3/']; %for ior, is 2+1
+    gaussian4_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/5/']; %for ior, is 4+1
     gaussian10_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/10/'];
     gaussian2_ln_path=[pwd '/' folder_props.output_folder '/gaussian_2gazes_' folder_props.output_subfolder];
     gaussian4_ln_path=[pwd '/' folder_props.output_folder '/gaussian_4gazes_' folder_props.output_subfolder];
