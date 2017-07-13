@@ -47,7 +47,7 @@ end
 
 img_cols = coord_j_eye*eye_elong2pix+gaze_params.fov_x;
 img_rows = coord_i_eye*eye_az2pix+gaze_params.fov_y;
-coord_img = round([img_rows;img_cols]);
+coord_img = [img_rows;img_cols];
 
 coord_img_min_limit = repmat([1 1],[numel(cortex) 1]);
 coord_img_max_limit = repmat([gaze_params.orig_height gaze_params.orig_width],[numel(cortex) 1]);
@@ -102,8 +102,9 @@ function [map1] = map_coords(map1,coord_map1,idx_inside,idx_outside,map2,coord_m
     coords_j_inside = j(idx_inside');
     coords_inside = sub2ind(size_map2,coords_i_inside,coords_j_inside);
 
-    map1(coord_map1(idx_inside))=map2(coords_inside);
-    
+    map3=interp2(map2,j,i);
+%     map1(coord_map1(idx_inside))=map2(coords_inside);
+    map1=reshape(map3,size(map1));
     
     %mirroring here
     if mirroring == 1
@@ -111,8 +112,8 @@ function [map1] = map_coords(map1,coord_map1,idx_inside,idx_outside,map2,coord_m
             coords_i_outside = inmod(coords_i_outside,1,size_map2(1));
         coords_j_outside = j(idx_outside');
             coords_j_outside = inmod(coords_j_outside,1,size_map2(2));
-        coords_outside = sub2ind(size_map2,coords_i_outside,coords_j_outside);
-        map1(coord_map1(idx_outside))=map2(coords_outside);
+         coords_outside = sub2ind(size_map2,floor(coords_i_outside)+1,floor(coords_j_outside)+1);
+         map1(coord_map1(idx_outside))=map2(coords_outside);
     end
     
 end
@@ -159,7 +160,6 @@ function [rows, cols] = custom_ind2sub(mat_size, subs)
     
     
 end
-
 
 
 

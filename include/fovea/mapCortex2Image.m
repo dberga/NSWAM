@@ -26,10 +26,6 @@ eye_pix2az = img_az_angle/gaze_params.orig_height;
 coord_img = [1:numel(img)];
 [coord_i_img, coord_j_img] = ind2sub(size(img),[1:numel(img)]);
 
-
-
-
-
 switch cortex_params.cm_method
     case 'schwartz_monopole'
         [coord_j_cortex,coord_i_cortex] = schwartz_monopole( (coord_i_img-gaze_params.fov_y)*eye_pix2az, (coord_j_img-gaze_params.fov_x)*eye_pix2elong,cortex_params.lambda,cortex_params.a);
@@ -46,21 +42,9 @@ end
 % coord_j_cortex(round(length(coord_j_cortex)/2)-pix:round(length(coord_j_cortex)/2)+pix)=imresize(coord_j_cortex,[pix*4 1]);
 % coord_j_cortex(round(length(coord_j_cortex)/2)-pix:round(length(coord_j_cortex)/2)+pix)=imresize(coord_j_cortex,[pix*2 1]);
 
-%reverse mid region negatives and positives j
-mid_col=floor(gaze_params.orig_width/2);
-cj2=reshape(coord_j_cortex,[gaze_params.orig_height gaze_params.orig_width]);
-aux=cj2(find(cj2(:,1:mid_col)>0));
-aux2=cj2(find(cj2(:,mid_col+1:end)<0));
-cj2(find(cj2(:,1:mid_col)>0))=-aux;
-cj2(:,mid_col+1:end)=imresize(fliplr(-cj2(:,1:mid_col)),size(cj2(:,mid_col+1:end)));
-%cj2(find(cj2(:,341:end)<0))=-aux2;
-cj2=reshape(cj2,[1 gaze_params.orig_height*gaze_params.orig_width]);
-coord_j_cortex=cj2;
-
 j = (coord_j_cortex*cortex_elong2pix_mm)+cortex_width_2+1;
 i = (coord_i_cortex*cortex_az2pix_mm)+cortex_height_2+1; 
-coord_cortex = round([i;j]);
-
+coord_cortex = [i;j];
 
 coord_cortex_min_limit = repmat([1 1],[numel(img) 1]);
 coord_cortex_max_limit = repmat([cortex_params.cortex_height cortex_params.cortex_width],[numel(img) 1]);
@@ -74,6 +58,7 @@ incorrect = setdiff(1:length(coord_cortex),correct);
 %img(coord_img(correct))=cortex(sub2ind(size(cortex),i(correct'),j(correct')));
 img = map_coords(img,coord_img,correct,incorrect,cortex,coord_cortex,cortex_params.mirroring);
 
+mid_col=round(size(img,2)/2);
 img(:,mid_col-5:mid_col+5)=imgaussfilt(img(:,mid_col-5:mid_col+5), 2);
 
 % for ic = coord_img
@@ -101,8 +86,9 @@ function [map1] = map_coords(map1,coord_map1,idx_inside,idx_outside,map2,coord_m
     coords_j_inside = j(idx_inside');
     coords_inside = sub2ind(size_map2,coords_i_inside,coords_j_inside);
 
-    map1(coord_map1(idx_inside))=map2(coords_inside);
-    
+    map3=interp2(map2,j,i);
+%     map1(coord_map1(idx_inside))=map2(coords_inside);
+    map1=reshape(map3,size(map1));
     
     %mirroring here
     if mirroring == 1
@@ -110,7 +96,7 @@ function [map1] = map_coords(map1,coord_map1,idx_inside,idx_outside,map2,coord_m
             coords_i_outside = inmod(coords_i_outside,1,size_map2(1));
         coords_j_outside = j(idx_outside');
             coords_j_outside = inmod(coords_j_outside,1,size_map2(2));
-        coords_outside = sub2ind(size_map2,coords_i_outside,coords_j_outside);
+        coords_outside = sub2ind(size_map2,floor(coords_i_outside)+1,floor(coords_j_outside)+1);
         map1(coord_map1(idx_outside))=map2(coords_outside);
     end
     
