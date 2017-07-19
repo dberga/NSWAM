@@ -8,36 +8,38 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
         
         loaded_struct_path=get_mat_name('struct',folder_props,image_props,gaze_idx);
         [ loaded_struct_equivalent_path , mfolder, folder_equivalent,iname_equivalent,k_equivalent] = get_samemat( loaded_struct_path );
-        iFactor_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_iFactor_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
-        xon_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_xon_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
-        xoff_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_xoff_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
-        yon_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_yon_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
-        yoff_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_yoff_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
-            
-        if exist(iFactor_path_equivalent,'file') && ... %reuse other iFactor if struct parameters are equivalent
-               exist(xon_path_equivalent,'file') && ...
-               exist(xoff_path_equivalent,'file') && ...
-               exist(yon_path_equivalent,'file') && ...
-               exist(yoff_path_equivalent,'file') 
-               
-                run_flags.load_iFactor_mats(gaze_idx)=1;
-                
-                iFactor_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_iFactor_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
-                    system(['ln -sf ' strrep(strrep(iFactor_path_equivalent,'(','\('),')','\)') ' ' strrep(strrep(iFactor_path_current,'(','\('),')','\)')]);
-                    
-                xon_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_xon_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
-                    system(['ln -sf ' strrep(strrep(xon_path_equivalent,'(','\('),')','\)') ' ' strrep(strrep(xon_path_current,'(','\('),')','\)')]);
-                
-                xoff_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_xoff_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
-                    system(['ln -sf ' strrep(strrep(xoff_path_equivalent,'(','\('),')','\)') ' ' strrep(strrep(xoff_path_current,'(','\('),')','\)')]);
-                
-                yon_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_yon_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
-                    system(['ln -sf ' strrep(strrep(yon_path_equivalent,'(','\('),')','\)') ' ' strrep(strrep(yon_path_current,'(','\('),')','\)')]);
-                
-                yoff_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_yoff_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
-                    system(['ln -sf ' strrep(strrep(yoff_path_equivalent,'(','\('),')','\)') ' ' strrep(strrep(yoff_path_current,'(','\('),')','\)')]);
-        end
         
+        if numel(loaded_struct_equivalent_path)>0
+            iFactor_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_iFactor_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
+            xon_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_xon_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
+            xoff_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_xoff_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
+            yon_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_yon_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
+            yoff_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_yoff_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
+            
+            if exist(iFactor_path_equivalent,'file') && ... %reuse other iFactor if struct parameters are equivalent
+                   exist(xon_path_equivalent,'file') && ...
+                   exist(xoff_path_equivalent,'file') && ...
+                   exist(yon_path_equivalent,'file') && ...
+                   exist(yoff_path_equivalent,'file') 
+
+                    run_flags.load_iFactor_mats(gaze_idx)=1;
+
+                    iFactor_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_iFactor_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
+                        system(['ln -sf ' strrep(strrep(iFactor_path_equivalent,'(','\('),')','\)') ' ' strrep(strrep(iFactor_path_current,'(','\('),')','\)')]);
+
+                    xon_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_xon_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
+                        system(['ln -sf ' strrep(strrep(xon_path_equivalent,'(','\('),')','\)') ' ' strrep(strrep(xon_path_current,'(','\('),')','\)')]);
+
+                    xoff_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_xoff_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
+                        system(['ln -sf ' strrep(strrep(xoff_path_equivalent,'(','\('),')','\)') ' ' strrep(strrep(xoff_path_current,'(','\('),')','\)')]);
+
+                    yon_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_yon_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
+                        system(['ln -sf ' strrep(strrep(yon_path_equivalent,'(','\('),')','\)') ' ' strrep(strrep(yon_path_current,'(','\('),')','\)')]);
+
+                    yoff_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_yoff_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
+                        system(['ln -sf ' strrep(strrep(yoff_path_equivalent,'(','\('),')','\)') ' ' strrep(strrep(yoff_path_current,'(','\('),')','\)')]);
+            end
+        end
         if run_flags.load_iFactor_mats(gaze_idx)==1 %&& run_flags.load_xon_mats(gaze_idx)==1 && run_flags.load_xoff_mats(gaze_idx)==1 && run_flags.load_yon_mats(gaze_idx)==1 && run_flags.load_yoff_mats(gaze_idx)==1
             iFactor = load(get_mat_name('iFactor',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); iFactor = iFactor.matrix_in;
             %iFactor = iFactor(~cellfun('isempty',iFactor)); %clean void cells
