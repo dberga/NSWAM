@@ -17,14 +17,14 @@ struct.gaze_params.orig_height = 200;
 struct.gaze_params.fov_x = round(struct.gaze_params.orig_width/2);
 struct.gaze_params.fov_y = round(struct.gaze_params.orig_height/2);
 struct.gaze_params.img_diag_angle = degtorad(35);
-struct.gaze_params.ior_factor_ctt = nthroot(0.01,600);
+struct.gaze_params.ior_factor_ctt = nthroot(0.01,3000);
 struct.gaze_params.ior_slope_ctt = 1;
 struct.gaze_params.ior_angle = degtorad(4);
 struct.zli_params.n_membr = 10;
 struct.zli_params.n_iter = 10;
 struct.wave_params.fin_scale=8;
 struct.wave_params.ini_scale=1;
-max_scale=repmat(1:8,1,40);
+max_scale=repmat(8:-1:1,1,40);
 map_in = zeros(200,300);
 n_scans = 40;
 
@@ -43,8 +43,7 @@ for k=1:n_scans
     for t=1:struct.zli_params.n_membr
         for i=1:struct.zli_params.n_iter
             inhibition_factor = get_ior_factor( inhibition_factor, struct.gaze_params.ior_factor_ctt );
-            pause(0.00001);
-            imagesc(inhibition_factor); %imshow(normalize_minmax(inhibition_factor));
+            imagesc(inhibition_factor,[0,1]); %imshow(normalize_minmax(inhibition_factor));
             colorbar;
             xlabel(['gaze=' num2str(k) ',' 't=' num2str(t) ',' 'iter=' num2str(i)]);
         end
