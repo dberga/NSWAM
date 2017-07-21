@@ -39,7 +39,7 @@ function [ gaussian ] = get_ior_gaussian( fov_x, fov_y, ior_factor, max_scale,in
  end
  pyramid=fliplr(pyramid);
  nnn=pyramid(max_scale); 
- ior_angle_pixels=(pyramid(end)-pyramid(1))*normalize_minmax(nnn,pyramid(1),pyramid(end)*2)+(pyramid(1));
+ ior_angle_pixels=(pyramid(end)-pyramid(1))*normalize_minmax(nnn,pyramid(1),pyramid(end)*2)+rad2deg(img_diag_angle);
  gaussian = ior_factor .* normalize_minmax(zhong2012(bmap,ior_angle_pixels));
  
  
