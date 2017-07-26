@@ -11,7 +11,7 @@
     if nargin < 2
         ds = 0;
         image_resized = input_image;
-        while max(size(image_resized)) > 511
+        while max(size(image_resized)) > 256
             ds = ds +1;
             image_resized = autoresize(input_image,ds);
         end
