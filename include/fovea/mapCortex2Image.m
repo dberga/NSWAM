@@ -58,8 +58,8 @@ incorrect = setdiff(1:length(coord_cortex),correct);
 %img(coord_img(correct))=cortex(sub2ind(size(cortex),i(correct'),j(correct')));
 img = map_coords(img,coord_img,correct,incorrect,cortex,coord_cortex,cortex_params.mirroring);
 
-mid_col=round(size(img,2)/2);
-img(:,mid_col-5:mid_col+5)=imgaussfilt(img(:,mid_col-5:mid_col+5), 2);
+%mid_col=round(size(img,2)/2);
+%img(:,mid_col-5:mid_col+5)=imgaussfilt(img(:,mid_col-5:mid_col+5), 2);
 
 % for ic = coord_img
 % 	coord_cortex = [i(ic) j(ic)];
