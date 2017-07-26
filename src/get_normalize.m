@@ -18,7 +18,7 @@ function [smap] = get_normalize(loaded_struct,smap)
             
         case 5
             
-            smap = histeq(smap);  % by histogram equalization
+            smap = histeq(normalize_minmax(smap));  % by histogram equalization
             
         otherwise
             %do nothing
