@@ -1,6 +1,6 @@
 function [input_image] = get_resize(input_image,conf_struct)
 
-    if conf_struct.gaze_params.foveate == 0 || conf_struct.gaze_params.foveate == 3
+    if conf_struct.gaze_params.foveate == 0 
 
          n_scales=calc_scales(input_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires);
          if conf_struct.zli_params.bScaleDelta==1

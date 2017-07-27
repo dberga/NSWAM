@@ -109,8 +109,9 @@ if run_flags.run_all==1
                     [conf_struct.resize_params.M, conf_struct.resize_params.N, ~] = size(input_image);
                     [conf_struct.resize_params.fov_x,conf_struct.resize_params.fov_y] = movecoords( conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y , conf_struct.resize_params.M, conf_struct.resize_params.N); 
                     
-                    [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(input_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
-                    [conf_struct.wave_params.n_orient] = calc_norient(input_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
+                    [input_image_foveated] = get_foveate(input_image,conf_struct);
+                    [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(input_image_foveated, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
+                    [conf_struct.wave_params.n_orient] = calc_norient(input_image_foveated,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
                     [curvs,residuals] = get_DWT(run_flags,conf_struct,folder_props,image_props,C,k,input_image);
                     [curvs,residuals]=get_foveate_multires(curvs,residuals,conf_struct);
                     conf_struct.gaze_params.ior_matrix = get_foveate(conf_struct.gaze_params.ior_matrix,conf_struct,1);
