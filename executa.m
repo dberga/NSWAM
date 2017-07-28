@@ -49,11 +49,7 @@ for i=1:length(conf_mats) %parfor i=1:length(conf_mats)
   		catch exc_process
               diary off;
               copyfile(log_name,error_name);
-              append_text(error_name,getReport(exc_process,'basic'));
-              stack_struct=dbstack;
-              append_text(error_name,stack_struct.file);
-              append_text(error_name,stack_struct.name);
-              append_text(error_name,stack_struct.line);
+              append_text(error_name,getReport(exc_process,'extended'));
           end
         proc=proc+1;
         delete(log_name);
