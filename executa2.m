@@ -3,7 +3,7 @@
 function [] = executa(input_dir, conf_dir, output_dir, mats_dir, fileformat,output_extension, funcio)
 
 if nargin < 1, input_dir = 'input';end
-if nargin < 2, conf_dir = 'conf_new'; end
+if nargin < 2, conf_dir = 'conf_try'; end
 if nargin < 3, output_dir = 'output'; end
 if nargin < 4, mats_dir = 'mats'; end
 if nargin < 5, fileformat = 'jpg'; end
@@ -33,8 +33,8 @@ for i=1:length(conf_mats) %parfor i=1:length(conf_mats)
     
     conf_path = [conf_dir '/' conf_mats(i).name];
     
-    if ~exist(done_name,'file') && ~exist(log_name,'file') && ~exist(error_name,'file') && proc<=maxproc
- 		try
+    if ~exist(done_name,'file') && ~exist(log_name,'file') && ~exist(error_name,'file')
+  		try
             diary(log_name);
             diary on;
             
@@ -46,12 +46,12 @@ for i=1:length(conf_mats) %parfor i=1:length(conf_mats)
             copyfile(log_name,done_name);
             
             
-  		catch exc_process
-              diary off;
-              copyfile(log_name,error_name);
-              append_text(error_name,getReport(exc_process,'extended'));
-  	      disp(getReport(exc_process,'extended'));
-          end
+   		catch exc_process
+               diary off;
+               copyfile(log_name,error_name);
+               append_text(error_name,getReport(exc_process,'extended'));
+	       disp(getReport(exc_process,'extended'));
+           end
         proc=proc+1;
         delete(log_name);
     end
