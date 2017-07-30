@@ -246,8 +246,8 @@ else
 end
 
     if conf_struct.gaze_params.foveate~=0
-        if exist([folder_props.output_path '/gbg'],'file') system(['rm' ' ' folder_props.output_path '/gbg']); end; system(['ln -s ' 'mean' ' ' folder_props.output_path '/gbg']); 
-        if exist([folder_props.output_path '/gbgs'],'file') system(['rm' ' ' folder_props.output_path '/gbgs']); end; system(['ln -s ' 'gazes' ' ' folder_props.output_path '/gbgs']);
+        if exist([folder_props.output_path '/gbg'],'file') system(['rm' ' ' folder_props.output_path '/gbg']); end; system(['ln -rsf ' 'mean' ' ' folder_props.output_path '/gbg']); 
+        if exist([folder_props.output_path '/gbgs'],'file') system(['rm' ' ' folder_props.output_path '/gbgs']); end; system(['ln -rsf ' 'gazes' ' ' folder_props.output_path '/gbgs']);
 
         mean2_path=[pwd '/' folder_props.output_path '/mean/2/'];
         mean4_path=[pwd '/' folder_props.output_path '/mean/4/'];
