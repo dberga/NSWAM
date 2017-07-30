@@ -4,8 +4,11 @@ function [mean_smap] = get_smaps_mean(smaps,part)
     
     smaps_part = smaps(:,:,part);
     
-    mean_smap = normalize_minmax(mean(smaps_part,3));  
-    
+    if size(smaps,3) > 1
+        mean_smap = normalize_minmax(mean(smaps_part,3));  
+    else
+        mean_smap=smaps;
+    end
 end
 
 

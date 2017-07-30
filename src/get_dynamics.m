@@ -4,6 +4,7 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
     iFactors = cell(1,C);
     loaded_struct_path=get_mat_name('struct',folder_props,image_props,gaze_idx);
     
+    %see if there are mats from other config that satisfy the pre-neurodynamical parameters, if so, create a soft link to such mats for each gaze and channel
     for c=1:C
         
         [ loaded_struct_equivalent_path , mfolder, folder_equivalent,iname_equivalent,k_equivalent] = get_samemat( loaded_struct_path );
