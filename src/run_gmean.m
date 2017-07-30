@@ -1,13 +1,13 @@
 function [mean_smap] = run_gmean(run_flags,image_props,conf_struct,smaps)
     if run_flags.run_gaussian 
         
-        for k=1:conf_struct.gaze_params.ngazes
-           if run_flags.load_smap(k)
-              smaps(:,:,k)=double(imread(image_props.output_image_paths{k})); 
-           else
-              %we have already computed the smaps(k) on previous loop
-           end
-        end
+%         for k=1:conf_struct.gaze_params.ngazes
+%            if run_flags.load_smap(k)
+%               smaps(:,:,k)=double(imread(image_props.output_image_paths{k})); 
+%            else
+%               %we have already computed the smaps(k) on previous loop
+%            end
+%         end
         
         if conf_struct.gaze_params.ngazes ==1
         
