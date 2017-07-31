@@ -71,7 +71,7 @@ img = map_coords(img,coord_img,correct,incorrect,cortex,coord_cortex,cortex_para
 end
 
 function [yn] = inside(coord,size)
-	yn = coord>0 & coord<=size;
+	yn = coord>=1 & coord<=size;
 end
 
 
