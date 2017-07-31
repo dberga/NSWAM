@@ -15,8 +15,8 @@ function [RFmax_s, residualmax_s, max_s, max_o, max_c, max_x, max_y] = get_RF_ma
 	for s=1:n_scales-1
         
         %initialize	
-        RFmax = zeros(size(RF_s_o_c{s}{1},1),size(RF_s_o_c{s}{1},2));
-        RFresidual = zeros(size(RF_s_o_c{s}{1},1),size(RF_s_o_c{s}{1},2));
+        RFmax = (-Inf).*ones(size(RF_s_o_c{s}{1},1),size(RF_s_o_c{s}{1},2));
+        RFresidual = (-Inf).*ones(size(RF_s_o_c{s}{1},1),size(RF_s_o_c{s}{1},2));
         
         %look for max for each frame and scale
         for o=1:n_orient
@@ -24,7 +24,7 @@ function [RFmax_s, residualmax_s, max_s, max_o, max_c, max_x, max_y] = get_RF_ma
                 values = RF_s_o_c{s}{o}(:,:,c); 
                 for y=1:size(RF_s_o_c{s}{o},1)
                     for x=1:size(RF_s_o_c{s}{o},2)
-                        if values(y,x) > RFmax(y,x)
+                        if values(y,x) >= RFmax(y,x)
                             RFmax(y,x) = values(y,x);
                             RFresidual(y,x) = residual_s_c{s}(y,x,c);
                             

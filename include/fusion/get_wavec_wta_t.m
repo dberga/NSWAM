@@ -2,7 +2,7 @@ function [ RFmax_c,residualmax_c, max_s, max_o, max_c ] = get_wavec_wta_t( RF_s_
 
     RFmax_c = zeros(size(RF_s_o_c{1}{1}));
     residualmax_c = zeros(size(residual_s_c{1}));
-    maxval=0;
+    maxval=-Inf;
     
     for c=1:C
         RFmax = zeros(size(RF_s_o_c{1}{1}(:,:,1)));

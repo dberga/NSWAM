@@ -3,8 +3,8 @@ function [ RFmax_s,residualmax_s, max_s, max_o, max_c ] = get_waves_max_t( RF_s_
     residualmax_s = cell(n_scales-1,1);
     
     for s=1:n_scales-1
-        RFmax = zeros(size(RF_s_o_c{s}{1}(:,:,1)));
-        residualmax= zeros(size(residual_s_c{s}(:,:,1)));
+        RFmax = (-Inf).*ones(size(RF_s_o_c{s}{1}(:,:,1)));
+        residualmax= (-Inf).*ones(size(residual_s_c{s}(:,:,1)));
         for o=1:n_orient
             for c=1:C
                 values = RF_s_o_c{s}{o}(:,:,c); 
