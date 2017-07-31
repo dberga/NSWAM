@@ -84,7 +84,7 @@ function [map1] = map_coords(map1,coord_map1,idx_inside,idx_outside,map2,coord_m
     
     coords_i_inside = i(idx_inside');
     coords_j_inside = j(idx_inside');
-    coords_inside = sub2ind(size_map2,coords_i_inside,coords_j_inside);
+    %coords_inside = sub2ind(size_map2,coords_i_inside,coords_j_inside);
 
     map3=interp2(map2,j,i);
 %     map1(coord_map1(idx_inside))=map2(coords_inside);
