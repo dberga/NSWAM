@@ -401,8 +401,13 @@ y=zeros(M,N,n_scales,K);
 % J_conv_tmp=zeros(M+2*Delta(s),N+2*Delta(s),n_scales+2*radius_sc,K);
 % W_conv_tmp=zeros(M+2*Delta(s),N+2*Delta(s),n_scales+2*radius_sc,K);
 
-size(x)
-size(x_in)
+if size(x_in,3)~=size(x,3)
+    x_in=repmat(x_in,1,1,size(x,3),1);
+end
+if size(y_in,3)~=size(y,3)
+    y_in=repmat(y_in,1,1,size(y,3),1);
+end
+
 x=x+x_in;
 y=y+y_in;
 
