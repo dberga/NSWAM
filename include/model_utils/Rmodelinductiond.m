@@ -401,6 +401,8 @@ y=zeros(M,N,n_scales,K);
 % J_conv_tmp=zeros(M+2*Delta(s),N+2*Delta(s),n_scales+2*radius_sc,K);
 % W_conv_tmp=zeros(M+2*Delta(s),N+2*Delta(s),n_scales+2*radius_sc,K);
 
+size(x)
+size(x_in)
 x=x+x_in;
 y=y+y_in;
 

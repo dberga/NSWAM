@@ -174,6 +174,9 @@ if run_flags.run_all==1
             [RF_s_o_c] = get_eCSF(loaded_struct,RF_s_o_c);
             
             %fusion
+            if isnan(RF_s_o_c{1}{1}(1,1,1))
+                break;
+            end
             [smap,residualmax,maxidx_s, maxidx_o, maxidx_c ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
             [maxval_d,maxidx_d]=max(smap(:));
             [maxval_r,maxidx_r]=max(residualmax(:));
