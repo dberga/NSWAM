@@ -36,7 +36,9 @@ function [mean_smap] = run_gmean(run_flags,image_props,conf_struct,smaps)
                 end
                 imwrite(mean_smap,[image_props.output_gaussian_nobaseline_path{i}]);
             end
-    
+            
+    else
+        mean_smap=imread(image_props.output_gaussian_path{conf_struct.gaze_params.ngazes});
     end
         
     %imwrite(mean_smap,[image_props.output_image_path]);

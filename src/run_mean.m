@@ -36,6 +36,8 @@ function [mean_smap] = run_mean(run_flags,image_props,conf_struct,smaps)
                 imwrite(mean_smap,[image_props.output_mean_nobaseline_path{i}]);
             end
     
+    else
+        mean_smap=imread(image_props.output_image_path);
     end
         
     imwrite(mean_smap,[image_props.output_image_path]);

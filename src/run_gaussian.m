@@ -1,5 +1,5 @@
 function [gaussian_smap] = run_gaussian(run_flags,image_props,conf_struct,scanpath)
-%     if run_flags.run_gaussian
+     if run_flags.run_gaussian
         
         if conf_struct.gaze_params.ngazes <=1
             aux_scanpath = scanpath(2:2,:); %all gazes except first
@@ -25,7 +25,7 @@ function [gaussian_smap] = run_gaussian(run_flags,image_props,conf_struct,scanpa
             
         end
         
-%     else
+     else
         gaussian_smap = imread(image_props.output_gaussian_path{conf_struct.gaze_params.ngazes}); 
-%     end
+     end
 end
