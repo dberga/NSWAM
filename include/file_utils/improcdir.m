@@ -26,12 +26,22 @@ N_files = size(files,1);                                %readed number of files
     %    end
         
     %otherwise
+        result=0;
         for i=1:N_files
             disp(files(i).name); %files array with names
             img = imread(files(i).name);
-            feval(process, files(i).name,img,args{1},args{2},args{3},args{4});
+            
+            try
+                feval(process, files(i).name,img,args{1},args{2},args{3},args{4});
+            catch exc_process2
+                result=-1;
+                disp(getReport(exc_process2,'extended'));
+                continue;
+            end
         end
-        
+        if result==-1
+            error(mats_folder);
+        end
 %end
 
 
