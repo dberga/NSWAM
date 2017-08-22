@@ -9,6 +9,10 @@ if(nargin < 5)
     args = {conf_path,output_directory,mats_folder,'png'};
 else
 	directory = input_path;
+    conf_path = args{1};
+    output_directory=args{2};
+    mats_folder=args{3};
+    output_extension=args{4};
 end
 
 
