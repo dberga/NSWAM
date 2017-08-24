@@ -11,7 +11,7 @@ height = size(image,1);
 width = size(image,2);
 
 % pad image when dimensions are not powers of 2/equal to each other:
-nearest_pow = 2^ceil(log2(max(width,height)));
+nearest_pow = 2^ceil(log2(max(width,height))); if nearest_pow <= max(height,width), nearest_pow=2^ceil(log2(max(width,height))+1); end
 image_padded = zeros(nearest_pow);
 image_padded(1:height,1:width) = image;
 image_padding = nearest_pow - [height width];
@@ -38,8 +38,8 @@ image_padding = nearest_pow - [height width];
 % %     image_padded((height+1):end,:) = image_extra_padded;
 % % end
 
-padding_horizontal=floor((nearest_pow-width)/2);
-padding_vertical=floor((nearest_pow-height)/2);
+padding_horizontal=floor((nearest_pow-width)/2); 
+padding_vertical=floor((nearest_pow-height)/2); 
 image_padded_alt=padarray(image,[padding_vertical,padding_horizontal],'symmetric','both');
 image_padded(1:size(image_padded_alt,1),1:size(image_padded_alt,2))=image_padded_alt;
 
