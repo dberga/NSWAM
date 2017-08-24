@@ -249,17 +249,15 @@ else
 end
 
     if conf_struct.gaze_params.foveate~=0
-        if exist([folder_props.output_path '/gbg'],'file') system(['rm' ' ' folder_props.output_path '/gbg']); end; system(['ln -rsf ' 'mean' ' ' folder_props.output_path '/gbg']); 
-        if exist([folder_props.output_path '/gbgs'],'file') system(['rm' ' ' folder_props.output_path '/gbgs']); end; system(['ln -rsf ' 'gazes' ' ' folder_props.output_path '/gbgs']);
+        slink([folder_props.output_path '/mean'],[folder_props.output_path '/gbg']); 
+        slink([folder_props.output_path '/gazes'],[folder_props.output_path '/gbgs']);
 
         mean2_path=[pwd '/' folder_props.output_path '/mean/2/'];
         mean4_path=[pwd '/' folder_props.output_path '/mean/4/'];
         mean2_ln_path=[pwd '/' folder_props.output_folder '/mean_2gazes_' folder_props.output_subfolder];
         mean4_ln_path=[pwd '/' folder_props.output_folder '/mean_4gazes_' folder_props.output_subfolder];
-        if exist(mean2_ln_path,'file') system(['rm -f' ' ' mean2_ln_path]); end;
-        system(['ln -rsf ' mean2_path ' ' mean2_ln_path]); 
-        if exist(mean4_ln_path,'file') system(['rm -f' ' ' mean4_ln_path]); end;
-        system(['ln -rsf ' mean4_path ' ' mean4_ln_path]);  
+        slink(mean2_path,mean2_ln_path); 
+        slink(mean4_path,mean4_ln_path);  
 
         gaussian2_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/3/']; %for ior, is 2+1
         gaussian4_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/5/']; %for ior, is 4+1
@@ -267,12 +265,10 @@ end
         gaussian2_ln_path=[pwd '/' folder_props.output_folder '/gaussian_2gazes_' folder_props.output_subfolder];
         gaussian4_ln_path=[pwd '/' folder_props.output_folder '/gaussian_4gazes_' folder_props.output_subfolder];
         gaussian10_ln_path=[pwd '/' folder_props.output_folder '/gaussian_10gazes_' folder_props.output_subfolder];
-        if exist(gaussian2_ln_path,'file') system(['rm -f' ' ' gaussian2_ln_path]); end;
-        system(['ln -rsf ' gaussian2_path ' ' gaussian2_ln_path]); 
-        if exist(gaussian4_ln_path,'file') system(['rm -f' ' ' gaussian4_ln_path]); end;
-        system(['ln -rsf ' gaussian4_path ' ' gaussian4_ln_path]);  
-        if exist(gaussian10_ln_path,'file') system(['rm -f' ' ' gaussian10_ln_path]); end;
-        system(['ln -rsf ' gaussian10_path ' ' gaussian10_ln_path]);
+
+        slink(gaussian2_path,gaussian2_ln_path); 
+        slink(gaussian4_path,gaussian4_ln_path);  
+        slink(gaussian10_path,gaussian10_ln_path);
     end
 end
 
