@@ -1,5 +1,5 @@
 function [mean_smap] = run_mean(run_flags,image_props,conf_struct,smaps)
-    if run_flags.run_mean 
+    if run_flags.run_mean || run_flags.run_smap
         
         for k=1:conf_struct.gaze_params.ngazes
            if exist(image_props.output_image_paths{k},'file')

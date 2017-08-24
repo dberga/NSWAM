@@ -1,5 +1,5 @@
 function [mean_smap] = run_gmean(run_flags,image_props,conf_struct,smaps)
-    if run_flags.run_gaussian 
+    if run_flags.run_gaussian || run_flags.run_smap
         
         for k=1:conf_struct.gaze_params.ngazes
            if exist(image_props.output_gaussian_path{k},'file')
