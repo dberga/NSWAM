@@ -75,15 +75,35 @@ for s = 1:wlev
 	h = [0 upsample(h,2)];
 % 	h = upsample(upsample(h,2)',2)';
    
-    %unpad wavelet plane and residual
-    for o=1:3
+    
+end
+
+
+%unpad wavelet plane and residual
+for s=1:wlev
+    for o=1:size(w{s,1},3)
         w2{s,1}(:,:,o)=erase_padding(w{s,1}(:,:,o),size(aux_image));
         c2{s,1} = erase_padding(c{s,1},size(aux_image));
+        figure,imagesc(w2{s,1}(:,:,o));
     end
     w{s,1}=w2{s,1};
     c{s,1}=c2{s,1};
-    
 end
+
+
+%debug
+%close all
+%for o=1:size(w{wlev-1,1},3)
+%    figure,imagesc(w{wlev-1,1}(:,:,o));
+%end
+
+%close all
+%for s=1:wlev
+%    for o=1:size(w{s,1},3)
+%        figure,imagesc(w{s,1}(:,:,o));
+%    end
+%end
+
 
 end
 
