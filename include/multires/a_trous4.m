@@ -20,9 +20,17 @@ hd = [1./256.,1./16.,9./64.,1./16.,1./256.]./(70./256.);
 hd1 = eye(5,5).*hd;
 hd2 = fliplr(eye(5,5).*hd);
 
+%normalize filter by energy
 energy = sum(h);
 inv_energy = 1/energy;
 h = h*inv_energy;
+
+energy_d = sum(hd);
+inv_energy_d = 1/energy_d;
+hd = hd*inv_energy_d;
+hd1 = hd1*inv_energy_d;
+hd2 = hd1*inv_energy_d;
+
 w = cell(wlev,1);
 c = cell(wlev,1);
 
@@ -33,55 +41,50 @@ for s = 1:wlev
     inv_sum = 1/sum(h);
     inv_sum_d = 1/sum(hd);
     
-    
-    
+    %compute horizontal filter
     prod = symmetric_filtering(image, h)*inv_sum;          % blur
     HF = prod;
 	GF = image - prod;                              % horizontal frequency info                            
     
-       
+    %compute vertical filter
     prod = symmetric_filtering(HF, h')*inv_sum;            % blur
     HHF = prod;
     GHF = HF - prod;                                % vertical wavelet plane
    
-    
+    %compute vertical filter over horizontal plane
      prod = symmetric_filtering(GF, h')*inv_sum;            % blur 
      HGF = prod;
      GGF = GF-prod;
      
+     %compute crossed diff
      iD=orig_image - (HHF + HGF + GHF); 
      
-       
+     %compute diagonal1 filter
      prod= symmetric_filtering(image, hd1)*inv_sum_d;
      SF=prod;
      PF=image-prod;
      
-      
+     %compute diagonal2 filter
      prod= symmetric_filtering(SF, hd2)*inv_sum_d;
      SSF=prod;
      PSF=image-prod;
      
-     
+     %compute diagonal2 filter over diagonal1 plane
      prod = symmetric_filtering(PF, hd2)*inv_sum_d;            % blur 
      SPF = prod;
      PPF=PF-prod;
      
-     %compute diag err
+     %compute diagonals err diff with crossed
      err=iD-(SPF+PSF);
      unbalance=0.5;
      
+    % DF = orig_image - (HGF + GF + GHF); %crossed horizontal and
+    
     % Create and save wavelet plane:
-%       DF = orig_image - (HGF + GF + GHF); 
-%       DF1=PF;
-%       DF2=PSF;
-      w{s,1}(:,:,1) = HGF + (0.5.*err.*(1-unbalance));
-      w{s,1}(:,:,2) = GHF + (0.5.*err.*(1-unbalance));
-      w{s,1}(:,:,3) = SPF + (0.5.*err.*unbalance);
-      w{s,1}(:,:,4) = PSF + (0.5.*err.*unbalance);
-%       w{s,1}(:,:,1)=image -(symmetric_filtering(image, h)*inv_sum);
-%       w{s,1}(:,:,2)=image -(symmetric_filtering(image, h')*inv_sum);
-%       w{s,1}(:,:,3)=image -(symmetric_filtering(image, hd1)*inv_sum);
-%       w{s,1}(:,:,4)=image -(symmetric_filtering(image, hd2)*inv_sum);
+      w{s,1}(:,:,1) = HGF + (0.5.*err.*(1-unbalance)); %v
+      w{s,1}(:,:,2) = GHF + (0.5.*err.*(1-unbalance)); %h
+      w{s,1}(:,:,3) = SPF + (0.5.*err.*unbalance); %d1
+      w{s,1}(:,:,4) = PSF + (0.5.*err.*unbalance); %d2
             
     % save residual
     C      = image - (w{s,1}(:,:,1)+w{s,1}(:,:,2)+w{s,1}(:,:,3)+w{s,1}(:,:,4));
@@ -93,33 +96,20 @@ for s = 1:wlev
     hd= upsample(hd,2);
     hd1 = [zeros(1,5*2^s+1); [zeros(5*2^s,1) eye(5*2^s,5*2^s).*hd]];
     hd2 = [zeros(1,5*2^s+1); [zeros(5*2^s,1) fliplr(eye(5*2^s,5*2^s).*hd)]];
-% 	h = upsample(upsample(h,2)',2)';
    
     
 end
 
 %unpad wavelet plane and residual
-for s=1:wlev
-    for o=1:size(w{s,1},3)
-        w2{s,1}(:,:,o)=erase_padding(w{s,1}(:,:,o),size(aux_image));
-        c2{s,1} = erase_padding(c{s,1},size(aux_image));
-    end
-    w{s,1}=w2{s,1};
-    c{s,1}=c2{s,1};
-end
+[w,c]=erase_padding_w(w,c,wlev);
 
-%debug
-%close all
-%for o=1:size(w{wlev-1,1},3)
-%    figure,imagesc(w{wlev-1,1}(:,:,o));
-%end
-
-%close all
-%for s=1:wlev
+%% debug
+% close all
+% for s=1:wlev
 %    for o=1:size(w{s,1},3)
 %        figure,imagesc(w{s,1}(:,:,o));
 %    end
-%end
+% end
 
 end
 
