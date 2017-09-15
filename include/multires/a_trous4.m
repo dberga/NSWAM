@@ -101,7 +101,7 @@ for s = 1:wlev
 end
 
 %unpad wavelet plane and residual
-[w,c]=erase_padding_w(w,c,wlev);
+[w,c]=erase_padding_w(w,c,wlev,size(aux_image));
 
 %% debug
 % close all
