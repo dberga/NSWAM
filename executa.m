@@ -3,7 +3,7 @@
 function [] = executa(input_dir, conf_dir, output_dir, mats_dir, fileformat,output_extension, funcio)
 
 if nargin < 1, input_dir = 'input';end
-if nargin < 2, conf_dir = 'conf_new'; end
+if nargin < 2, conf_dir = 'conf_try'; end
 if nargin < 3, output_dir = 'output'; end
 if nargin < 4, mats_dir = 'mats'; end
 if nargin < 5, fileformat = 'jpg'; end
@@ -49,8 +49,10 @@ for i=1:length(conf_mats) %parfor i=1:length(conf_mats)
   		catch exc_process
               diary off;
               copyfile(log_name,error_name);
-              append_text(error_name,getReport(exc_process,'extended'));
-  	      disp(getReport(exc_process,'extended'));
+              extendedreport=getReport(exc_process,'extended');
+              append_text(error_name,extendedreport);
+              disp(extendedreport);
+              smail('dberga@cvc.uab.es',extendedreport,error_name);
           end
         proc=proc+1;
         delete(log_name);
