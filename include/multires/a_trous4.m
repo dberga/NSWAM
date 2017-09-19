@@ -17,8 +17,8 @@ image = add_padding(image);
 % Defined 1D Gabor-like filter:
 h = [1./16.,1./4.,3./8.,1./4.,1./16.];
 hd = [1./256.,1./16.,9./64.,1./16.,1./256.]./(70./256.);
-hd1 = eye(5,5).*hd;
-hd2 = fliplr(eye(5,5).*hd);
+hd1 = eye(5,5).*repmat(hd,5,1);
+hd2 = fliplr(eye(5,5).*repmat(hd,5,1));
 
 %normalize filter by energy
 energy = sum(h);
@@ -94,8 +94,8 @@ for s = 1:wlev
 	% Upsample filter
 	h = [0 upsample(h,2)];
     hd= upsample(hd,2);
-    hd1 = [zeros(1,5*2^s+1); [zeros(5*2^s,1) eye(5*2^s,5*2^s).*hd]];
-    hd2 = [zeros(1,5*2^s+1); [zeros(5*2^s,1) fliplr(eye(5*2^s,5*2^s).*hd)]];
+    hd1 = [zeros(1,5*2^s+1); [zeros(5*2^s,1) eye(5*2^s,5*2^s).*repmat(hd,5*2^s,1)]];
+    hd2 = [zeros(1,5*2^s+1); [zeros(5*2^s,1) fliplr(eye(5*2^s,5*2^s).*repmat(hd,5*2^s,1))]];
    
     
 end
