@@ -2,10 +2,10 @@ function [mean_smap] = run_gmean(run_flags,image_props,conf_struct,smaps)
     if run_flags.run_gaussian || run_flags.run_smap
         
         for k=1:conf_struct.gaze_params.ngazes
-           if exist(image_props.output_gaussian_path{k},'file')
-              smaps(:,:,k)=double(imread(image_props.output_gaussian_path{k})); 
+           if exist(image_props.output_gaussian_paths{k},'file')
+               smaps(:,:,k)=double(imread(image_props.output_gaussian_paths{k})); 
            else
-              %we have already computed the smaps(k) on previous loop
+               imwrite(smaps(:,:,k),image_props.output_gaussian_paths{k});
            end
         end
         
@@ -28,13 +28,13 @@ function [mean_smap] = run_gmean(run_flags,image_props,conf_struct,smaps)
                 part = 2:i;
                 switch(conf_struct.fusion_params.tmem_res)
                     case 'max'
-                        mean_smap = get_smaps_max(smaps,part);
+                        mean_smap_nobaseline = get_smaps_max(smaps,part);
                     case 'sum'
-                        mean_smap = get_smaps_sum(smaps,part);
+                        mean_smap_nobaseline = get_smaps_sum(smaps,part);
                     otherwise
-                        mean_smap = get_smaps_mean(smaps,part);
+                        mean_smap_nobaseline = get_smaps_mean(smaps,part);
                 end
-                imwrite(mean_smap,[image_props.output_gaussian_nobaseline_path{i}]);
+                imwrite(mean_smap_nobaseline,[image_props.output_gaussian_nobaseline_path{i}]);
             end
             
     else

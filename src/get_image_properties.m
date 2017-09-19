@@ -9,6 +9,7 @@ function [image_props] = get_image_properties(input_image,image_name,folder_prop
     image_props.output_image_paths = cell(1,conf_struct.gaze_params.ngazes);
     for k=1:conf_struct.gaze_params.ngazes
         image_props.output_image_paths{k} = [folder_props.output_folder_gazes{k} '/' image_props.image_name_noext '.' folder_props.output_extension];
+        image_props.output_gaussian_paths{k} = [folder_props.output_folder_gazes_gaussian{k} '/' image_props.image_name_noext '.' folder_props.output_extension];
     end
     
     

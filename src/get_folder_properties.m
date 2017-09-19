@@ -18,6 +18,7 @@ function [folder_props] = get_folder_properties(output_folder,conf_struct_path_n
     
     for i=1:conf_struct.gaze_params.ngazes %ngazes
         folder_props.output_folder_gazes{i} = [ folder_props.output_path '/' 'gazes' '/' num2str(i) ];
+        folder_props.output_folder_gazes_gaussian{i} = [ folder_props.output_path '/' 'gazes_gaussian' '/' num2str(i) ];
         folder_props.output_folder_mean{i} = [ folder_props.output_path '/' 'mean' '/' num2str(i) ];
         folder_props.output_folder_mean_nobaseline{i} = [ folder_props.output_path '/' 'mean_nobaseline' '/' num2str(i) ];
         folder_props.output_folder_gaussian{i} = [ folder_props.output_path '/' 'gaussian' '/' num2str(i)];
@@ -27,6 +28,7 @@ function [folder_props] = get_folder_properties(output_folder,conf_struct_path_n
         
         
         if ~exist(folder_props.output_folder_gazes{i},'dir') mkdir(folder_props.output_folder_gazes{i}); end
+        if ~exist(folder_props.output_folder_gazes_gaussian{i},'dir') mkdir(folder_props.output_folder_gazes_gaussian{i}); end
         if ~exist(folder_props.output_folder_mean{i},'dir') mkdir(folder_props.output_folder_mean{i}); end
         if ~exist(folder_props.output_folder_mean_nobaseline{i},'dir') mkdir(folder_props.output_folder_mean_nobaseline{i}); end
         if ~exist(folder_props.output_folder_gaussian{i},'dir') mkdir(folder_props.output_folder_gaussian{i}); end

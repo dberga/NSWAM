@@ -5,7 +5,7 @@ function [mean_smap] = run_mean(run_flags,image_props,conf_struct,smaps)
            if exist(image_props.output_image_paths{k},'file')
               smaps(:,:,k)=double(imread(image_props.output_image_paths{k})); 
            else
-              %we have already computed the smaps(k) on previous loop
+              imwrite(smaps(:,:,k),image_props.output_image_paths{k});
            end
         end
         
@@ -27,15 +27,15 @@ function [mean_smap] = run_mean(run_flags,image_props,conf_struct,smaps)
                 part = 2:i;
                 switch(conf_struct.fusion_params.tmem_res)
                     case 'max'
-                        mean_smap = get_smaps_max(smaps,part);
+                        mean_smap_nobaseline = get_smaps_max(smaps,part);
                     case 'sum'
-                        mean_smap = get_smaps_sum(smaps,part);
+                        mean_smap_nobaseline = get_smaps_sum(smaps,part);
                     otherwise
-                        mean_smap = get_smaps_mean(smaps,part);
+                        mean_smap_nobaseline = get_smaps_mean(smaps,part);
                 end
-                imwrite(mean_smap,[image_props.output_mean_nobaseline_path{i}]);
+                imwrite(mean_smap_nobaseline,[image_props.output_mean_nobaseline_path{i}]);
             end
-    
+            
     else
         mean_smap=imread(image_props.output_image_path);
     end
