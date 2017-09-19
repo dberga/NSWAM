@@ -18,33 +18,36 @@ function [w, c] = multires_dispatcher(img, method,n_scales,n_orient)
             end
        case 'a_trous'
               [w, c] = a_trous(img(:,:), n_scales-1);
-               
+              
+       case 'a_trous4'
+              [w, c] = a_trous4(img(:,:), n_scales-1);
+              
        case 'a_trous_contrast'
               [w, c] = a_trous_contrast(img(:,:), n_scales-1);
             
        case 'wav'
                 [w, c] = DWT(img(:,:), n_scales-1);
-                
+                %w=undecimate(w,M,N);
+                %c=undecimate(c,M,N);
        case 'wav_contrast'
             
                 [w, c] = DWT_contrast(img(:,:), n_scales-1);
-            
+                %w=undecimate(w,M,N);
+                %c=undecimate(c,M,N);
        case 'gabor'
                 [w,c]=GaborTransform_XOP(img(:,:),n_scales);
-             
+                %w=undecimate(w,M,N);
+                %c=undecimate(c,M,N);
        case 'gabor_HMAX'
     
                 [w,n_scales]=Gabor_decomposition(img);
                 disp(['gabor_HMAX n_scales:' int2str(n_scales)]);
-    
+                %w=undecimate(w,M,N);
+                %c=undecimate(c,M,N);
        otherwise
           devlog('ERROR: No valid multiresolution decomposition method',4);
           return;
     end
-    
-    %wav and gabor are decimated, undecimate by upsampling to image size
-    w=undecimate(w,M,N);
-    c=undecimate(c,M,N);
     
     
     

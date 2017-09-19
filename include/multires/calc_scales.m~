@@ -20,7 +20,7 @@ function [n_scales, ini_scale, fin_scale] = calc_scales(img, ini_scale, fin_scal
     %			n_scales=floor(log2(	min(size(img(:,:,1)))-1) )-n_scale_max;
                 fin_scale= n_scales - fin_scale_offset;
                 if n_scales>8+1
-                    n_scales=8+1; %scales from 1 to 8 is max
+                    n_scales=8;
                     fin_scale= n_scales - fin_scale_offset;
                 end
         end

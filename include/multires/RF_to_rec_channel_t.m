@@ -60,6 +60,14 @@ function [img_out] = IDWTdispatcher(RF,n_scales,method,residual, Ls)
                 end
               c{n_scales-1}=RF{n_scales}{1};
                 img_out(:,:) = Ia_trous(w,c);
+        case 'a_trous4'
+               for s=1:n_scales-1
+                    for o=1:4
+                        w{s}(:,:,o)=RF{s}{o};
+                    end
+                end
+              c{n_scales-1}=RF{n_scales}{1};
+                img_out(:,:) = Ia_trous4(w,c);
             
        case 'a_trous_contrast'
                for s=1:n_scales-1

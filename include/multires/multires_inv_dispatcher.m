@@ -29,7 +29,9 @@ function [img_out] = multires_inv_dispatcher(w,c,method,n_scales,n_orient)
        case 'a_trous'
                img_out(:,:) = Ia_trous(w,c);
                 
-            
+       case 'a_trous4'
+               img_out(:,:) = Ia_trous4(w,c);
+               
        case 'a_trous_contrast'
                img_out(:,:) = Ia_trous_contrast(w,c);
                 

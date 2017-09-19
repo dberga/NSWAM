@@ -60,6 +60,10 @@ elseif n==1
 		 case 'a_trous'
 			for i=1:10
 				 B(:,:,i)=[sigma_de*sigma_de*2^((i-2)*2);sigma_di*sigma_di*2^((i-2)*2)];
+            end
+         case 'a_trous4'
+			for i=1:10
+				 B(:,:,i)=[sigma_de*sigma_de*2^((i-2)*2);sigma_di*sigma_di*2^((i-2)*2)];
 			end
 		 otherwise
 			for i=1:10

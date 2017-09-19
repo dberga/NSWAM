@@ -23,6 +23,9 @@ switch(transf)
 	case('a_trous')
 		thetas=[pi/2 -pi/4 0 pi/4];
 % 		thetas=[pi/2 -pi/4 0];
+    case('a_trous4')
+		thetas=[pi/2 -pi/4 0 pi/4];
+% 		thetas=[pi/2 -pi/4 0];
 	case('a_trous_contrast')
 		thetas=[pi/2 -pi/4 0 pi/4];
 % 		thetas=[pi/2 -pi/4 0];
