@@ -41,9 +41,9 @@ N_files = size(files,1);                                %readed number of files
             catch exc_process2
                 result=-1;
                 disp(getReport(exc_process2,'extended'));
-                acum_error=[acum_error, newline ' error in config: ' conf_path];
-                acum_error=[acum_error, newline ' error in image: ' files(i).name]; 
-                acum_error=[acum_error, newline ' report: ' getReport(exc_process2,'extended')];
+                acum_error=[acum_error, '\n' ' error in config: ' conf_path];
+                acum_error=[acum_error, '\n' ' error in image: ' files(i).name]; 
+                acum_error=[acum_error, '\n' ' report: ' getReport(exc_process2,'extended')];
                 continue;
             end
         end
