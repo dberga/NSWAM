@@ -23,12 +23,14 @@ function [ loaded_struct_equivalent_path, mfolder,folder_equivalent,iname1,k1 ] 
                 k1=tokens2{1};
                 folder_equivalent=lfolders{l}; 
                 folder_current=[mfolder '/' lfolders{l} '/' lfiles{f}];
-                if(get_checksame(folder_current,loaded_struct_path) ... %check pre-neurodyn parameters
-                    && ~strcmp(folder_current,loaded_struct_path) ... %must be not same file
-                    && strcmp(iname1,iname2)) %must be same image
-                    found=1;
-                    loaded_struct_equivalent_path=folder_current;
-                    break;
+                try
+                    if(get_checksame(folder_current,loaded_struct_path) ... %check pre-neurodyn parameters
+                        && ~strcmp(folder_current,loaded_struct_path) ... %must be not same file
+                        && strcmp(iname1,iname2)) %must be same image
+                        found=1;
+                        loaded_struct_equivalent_path=folder_current;
+                        break;
+                    end
                 end
             end
         end
