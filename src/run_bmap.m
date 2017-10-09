@@ -24,6 +24,6 @@ function [bmap] = run_bmap(run_flags,image_props,conf_struct,scanpath)
         end
         
     else
-       bmap = imread(image_props.output_bmap_path{conf_struct.gaze_params.ngazes}); 
+       bmap = mat2gray(imread(image_props.output_bmap_path{conf_struct.gaze_params.ngazes})); 
     end
 end

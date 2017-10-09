@@ -45,13 +45,16 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
         end
     end
     
+    aux_loaded_struct_path=loaded_struct_path;
+    
     for c=1:C
+        loaded_struct_path=aux_loaded_struct_path;
         
         if gaze_idx <=1 || loaded_struct.gaze_params.conserve_dynamics == 0 || loaded_struct.compute_params.model ~= 1
-                last_xon = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),size(curvs{c},1),size(curvs{c}{1},3)); %M,N,S,O
-                last_xoff = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),size(curvs{c},1),size(curvs{c}{1},3)); %M,N,S,O
-                last_yon = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),size(curvs{c},1),size(curvs{c}{1},3)); %M,N,S,O
-                last_yoff = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),size(curvs{c},1),size(curvs{c}{1},3)); %M,N,S,O
+                last_xon = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),size(curvs{c},2),size(curvs{c}{1},3)); %M,N,S,O
+                last_xoff = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),size(curvs{c},2),size(curvs{c}{1},3)); %M,N,S,O
+                last_yon = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),size(curvs{c},2),size(curvs{c}{1},3)); %M,N,S,O
+                last_yoff = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),size(curvs{c},2),size(curvs{c}{1},3)); %M,N,S,O
         else
                 last_xon = load(get_mat_name('xon',folder_props,image_props,gaze_idx-1,loaded_struct.color_params.channels{c})); last_xon = last_xon.matrix_in;
                 last_xoff = load(get_mat_name('xoff',folder_props,image_props,gaze_idx-1,loaded_struct.color_params.channels{c})); last_xoff = last_xoff.matrix_in;
@@ -64,7 +67,13 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
             %iFactor = iFactor(~cellfun('isempty',iFactor)); %clean void cells
            
         else
-
+                
+                [loaded_struct.gaze_params.max_mempotential_val,loaded_struct.gaze_params.idx_max_mempotential_polarity]=max([last_xon(loaded_struct.gaze_params.maxidx_y,loaded_struct.gaze_params.maxidx_x,loaded_struct.gaze_params.maxidx_s,loaded_struct.gaze_params.maxidx_o),last_xoff(loaded_struct.gaze_params.maxidx_y,loaded_struct.gaze_params.maxidx_x,loaded_struct.gaze_params.maxidx_s,loaded_struct.gaze_params.maxidx_o)]);
+                
+                if c~=loaded_struct.gaze_params.maxidx_c
+                    loaded_struct.gaze_params.ior_matrix=loaded_struct.gaze_params.ior_matrix.*0;
+                end
+                    
                 t_ini = tic;
                 switch loaded_struct.compute_params.model
                     case -1

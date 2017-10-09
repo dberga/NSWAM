@@ -21,7 +21,13 @@ function [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,
 %             if ~isfield(loaded_struct.fusion_params,'gsp') loaded_struct.fusion_params.gsp = 0; end;
 %             if ~isfield(loaded_struct.fusion_params,'ior_smap') loaded_struct.fusion_params.ior_smap = 0; end;
 %             if ~isfield(loaded_struct.fusion_params,'inverse') loaded_struct.ior_smap.inverse = 'default'; end;
-            
+            if ~isfield(loaded_struct.gaze_params,'maxidx_s') loaded_struct.gaze_params.maxidx_s = 1; end;
+            if ~isfield(loaded_struct.gaze_params,'maxidx_o') loaded_struct.gaze_params.maxidx_o = 1; end;
+            if ~isfield(loaded_struct.gaze_params,'maxidx_c') loaded_struct.gaze_params.maxidx_c = 1; end;
+            if ~isfield(loaded_struct.gaze_params,'maxidx_x') loaded_struct.gaze_params.maxidx_x = 1; end;
+            if ~isfield(loaded_struct.gaze_params,'maxidx_y') loaded_struct.gaze_params.maxidx_y = 1; end;
+            if ~isfield(loaded_struct.gaze_params,'maxval') loaded_struct.gaze_params.maxval = 0; end;
+
             
             %loaded struct gazing ovewrites
             loaded_struct.resize_params.M = conf_struct.resize_params.M;

@@ -3,7 +3,7 @@ function [mean_smap] = run_gmean(run_flags,image_props,conf_struct,smaps)
         
         for k=1:conf_struct.gaze_params.ngazes
            if exist(image_props.output_gaussian_paths{k},'file')
-               smaps(:,:,k)=double(imread(image_props.output_gaussian_paths{k})); 
+               smaps(:,:,k)=mat2gray(imread(image_props.output_gaussian_paths{k})); 
            else
                imwrite(smaps(:,:,k),image_props.output_gaussian_paths{k});
            end
@@ -38,7 +38,7 @@ function [mean_smap] = run_gmean(run_flags,image_props,conf_struct,smaps)
             end
             
     else
-        mean_smap=imread(image_props.output_gaussian_path{conf_struct.gaze_params.ngazes});
+        mean_smap=mat2gray(imread(image_props.output_gaussian_path{conf_struct.gaze_params.ngazes}));
     end
         
     %imwrite(mean_smap,[image_props.output_image_path]);

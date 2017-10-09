@@ -532,7 +532,7 @@ for t_membr=1:n_membr  % membrane time
             I_norm=zeros(M,N,n_scales,K);	
             I_ior=zeros(M,N,n_scales,K);	
             if struct.gaze_params.ior == 1
-                I_ior=repmat(struct.gaze_params.ior_matrix,[1 1 n_scales K]); 
+                I_ior(:,:,struct.gaze_params.maxidx_s,struct.gaze_params.maxidx_o)=struct.gaze_params.ior_matrix; 
             end
 
 			%%%%%%%%%%%%%% preparatory terms %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -710,7 +710,7 @@ for t_membr=1:n_membr  % membrane time
 			y=y+prec*(-alphay*y...     % decay
 				+newgx(x)...
 				+y_ie...
-                +I_ior...
+                +newgx(I_ior)...
 				+1.0...     % spontaneous firing rate
                 +var_noise*(rand(M,N,n_scales,K))-0.5);  % neural noise (comment for speed
 

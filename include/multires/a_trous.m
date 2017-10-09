@@ -88,7 +88,6 @@ end
 %        figure,imagesc(w{s,1}(:,:,o));
 %    end
 % end
-
 end
 
 

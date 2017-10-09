@@ -26,6 +26,6 @@ function [gaussian_smap] = run_gaussian(run_flags,image_props,conf_struct,scanpa
         end
         
      else
-        gaussian_smap = imread(image_props.output_gaussian_path{conf_struct.gaze_params.ngazes}); 
+        gaussian_smap = mat2gray(imread(image_props.output_gaussian_path{conf_struct.gaze_params.ngazes})); 
      end
 end

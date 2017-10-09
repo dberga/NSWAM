@@ -1,4 +1,4 @@
-function [ RFmax_s,residualmax_s, max_s, max_o, max_c ] = get_waves_max_t( RF_s_o_c,residual_s_c,n_scales,n_orient,C )
+function [ RFmax_s,residualmax_s, max_s, max_o, max_c, max_x, max_y ] = get_waves_max_t( RF_s_o_c,residual_s_c,n_scales,n_orient,C )
     RFmax_s = cell(n_scales-1,1);
     residualmax_s = cell(n_scales-1,1);
     
@@ -17,6 +17,8 @@ function [ RFmax_s,residualmax_s, max_s, max_o, max_c ] = get_waves_max_t( RF_s_
                             max_s=s;
                             max_o=o;
                             max_c=c;
+                           max_x=x;
+                           max_y=y;
                         end
                     end
                 end

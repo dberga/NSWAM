@@ -177,7 +177,7 @@ if run_flags.run_all==1
             if isnan(RF_s_o_c{1}{1}(1,1,1))
                 break;
             end
-            [smap,residualmax,maxidx_s, maxidx_o, maxidx_c ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
+            [smap,residualmax,maxidx_s, maxidx_o, maxidx_c, maxidx_x, maxidx_y ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
             [maxval_d,maxidx_d]=max(smap(:));
             [maxval_r,maxidx_r]=max(residualmax(:));
             
@@ -196,7 +196,12 @@ if run_flags.run_all==1
             %set inhibition of return on current gaze (update and add)
             conf_struct.gaze_params.ior_matrix = get_ior_matrix_newgaze(ior_matrix_unfoveated, maxidx_s,conf_struct.wave_params.ini_scale,conf_struct.wave_params.fin_scale,conf_struct); 
                 %get_fig_single(normalize_minmax(conf_struct.gaze_params.ior_matrix,0,1),'ior',folder_props,image_props,conf_struct);
-            
+            conf_struct.gaze_params.maxidx_s=maxidx_s;
+            conf_struct.gaze_params.maxidx_o=maxidx_o;
+            conf_struct.gaze_params.maxidx_c=maxidx_c;
+            conf_struct.gaze_params.maxidx_x=maxidx_x;
+            conf_struct.gaze_params.maxidx_y=maxidx_y;
+                
             %set ior smap (depending on a fusion factor)
             gmap=get_ior_gaussian(conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y, 1, maxidx_s,conf_struct.wave_params.ini_scale,conf_struct.wave_params.fin_scale, conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.img_diag_angle);
             
@@ -240,7 +245,6 @@ if run_flags.run_all==1
     end
     
    
-    
     
     
 else

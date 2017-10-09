@@ -25,7 +25,6 @@ function [n_scales, ini_scale, fin_scale] = calc_scales(img, ini_scale, fin_scal
                 end
         end
         
-        
     %%a_trous uses same scaling per scale (wont crash), other decomp. would crash afterwards
     
 end
