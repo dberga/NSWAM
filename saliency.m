@@ -180,6 +180,12 @@ if run_flags.run_all==1
             [smap,residualmax,maxidx_s, maxidx_o, maxidx_c, maxidx_x, maxidx_y ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
             [maxval_d,maxidx_d]=max(smap(:));
             [maxval_r,maxidx_r]=max(residualmax(:));
+            if maxidx_c>C, maxidx_c=C; end; 
+            conf_struct.gaze_params.maxidx_s=maxidx_s;
+            conf_struct.gaze_params.maxidx_o=maxidx_o;
+            conf_struct.gaze_params.maxidx_c=maxidx_c; 
+            conf_struct.gaze_params.maxidx_x=maxidx_x;
+            conf_struct.gaze_params.maxidx_y=maxidx_y;
             
             %undistort
             smap = get_undistort(loaded_struct,smap);
@@ -196,12 +202,7 @@ if run_flags.run_all==1
             %set inhibition of return on current gaze (update and add)
             conf_struct.gaze_params.ior_matrix = get_ior_matrix_newgaze(ior_matrix_unfoveated, maxidx_s,conf_struct.wave_params.ini_scale,conf_struct.wave_params.fin_scale,conf_struct); 
                 %get_fig_single(normalize_minmax(conf_struct.gaze_params.ior_matrix,0,1),'ior',folder_props,image_props,conf_struct);
-            conf_struct.gaze_params.maxidx_s=maxidx_s;
-            conf_struct.gaze_params.maxidx_o=maxidx_o;
-            conf_struct.gaze_params.maxidx_c=maxidx_c;
-            conf_struct.gaze_params.maxidx_x=maxidx_x;
-            conf_struct.gaze_params.maxidx_y=maxidx_y;
-                
+            
             %set ior smap (depending on a fusion factor)
             gmap=get_ior_gaussian(conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y, 1, maxidx_s,conf_struct.wave_params.ini_scale,conf_struct.wave_params.fin_scale, conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.img_diag_angle);
             
@@ -252,28 +253,28 @@ else
     scanpath = load(image_props.output_scanpath_path); scanpath = scanpath.scanpath;
 end
 
-    if conf_struct.gaze_params.foveate~=0
-        slink([folder_props.output_path '/mean'],[folder_props.output_path '/gbg']); 
-        slink([folder_props.output_path '/gazes'],[folder_props.output_path '/gbgs']);
-
-        mean2_path=[pwd '/' folder_props.output_path '/mean/2/'];
-        mean4_path=[pwd '/' folder_props.output_path '/mean/4/'];
-        mean2_ln_path=[pwd '/' folder_props.output_folder '/mean_2gazes_' folder_props.output_subfolder];
-        mean4_ln_path=[pwd '/' folder_props.output_folder '/mean_4gazes_' folder_props.output_subfolder];
-        slink(mean2_path,mean2_ln_path); 
-        slink(mean4_path,mean4_ln_path);  
-
-        gaussian2_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/3/']; %for ior, is 2+1
-        gaussian4_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/5/']; %for ior, is 4+1
-        gaussian10_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/10/'];
-        gaussian2_ln_path=[pwd '/' folder_props.output_folder '/gaussian_2gazes_' folder_props.output_subfolder];
-        gaussian4_ln_path=[pwd '/' folder_props.output_folder '/gaussian_4gazes_' folder_props.output_subfolder];
-        gaussian10_ln_path=[pwd '/' folder_props.output_folder '/gaussian_10gazes_' folder_props.output_subfolder];
-
-        slink(gaussian2_path,gaussian2_ln_path); 
-        slink(gaussian4_path,gaussian4_ln_path);  
-        slink(gaussian10_path,gaussian10_ln_path);
-    end
+%     if conf_struct.gaze_params.foveate~=0
+%         slink([folder_props.output_path '/mean'],[folder_props.output_path '/gbg']); 
+%         slink([folder_props.output_path '/gazes'],[folder_props.output_path '/gbgs']);
+% 
+%         mean2_path=[pwd '/' folder_props.output_path '/mean/2/'];
+%         mean4_path=[pwd '/' folder_props.output_path '/mean/4/'];
+%         mean2_ln_path=[pwd '/' folder_props.output_folder '/mean_2gazes_' folder_props.output_subfolder];
+%         mean4_ln_path=[pwd '/' folder_props.output_folder '/mean_4gazes_' folder_props.output_subfolder];
+%         slink(mean2_path,mean2_ln_path); 
+%         slink(mean4_path,mean4_ln_path);  
+% 
+%         gaussian2_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/3/']; %for ior, is 2+1
+%         gaussian4_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/5/']; %for ior, is 4+1
+%         gaussian10_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/10/'];
+%         gaussian2_ln_path=[pwd '/' folder_props.output_folder '/gaussian_2gazes_' folder_props.output_subfolder];
+%         gaussian4_ln_path=[pwd '/' folder_props.output_folder '/gaussian_4gazes_' folder_props.output_subfolder];
+%         gaussian10_ln_path=[pwd '/' folder_props.output_folder '/gaussian_10gazes_' folder_props.output_subfolder];
+% 
+%         slink(gaussian2_path,gaussian2_ln_path); 
+%         slink(gaussian4_path,gaussian4_ln_path);  
+%         slink(gaussian10_path,gaussian10_ln_path);
+%     end
 end
 
 

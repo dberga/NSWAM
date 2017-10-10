@@ -45,10 +45,10 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
         end
     end
     
-    aux_loaded_struct_path=loaded_struct_path;
+    aux_loaded_struct=loaded_struct;
     
     for c=1:C
-        loaded_struct_path=aux_loaded_struct_path;
+        loaded_struct=aux_loaded_struct;
         
         if gaze_idx <=1 || loaded_struct.gaze_params.conserve_dynamics == 0 || loaded_struct.compute_params.model ~= 1
                 last_xon = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),size(curvs{c},2),size(curvs{c}{1},3)); %M,N,S,O
