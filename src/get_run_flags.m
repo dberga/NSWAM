@@ -63,12 +63,18 @@ function [run_flags] = get_run_flags(image_props,mat_props,conf_struct)
          
          
          if exist(mat_props.loaded_struct_path{k}, 'file') 
-             loaded_struct = load(mat_props.loaded_struct_path{k}); loaded_struct = loaded_struct.matrix_in;
-             if compare_structs(conf_struct,loaded_struct) == 1
-                 run_flags.load_struct(k)=1;
-             else
+             try
+                loaded_struct = load(mat_props.loaded_struct_path{k}); loaded_struct = loaded_struct.matrix_in;
+                
+                if compare_structs(conf_struct,loaded_struct) == 1
+                     run_flags.load_struct(k)=1;
+                else
+                     run_flags.load_struct(k)=0;
+                end
+             catch
                  run_flags.load_struct(k)=0;
              end
+             
          else
              run_flags.load_struct(k)=0;
          end
