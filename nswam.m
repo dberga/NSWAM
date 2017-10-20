@@ -252,7 +252,10 @@ if run_flags.run_all==1
     
 else
     
-        
+    if run_flags.run_all==-1
+        return;
+    end
+    
     smap = imread(image_props.output_image_path); 
     scanpath = load(image_props.output_scanpath_path); scanpath = scanpath.scanpath;
     for k=1:conf_struct.gaze_params.ngazes
