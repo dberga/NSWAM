@@ -1,7 +1,7 @@
 function [  ] = confgen( folder)
 
 if nargin < 1
-    folder = 'conf_best5';
+    folder = 'conf_best3';
 end
 
 % zli_params
@@ -287,7 +287,7 @@ end
 function [] = store_superstruct(superstruct_n,folder)
     for ss=1:numel(superstruct_n)
         matrix_in = superstruct_n{ss};
-        save([folder '/' 'no_cortical_config_' int2str(ss) '.mat'],'matrix_in');
+        save([folder '/' 'new_no_ior_config_' int2str(ss) '.mat'],'matrix_in');
     end
 end
 
@@ -423,8 +423,8 @@ function [fusion_params] = get_all_parameters_fusion_NCZLd()
     %fusion_params.tmem_res = {'mean','max'}; %temporal mean of iFactor or temporal max?
     fusion_params.tmem_res = {'mean','max'}; 
     
-    %fusion_params.inverse = {'default','max','wta'};
-    fusion_params.inverse={'default','max','wta'};
+    %fusion_params.inverse = {'multires_inv','max','wta'};
+    fusion_params.inverse={'multires_inv','max','wta'};
     
     %fusion_params.gsp={0,n} smoothing parameter
     fusion_params.gsp={0,1};
@@ -547,7 +547,6 @@ end
 function [compute_params] = get_all_parameters_compute_NCZLd()
 
     compute_params.model = {1}; %matlab
-    compute_params.posttune = {1}; %exit if cannot reuse iFactor
     % Jobmanager
     compute_params.jobmanager={'xcerda-10'}; % 'penacchio'/'xotazu'/'xcerda'/'xcerda-10'
 
@@ -584,8 +583,8 @@ function [cortex_params] = get_all_parameters_cortex_NCZLd()
         %cortex_params.cm_method = {'schwartz_monopole','schwartz_dipole'};
         cortex_params.cm_method = {'schwartz_monopole'};
         cortex_params.cortex_width = {128};
-        cortex_params.a={degtorad(0.77)}; %schira's code
-        cortex_params.b={degtorad(150)}; %schira's code
+        cortex_params.a={degtorad(0.77)};
+        cortex_params.b={degtorad(150)};
         %cortex_params.lambda={12,18};
         cortex_params.lambda={12,18};
         cortex_params.isoPolarGrad={0.1821};
@@ -613,13 +612,13 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
         %gaze_params.img_diag_angle = {degtorad(35.12),degtorad(44.12)};
         gaze_params.img_diag_angle = {degtorad(35.12)}; %used on magnification
         gaze_params.ior = {0};
-        gaze_params.ior_factor_ctt = {nthroot(0.001,1600)}; %samuel & kat 2003 %(Xms=Nsaccades*10tmem*10ms/tmem) 
-        gaze_params.ior_angle = {degtorad(4)}; %not used, using scale corresponding to output
+        gaze_params.ior_factor_ctt = {nthroot(0.001,1}; %samuel & kat 2003 %(Xms=Nsaccades*10tmem*10ms/tmem) 
+        gaze_params.ior_angle = {degtorad(4)}; %not used
         gaze_params.ior_matrix = {0}; %starting ior
         gaze_params.conserve_dynamics = {1};
         gaze_params.conserve_dynamics_rest = {1};
 
-    gaze_params.foveate = {0};
+    gaze_params.foveate = {1,3};
     %gaze_params.foveate = {0,1,3};
     %gaze_params.fov_type = {'cortical_xavi','cortical_xavi_mirrored','cortical', 'gaussian', 'fisheye'};
     gaze_params.fov_type = {'cortical'};

@@ -147,7 +147,12 @@ function [run_flags] = get_run_flags(image_props,mat_props,conf_struct)
          
      end
     
-
+    %if we are postneurodynamic tuning, we only compute if we have all iFactors
+    if ~isfield(conf_struct.compute_params,'posttune'), conf_struct.compute_params.posttune=1;  end
+    if sum(run_flags.load_iFactor_mats) < conf_struct.gaze_params.ngazes
+        run_flags.run_all=0;
+    end
+    
 end
 
 %[ loaded_struct_equivalent ] = get_samemat( mat_props.loaded_struct_path{k} );

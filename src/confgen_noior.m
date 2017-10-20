@@ -547,6 +547,7 @@ end
 function [compute_params] = get_all_parameters_compute_NCZLd()
 
     compute_params.model = {1}; %matlab
+    compute_params.posttune = {1}; %exit if cannot reuse iFactor
     % Jobmanager
     compute_params.jobmanager={'xcerda-10'}; % 'penacchio'/'xotazu'/'xcerda'/'xcerda-10'
 
