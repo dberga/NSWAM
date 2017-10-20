@@ -1,7 +1,7 @@
 function [  ] = confgen( folder)
 
 if nargin < 1
-    folder = 'conf';
+    folder = 'conf_default';
 end
 
 % zli_params
@@ -295,7 +295,7 @@ function [wave_params] = get_all_parameters_wave_NCZLd()
 
 
     %wave_params.multires={'a_trous', 'wav', 'wav_contrast', 'curv', 'gabor', 'gabor_HMAX', 'a_trous4'};
-    wave_params.multires={'a_trous'};
+    wave_params.multires={'a_trous','a_trous4'};
     
     wave_params.n_scales={0}; %auto
     
@@ -412,22 +412,22 @@ function [fusion_params] = get_all_parameters_fusion_NCZLd()
     fusion_params.output_from_csf= {'iFactor'};
     
     %fusion_params.residual_wave= {0,1,2};
-    fusion_params.residual_wave= {0};
+    fusion_params.residual_wave= {0,1,2};
 
     %fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','wtamaxc','wtamax2','wta','wta2'}; %fusion method
-    fusion_params.smethod= {'sqmean'};
+    fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','wtamaxc','wtamax2','wta','wta2'};
 
     %fusion_params.fusion= {1,2,3,4,5}; %normalization
-    fusion_params.fusion= {1};
+    fusion_params.fusion= {1,2,3,4,5};
 
     %fusion_params.tmem_res = {'mean','max'}; %temporal mean of iFactor or temporal max?
-    fusion_params.tmem_res = {'mean'}; 
+    fusion_params.tmem_res = {'mean','max'}; 
     
-    %fusion_params.inverse = {'default','max','wta'}; %default=default multires inverse
-    fusion_params.inverse={'default'};
+    %fusion_params.inverse = {'default','max','wta'};
+    fusion_params.inverse={'default','max','wta'};
     
     %fusion_params.gsp={0,n} smoothing parameter
-    fusion_params.gsp={1};
+    fusion_params.gsp={0,1};
     
     %fusion_params.ior_smap={1,0}; %get gaussian map according to ior or fixed at 40 dva
     fusion_params.ior_smap={1};
@@ -474,7 +474,7 @@ function [zli_params] = get_all_parameters_zli_NCZLd()
     zli_params.scale2size_epsilon = {1.3}; zli_params.nepsilon={num2str(zli_params.scale2size_epsilon{1})};
     
     %zli_params.bScaleDelta={0,1};
-    zli_params.bScaleDelta={1};
+    zli_params.bScaleDelta={0,1};
     
     %zli_params.reduccio_JW=num2cell(0:0.25:4);
     zli_params.reduccio_JW={1};
@@ -586,7 +586,7 @@ function [cortex_params] = get_all_parameters_cortex_NCZLd()
         cortex_params.a={degtorad(0.77)};
         cortex_params.b={degtorad(150)};
         %cortex_params.lambda={12,18};
-        cortex_params.lambda={12};
+        cortex_params.lambda={12,18};
         cortex_params.isoPolarGrad={0.1821};
         cortex_params.eccWidth={0.7609};
         cortex_params.cortex_max_elong_mm = {120};
@@ -618,7 +618,7 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
         gaze_params.conserve_dynamics = {1};
         gaze_params.conserve_dynamics_rest = {1};
 
-    gaze_params.foveate = {3};
+    gaze_params.foveate = {0,1,3};
     %gaze_params.foveate = {0,1,3};
     %gaze_params.fov_type = {'cortical_xavi','cortical_xavi_mirrored','cortical', 'gaussian', 'fisheye'};
     gaze_params.fov_type = {'cortical'};

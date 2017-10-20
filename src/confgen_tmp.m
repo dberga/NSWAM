@@ -1,7 +1,7 @@
 function [  ] = confgen( folder)
 
 if nargin < 1
-    folder = 'conf';
+    folder = 'conf_try_ior';
 end
 
 % zli_params
@@ -287,7 +287,7 @@ end
 function [] = store_superstruct(superstruct_n,folder)
     for ss=1:numel(superstruct_n)
         matrix_in = superstruct_n{ss};
-        save([folder '/' 'config_' int2str(ss) '.mat'],'matrix_in');
+        save([folder '/' 'ior_config_' int2str(ss) '.mat'],'matrix_in');
     end
 end
 
@@ -295,7 +295,7 @@ function [wave_params] = get_all_parameters_wave_NCZLd()
 
 
     %wave_params.multires={'a_trous', 'wav', 'wav_contrast', 'curv', 'gabor', 'gabor_HMAX', 'a_trous4'};
-    wave_params.multires={'a_trous'};
+    wave_params.multires={'a_trous','a_trous4'};
     
     wave_params.n_scales={0}; %auto
     
@@ -474,7 +474,7 @@ function [zli_params] = get_all_parameters_zli_NCZLd()
     zli_params.scale2size_epsilon = {1.3}; zli_params.nepsilon={num2str(zli_params.scale2size_epsilon{1})};
     
     %zli_params.bScaleDelta={0,1};
-    zli_params.bScaleDelta={1};
+    zli_params.bScaleDelta={0,1};
     
     %zli_params.reduccio_JW=num2cell(0:0.25:4);
     zli_params.reduccio_JW={1};
@@ -586,7 +586,7 @@ function [cortex_params] = get_all_parameters_cortex_NCZLd()
         cortex_params.a={degtorad(0.77)};
         cortex_params.b={degtorad(150)};
         %cortex_params.lambda={12,18};
-        cortex_params.lambda={12};
+        cortex_params.lambda={12,18};
         cortex_params.isoPolarGrad={0.1821};
         cortex_params.eccWidth={0.7609};
         cortex_params.cortex_max_elong_mm = {120};
@@ -611,14 +611,14 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
         gaze_params.fov_y = {0}; %auto
         %gaze_params.img_diag_angle = {degtorad(35.12),degtorad(44.12)};
         gaze_params.img_diag_angle = {degtorad(35.12)}; %used on magnification
-        gaze_params.ior = {0};
+        gaze_params.ior = {1};
         gaze_params.ior_factor_ctt = {nthroot(0.001,1600)}; %samuel & kat 2003 %(Xms=Nsaccades*10tmem*10ms/tmem) 
         gaze_params.ior_angle = {degtorad(4)}; %not used, using scale corresponding to output
         gaze_params.ior_matrix = {0}; %starting ior
         gaze_params.conserve_dynamics = {1};
         gaze_params.conserve_dynamics_rest = {1};
 
-    gaze_params.foveate = {3};
+    gaze_params.foveate = {1,3};
     %gaze_params.foveate = {0,1,3};
     %gaze_params.fov_type = {'cortical_xavi','cortical_xavi_mirrored','cortical', 'gaussian', 'fisheye'};
     gaze_params.fov_type = {'cortical'};

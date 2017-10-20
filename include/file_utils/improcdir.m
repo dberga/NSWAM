@@ -37,7 +37,7 @@ N_files = size(files,1);                                %readed number of files
             img = imread(files(i).name);
             
             try
-                feval(process, files(i).name,img,args{1},args{2},args{3},args{4});
+                feval(process,img,files(i).name,args{1},args{2},args{3},args{4});
             catch exc_process2
                 result=-1;
                 disp(getReport(exc_process2,'extended'));

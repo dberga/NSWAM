@@ -1,4 +1,4 @@
-function [smap,scanpath] = saliency(image_name,input_image,conf_struct_path,output_folder,output_folder_mats,output_extension)
+function [smap,scanpath,smaps] = nswam(input_image,image_path,conf_struct_path,output_folder,output_folder_mats,output_extension)
 
 addpath(genpath('include'));
 addpath(genpath('src'));
@@ -8,8 +8,7 @@ addpath(genpath('src_mex'));
 if ~exist('output_extension','var')    output_extension = 'png'; end
 if ~exist('output_folder','var')    output_folder = 'output'; end
 if ~exist('output_folder_mats','var')   output_folder_mats = 'mats'; end
-if ~exist('conf_struct_path','var')    conf_struct_path = ''; end
-if ~exist('input_image','var')    input_image = imread(image_name); end
+if ~exist('conf_struct_path','var')    conf_struct_path = 'conf'; end
 
 
 %non modified input_image
@@ -22,8 +21,11 @@ if strcmp(conf_struct_path,'')==0
     
     [conf_struct] = load(conf_struct_path); conf_struct = conf_struct.matrix_in;
 else
-    confgen();
-    [conf_struct] = load('conf_default/config_1.mat'); conf_struct = conf_struct.matrix_in;
+    conf_struct_folder='conf';
+    confgen(conf_struct_folder);
+    conf_struct_path=[conf_struct_folder '/' 'config_1.mat'];
+    [conf_struct] = load(conf_struct_path); conf_struct = conf_struct.matrix_in;
+    
 end
 
 %discriminate if no foveation
@@ -64,7 +66,7 @@ curvs = cell(1,3);
 residuals = cell(1,3);
 %%%%%%%%%%%%%%%%%%get folder_props and image_props
 [folder_props] = get_folder_properties(output_folder,conf_struct_path_name,output_folder_mats,output_extension,conf_struct);
-[image_props] = get_image_properties(input_image,image_name,folder_props,conf_struct);
+[image_props] = get_image_properties(input_image,image_path,folder_props,conf_struct);
 [mat_props] = get_mat_properties(folder_props,image_props,conf_struct);
 
 
@@ -249,32 +251,23 @@ if run_flags.run_all==1
     
     
 else
+    
+        
     smap = imread(image_props.output_image_path); 
     scanpath = load(image_props.output_scanpath_path); scanpath = scanpath.scanpath;
+    for k=1:conf_struct.gaze_params.ngazes
+       if exist(image_props.output_image_paths{k},'file')
+          smaps(:,:,k)=mat2gray(imread(image_props.output_image_paths{k})); 
+       else
+          imwrite(smaps(:,:,k),image_props.output_image_paths{k});
+       end
+    end
+    
 end
 
-%     if conf_struct.gaze_params.foveate~=0
-%         slink([folder_props.output_path '/mean'],[folder_props.output_path '/gbg']); 
-%         slink([folder_props.output_path '/gazes'],[folder_props.output_path '/gbgs']);
-% 
-%         mean2_path=[pwd '/' folder_props.output_path '/mean/2/'];
-%         mean4_path=[pwd '/' folder_props.output_path '/mean/4/'];
-%         mean2_ln_path=[pwd '/' folder_props.output_folder '/mean_2gazes_' folder_props.output_subfolder];
-%         mean4_ln_path=[pwd '/' folder_props.output_folder '/mean_4gazes_' folder_props.output_subfolder];
-%         slink(mean2_path,mean2_ln_path); 
-%         slink(mean4_path,mean4_ln_path);  
-% 
-%         gaussian2_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/3/']; %for ior, is 2+1
-%         gaussian4_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/5/']; %for ior, is 4+1
-%         gaussian10_path=[pwd '/' folder_props.output_path '/gaussian_nobaseline/10/'];
-%         gaussian2_ln_path=[pwd '/' folder_props.output_folder '/gaussian_2gazes_' folder_props.output_subfolder];
-%         gaussian4_ln_path=[pwd '/' folder_props.output_folder '/gaussian_4gazes_' folder_props.output_subfolder];
-%         gaussian10_ln_path=[pwd '/' folder_props.output_folder '/gaussian_10gazes_' folder_props.output_subfolder];
-% 
-%         slink(gaussian2_path,gaussian2_ln_path); 
-%         slink(gaussian4_path,gaussian4_ln_path);  
-%         slink(gaussian10_path,gaussian10_ln_path);
-%     end
 end
+
+
+
 
 
