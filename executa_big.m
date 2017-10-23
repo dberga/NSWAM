@@ -24,7 +24,7 @@ addpath('src_mex');
 conf_mats= dir(fullfile(conf_dir, ['*.mat']));
 conf_mats=unsort_array(conf_mats);
 
-maxproc=1;
+maxproc=length(conf_mats);
 proc=1;
 for i=1:length(conf_mats) %parfor i=1:length(conf_mats)
     log_name=[output_dir '/' 'log_' conf_mats(i).name '.txt'];
@@ -33,7 +33,7 @@ for i=1:length(conf_mats) %parfor i=1:length(conf_mats)
     
     conf_path = [conf_dir '/' conf_mats(i).name];
     
-    if ~exist(done_name,'file') && ~exist(log_name,'file') && ~exist(error_name,'file') && proc<=maxproc
+    if ~exist(done_name,'file') && ~exist(log_name,'file') && ~exist(error_name,'file')
  		try
             diary(log_name);
             diary on;
