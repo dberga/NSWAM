@@ -626,7 +626,8 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
  
 
     %gaze_params.redistort_periter = {1,0};
-    gaze_params.redistort_periter = {1};
+    gaze_params.redistort_periter = {0};
+    gaze_params.redistort_pertmem = {1};
 
     gaze_params.ngazes = {10};
     %gaze_params.ngazes = {2,5,10};

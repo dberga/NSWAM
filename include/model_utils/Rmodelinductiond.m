@@ -729,7 +729,16 @@ for t_membr=1:n_membr  % membrane time
         %update inhibition
         struct.gaze_params.ior_matrix = struct.gaze_params.ior_matrix.*exp(prec.*log(struct.gaze_params.ior_factor_ctt)); %same as I_ior = struct.gaze_params.ior_matrix.*struct.gaze_params.ior_factor_ctt.^(prec);
 
-    
+        %redistort
+        if struct.gaze_params.foveate == 1 && struct.gaze_params.redistort_periter == 1
+            for s=1:struct.wave_params.fin_scale
+                for o=1:struct.wave_params.n_orient
+                    x_und = foveate(x(:,:,s,o),1,struct);
+                    x(:,:,s,o) = foveate(x_und,0,struct);
+                end
+            end
+        end
+
         % store I_norm
         vector_I_norm(:,(t_membr-1)*n_iter+t_iter)=[min(I_norm(:));max(I_norm(:));mean(I_norm(:))];
 
@@ -749,21 +758,21 @@ for t_membr=1:n_membr  % membrane time
         gy_final_per_iter{t_membr}{t_iter}=gy_final{t_membr};
 % 		disp('questions: verify that the newgy(y) newgx(x) are not in the expressions y_ei,x_ei,x_ee ')
         
+        
 	end % end t_iter=1:n_iter	
 % 	ginput(1);
 toc
 	%if t*prec==ceil(t*prec) % added 1/2/12
 	
-    %redistort
-    if struct.gaze_params.foveate == 1 && struct.gaze_params.redistort_periter == 1
-        for s=1:struct.wave_params.fin_scale
-            for o=1:struct.wave_params.n_orient
-                x_und = foveate(x(:,:,s,o),1,struct);
-                x(:,:,s,o) = foveate(x_und,0,struct);
+        %redistort
+        if struct.gaze_params.foveate == 1 && struct.gaze_params.redistort_pertmem == 1 && struct.gaze_params.redistort_periter==0
+            for s=1:struct.wave_params.fin_scale
+                for o=1:struct.wave_params.n_orient
+                    x_und = foveate(x(:,:,s,o),1,struct);
+                    x(:,:,s,o) = foveate(x_und,0,struct);
+                end
             end
         end
-    end
-
 	
 % 		gx_final{t_membr}=newgx(x); % was gx_final(:,:,:,t)=newgx(x(:,:,:));
 % 		

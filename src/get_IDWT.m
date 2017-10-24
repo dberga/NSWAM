@@ -1,6 +1,6 @@
 function [RF_c] = get_IDWT(loaded_struct,RF_c_s_o,residual_c_s)
         
-        if ~isfield(loaded_struct.fusion_params,'inverse') loaded_struct.fusion_params.inverse = 'multires_inv'; end
+        
         switch loaded_struct.fusion_params.inverse
             case 'max'
                 RF_c(:,:,1) = get_wave_max_t(RF_c_s_o{1},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);

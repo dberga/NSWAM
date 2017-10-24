@@ -70,7 +70,6 @@ function [smap,residualmax,max_s, max_o, max_c, max_x, max_y ] = get_fusion(RF_s
      residual_c_s = residualmax_c_s;
      
     
-    if ~isfield(loaded_struct.fusion_params,'inverse') loaded_struct.fusion_params.inverse = 'multires_inv'; end
     switch loaded_struct.fusion_params.inverse
         case 'max'
             RF_c  = RFmax_c;

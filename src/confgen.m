@@ -423,14 +423,14 @@ function [fusion_params] = get_all_parameters_fusion_NCZLd()
     %fusion_params.tmem_res = {'mean','max'}; %temporal mean of iFactor or temporal max?
     fusion_params.tmem_res = {'mean'}; 
     
-    %fusion_params.inverse = {'default','max','wta'}; %default=default multires inverse
-    fusion_params.inverse={'default'};
+    %fusion_params.inverse = {'multires_inv','max','wta'}; %multires_inv=default multires inverse
+    fusion_params.inverse={'multires_inv'};
     
     %fusion_params.gsp={0,n} smoothing parameter
     fusion_params.gsp={1};
     
     %fusion_params.ior_smap={1,0}; %get gaussian map according to ior or fixed at 40 dva
-    fusion_params.ior_smap={1};
+    fusion_params.ior_smap={0};
 end
 
 function [file_params] = get_all_parameters_file_NCZLd()
@@ -625,7 +625,8 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
  
 
     %gaze_params.redistort_periter = {1,0};
-    gaze_params.redistort_periter = {1};
+    gaze_params.redistort_periter = {0};
+    gaze_params.redistort_pertmem = {1};
 
     gaze_params.ngazes = {10};
     %gaze_params.ngazes = {2,5,10};

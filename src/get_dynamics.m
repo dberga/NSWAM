@@ -45,6 +45,12 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
         end
     end
     
+    %if we are postneurodynamic tuning, we only compute if we have all iFactors
+    if conf_struct.compute_params.posttune==1 && sum(run_flags.load_iFactor_mats) < conf_struct.gaze_params.ngazes
+        error('Some iFactor_mats not found, cannot posttune');
+        return;
+    end
+
     aux_loaded_struct=loaded_struct;
     
     for c=1:C
@@ -68,6 +74,7 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
            
         else
                 
+
                 [loaded_struct.gaze_params.max_mempotential_val,loaded_struct.gaze_params.idx_max_mempotential_polarity]=max([last_xon(loaded_struct.gaze_params.maxidx_y,loaded_struct.gaze_params.maxidx_x,loaded_struct.gaze_params.maxidx_s,loaded_struct.gaze_params.maxidx_o),last_xoff(loaded_struct.gaze_params.maxidx_y,loaded_struct.gaze_params.maxidx_x,loaded_struct.gaze_params.maxidx_s,loaded_struct.gaze_params.maxidx_o)]);
                 
                 if c~=loaded_struct.gaze_params.maxidx_c

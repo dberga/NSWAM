@@ -240,7 +240,6 @@ if run_flags.run_all==1
     saccades_bmap = run_bmap(run_flags,image_props,conf_struct,scanpath);
     
     %smap from density of scanpath
-    if ~isfield(conf_struct.fusion_params,'ior_smap'), conf_struct.fusion_params.ior_smap=1;  end
     if conf_struct.fusion_params.ior_smap
         mean_gmap = run_gmean(run_flags,image_props,conf_struct,gmaps);
     else
@@ -251,10 +250,6 @@ if run_flags.run_all==1
     
     
 else
-    
-    if run_flags.run_all==-1
-        return;
-    end
     
     smap = imread(image_props.output_image_path); 
     scanpath = load(image_props.output_scanpath_path); scanpath = scanpath.scanpath;
