@@ -37,9 +37,18 @@ function [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,
             %conf struct fusion ovewrites 
             loaded_struct.fusion_params = conf_struct.fusion_params;
             loaded_struct.csf_params = conf_struct.csf_params;
-            
            
-            
+            %set default old params
+            if ~isfield(conf_struct.fusion_params,'gsp') conf_struct.fusion_params.gsp = 1; end;
+            if ~isfield(conf_struct.fusion_params,'ior_smap') conf_struct.fusion_params.ior_smap = 1; end;
+            if ~isfield(conf_struct.fusion_params,'inverse') conf_struct.fusion_params.inverse = 'multires_inv'; end;
+            if ~isfield(conf_struct.compute_params,'posttune') conf_struct.compute_params.posttune=0; end
+
+            if ~isfield(loaded_struct.fusion_params,'gsp') loaded_struct.fusion_params.gsp = 1; end;
+            if ~isfield(loaded_struct.fusion_params,'ior_smap') loaded_struct.fusion_params.ior_smap = 1; end;
+            if ~isfield(loaded_struct.fusion_params,'inverse') loaded_struct.fusion_params.inverse = 'multires_inv'; end;
+            if ~isfield(loaded_struct.compute_params,'posttune') loaded_struct.compute_params.posttune=0; end
+
             
 end
 

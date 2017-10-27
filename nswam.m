@@ -53,11 +53,6 @@ conf_struct.gaze_params.ior_matrix = zeros(conf_struct.gaze_params.orig_height, 
     output_folder_mats = [output_folder_mats '/' conf_struct_path_name];
 %end
 
-%set default old params
-if ~isfield(conf_struct.fusion_params,'gsp') conf_struct.fusion_params.gsp = 1; end;
-if ~isfield(conf_struct.fusion_params,'ior_smap') conf_struct.fusion_params.ior_smap = 1; end;
-if ~isfield(conf_struct.fusion_params,'inverse') conf_struct.fusion_params.inverse = 'multires_inv'; end;
-if ~isfield(conf_struct.compute_params,'posttune') conf_struct.compute_params.posttune=0; end
 
             
 
