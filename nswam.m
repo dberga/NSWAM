@@ -14,7 +14,7 @@ if ~exist('conf_struct_path','var')    conf_struct_path = 'conf'; end
 %non modified input_image
 aux_input_image = input_image;
 
-%%%%%%%%%%%%%%%%%%LOAD/CREATE CONFIG STRUCT PARAMS
+%% LOAD/CREATE CONFIG STRUCT PARAMS
 
 [~,conf_struct_path_name,~] = fileparts(conf_struct_path);
 if strcmp(conf_struct_path,'')==0
@@ -53,8 +53,15 @@ conf_struct.gaze_params.ior_matrix = zeros(conf_struct.gaze_params.orig_height, 
     output_folder_mats = [output_folder_mats '/' conf_struct_path_name];
 %end
 
+%set default old params
+if ~isfield(conf_struct.fusion_params,'gsp') conf_struct.fusion_params.gsp = 1; end;
+if ~isfield(conf_struct.fusion_params,'ior_smap') conf_struct.fusion_params.ior_smap = 1; end;
+if ~isfield(conf_struct.fusion_params,'inverse') conf_struct.fusion_params.inverse = 'multires_inv'; end;
+if ~isfield(conf_struct.compute_params,'posttune') conf_struct.compute_params.posttune=0; end
 
-%%%%%%%%%%%%%%%%%%INITIALIZE OUTPUT
+            
+
+%% INITIALIZE OUTPUT
 [M,N,C] = size(input_image);
 smap = zeros(M,N);
 smaps = zeros(M,N,conf_struct.gaze_params.ngazes);
@@ -73,7 +80,7 @@ residuals = cell(1,3);
 %%%%%%%%%%%%%%%%%%GET RUN FLAGS (LOAD,NEURODYN,RECONS...)
 [run_flags] = get_run_flags(image_props,mat_props,conf_struct);
 
-
+%% NSWAM ALGORITHM
 if run_flags.run_all==1
     if run_flags.run_smaps
         for k=1:conf_struct.gaze_params.ngazes
@@ -84,13 +91,13 @@ if run_flags.run_all==1
             input_image = double(aux_input_image);
                     %get_fig_opp(normalize_minmax(input_image,0,255),'img',folder_props,image_props,conf_struct);
             
-            %%%%%%%%%%%%% 1.im2opponent  [IMAGE->RGC]
+            %% 1.im2opponent  [IMAGE->RGC]
             input_image = get_rgb2opp(input_image,conf_struct); %! (depending on flag)
                     %get_fig_opp(input_image,'opp',folder_props,image_props,conf_struct);
             
                     
             
-            %%%%%%%%%%%%% 2 & 3.foveate (or cortical mapping) and DWT [RGC->LGN->CORTEX]
+            %% 2 & 3.foveate (or cortical mapping) and DWT [RGC->LGN->CORTEX]
             
             ior_matrix_unfoveated = conf_struct.gaze_params.ior_matrix;    
             
@@ -129,21 +136,15 @@ if run_flags.run_all==1
                     [conf_struct.gaze_params.ior_matrix] = get_resize(conf_struct.gaze_params.ior_matrix,conf_struct);
             end
             
-            
+            %get_fig_opp(input_image,'fov',folder_props,image_props,conf_struct);
+            %get_fig_wav(curvs_aux{1},'wav_c1',folder_props,image_props,conf_struct);
+            %get_fig_wav(curvs_aux{2},'wav_c2',folder_props,image_props,conf_struct);
+            %get_fig_wav(curvs_aux{3},'wav_c3',folder_props,image_props,conf_struct);
             
             [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,image_props,mat_props,conf_struct,k);
             
-            
-            
-            
-                %get_fig_opp(input_image,'fov',folder_props,image_props,conf_struct);
-                %get_fig_wav(curvs_aux{1},'wav_c1',folder_props,image_props,conf_struct);
-                %get_fig_wav(curvs_aux{2},'wav_c2',folder_props,image_props,conf_struct);
-                %get_fig_wav(curvs_aux{3},'wav_c3',folder_props,image_props,conf_struct);
-                    
-            
              
-            %%%%%%%%%%%%% 4. CORE, COMPUTE DYNAMICS [CORTEX->CORTEX]
+            %% 4. CORE, COMPUTE DYNAMICS [CORTEX->CORTEX]
             [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,k,curvs,residuals);
                     %get_fig_ifactor(iFactors{1},'ifactor_c1',folder_props,image_props,conf_struct);
                     %get_fig_ifactor(iFactors{2},'ifactor_c2',folder_props,image_props,conf_struct);
@@ -156,7 +157,7 @@ if run_flags.run_all==1
                 return;
             end
             
-            %%%%%%%%%%%%% 5. FUSION [CORTEX->SMAP]
+            %% 5. FUSION [CORTEX->SMAP]
 
             %residual to zero?
             [residuals{1}] = get_residual_updated(loaded_struct,residuals{1});
@@ -227,7 +228,7 @@ if run_flags.run_all==1
         end
     end
     
-    
+    %% Prepare Output (we just created smaps)
     %smap from means of gazed smaps
     mean_smap = run_mean(run_flags,image_props,conf_struct,smaps);
     
@@ -250,7 +251,7 @@ if run_flags.run_all==1
     
     
 else
-    
+    %% Prepare Output (we already have smaps)
     smap = imread(image_props.output_image_path); 
     scanpath = load(image_props.output_scanpath_path); scanpath = scanpath.scanpath;
     for k=1:conf_struct.gaze_params.ngazes

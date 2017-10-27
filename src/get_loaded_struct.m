@@ -27,7 +27,6 @@ function [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,
             if ~isfield(loaded_struct.gaze_params,'redistort_pertmem')
                 loaded_struct.gaze_params.redistort_pertmem=loaded_struct.gaze_params.redistort_periter;
             end
-            if ~isfield(loaded_struct.compute_params,'posttune') loaded_struct.compute_params.posttune=0; end
             
             %loaded struct gazing ovewrites
             loaded_struct.resize_params.M = conf_struct.resize_params.M;
@@ -39,10 +38,7 @@ function [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,
             loaded_struct.fusion_params = conf_struct.fusion_params;
             loaded_struct.csf_params = conf_struct.csf_params;
             
-            if ~isfield(loaded_struct.fusion_params,'gsp') loaded_struct.fusion_params.gsp = 1; end;
-            if ~isfield(loaded_struct.fusion_params,'ior_smap') loaded_struct.fusion_params.ior_smap = 0; end;
-            if ~isfield(loaded_struct.fusion_params,'inverse') loaded_struct.fusion_params.inverse = 'multires_inv'; end;
-            
+           
             
             
 end
