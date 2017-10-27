@@ -18,9 +18,6 @@ function [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,
             if ~isfield(loaded_struct.gaze_params,'ior') loaded_struct.gaze_params.ior = 0; end;
             if ~isfield(loaded_struct.gaze_params,'ior_factor_ctt') loaded_struct.gaze_params.ior_factor_ctt = 0; end;
             if ~isfield(loaded_struct.gaze_params,'ior_matrix') loaded_struct.gaze_params.ior_matrix = 0; end;
-            if ~isfield(loaded_struct.fusion_params,'gsp') loaded_struct.fusion_params.gsp = 1; end;
-            if ~isfield(loaded_struct.fusion_params,'ior_smap') loaded_struct.fusion_params.ior_smap = 0; end;
-            if ~isfield(loaded_struct.fusion_params,'inverse') loaded_struct.fusion_params.inverse = 'multires_inv'; end;
             if ~isfield(loaded_struct.gaze_params,'maxidx_s') loaded_struct.gaze_params.maxidx_s = 1; end;
             if ~isfield(loaded_struct.gaze_params,'maxidx_o') loaded_struct.gaze_params.maxidx_o = 1; end;
             if ~isfield(loaded_struct.gaze_params,'maxidx_c') loaded_struct.gaze_params.maxidx_c = 1; end;
@@ -42,6 +39,9 @@ function [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,
             loaded_struct.fusion_params = conf_struct.fusion_params;
             loaded_struct.csf_params = conf_struct.csf_params;
             
+            if ~isfield(loaded_struct.fusion_params,'gsp') loaded_struct.fusion_params.gsp = 1; end;
+            if ~isfield(loaded_struct.fusion_params,'ior_smap') loaded_struct.fusion_params.ior_smap = 0; end;
+            if ~isfield(loaded_struct.fusion_params,'inverse') loaded_struct.fusion_params.inverse = 'multires_inv'; end;
             
             
             
