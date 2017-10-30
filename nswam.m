@@ -236,14 +236,14 @@ if run_flags.run_all==1
     %scanpath from files or from computed smaps(k)
     scanpath = run_scanpath(run_flags,image_props,conf_struct,smaps);
     
-    %binary map from scanpath
-    saccades_bmap = run_bmap(run_flags,image_props,conf_struct,scanpath);
+    %fixations binary map from scanpath
+    bmap = run_bmap(run_flags,image_props,conf_struct,scanpath);
     
     %smap from density of scanpath
     if conf_struct.fusion_params.ior_smap
-        mean_gmap = run_gmean(run_flags,image_props,conf_struct,gmaps);
+        mean_gmap = run_gmean(run_flags,image_props,conf_struct,gmaps); %scale-dependent
     else
-        mean_gmap = run_gaussian(run_flags,image_props,conf_struct,scanpath);
+        mean_gmap = run_gaussian(run_flags,image_props,conf_struct,scanpath); %non scale-dependent
     end
     
    

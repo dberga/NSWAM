@@ -730,7 +730,7 @@ for t_membr=1:n_membr  % membrane time
         struct.gaze_params.ior_matrix = struct.gaze_params.ior_matrix.*exp(prec.*log(struct.gaze_params.ior_factor_ctt)); %same as I_ior = struct.gaze_params.ior_matrix.*struct.gaze_params.ior_factor_ctt.^(prec);
 
         %redistort
-        if struct.gaze_params.foveate == 1 && struct.gaze_params.redistort_periter == 1
+        if struct.gaze_params.foveate ~= 0 && struct.gaze_params.redistort_periter == 1
             for s=1:struct.wave_params.fin_scale
                 for o=1:struct.wave_params.n_orient
                     x_und = foveate(x(:,:,s,o),1,struct);
@@ -765,7 +765,7 @@ toc
 	%if t*prec==ceil(t*prec) % added 1/2/12
 	
         %redistort
-        if struct.gaze_params.foveate == 1 && struct.gaze_params.redistort_pertmem == 1 && struct.gaze_params.redistort_periter==0
+        if struct.gaze_params.foveate ~= 0 && struct.gaze_params.redistort_pertmem == 1 && struct.gaze_params.redistort_periter==0
             for s=1:struct.wave_params.fin_scale
                 for o=1:struct.wave_params.n_orient
                     x_und = foveate(x(:,:,s,o),1,struct);
