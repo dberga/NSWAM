@@ -46,7 +46,7 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
     end
     
     %if we are postneurodynamic tuning, we only compute if we have all iFactors
-    if loaded_struct.compute_params.posttune==1 && sum(run_flags.load_iFactor_mats) < loaded_struct.gaze_params.ngazes
+    if loaded_struct.compute_params.posttune==1 && run_flags.load_iFactor_mats(gaze_idx) == 0
         error('Some iFactor_mats not found, cannot posttune');
         return;
     end
