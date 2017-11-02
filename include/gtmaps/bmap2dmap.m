@@ -1,5 +1,5 @@
 function [ dmap ] = bmap2dmap( bmap, option)
-    if nargin < 2, option = 1; end
+    if nargin < 2, option = 2; end
         
 switch option
 
@@ -13,7 +13,7 @@ switch option
         dmap = imgSalGaussian( bmap );
 
     case 4 %inverse distance transform
-	dmap = normalize_minmax(imcomplement(bwdist(bmap)));
+	dmap = bmap2distmap(bmap);
 
 end
 
