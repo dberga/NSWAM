@@ -4,9 +4,9 @@
 % required for the Gaussian low pass filter in the Fourier domain.
 % This function runs Antonio's gaussian computation.
 
-function [BF, gf] = run_antonioGaussian(img, sigma)
-
-if nargin < 2, dvapix=40; sigma = (dvapix/(2*sqrt(2*log(2)))); end
+function [BF, gf] = run_antonioGaussian(img, dvapix, sigma)
+if nargin < 2, dvapix= 40; end
+if nargin < 3, sigma = (dvapix/(2*sqrt(2*log(2)))); end
 
 [sn, sm, c]=size(img);
 n=max([sn sm]);
