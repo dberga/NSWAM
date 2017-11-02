@@ -1,9 +1,12 @@
-function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,gaze_idx,curvs,residuals)
+function [iFactors,max_mempotential_val,maxidx_y,maxidx_x,maxidx_s,maxidx_o,idx_max_mempotential_polarity,maxidx_c] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,gaze_idx,curvs,residuals)
     
 
     iFactors = cell(1,C);
     loaded_struct_path=get_mat_name('struct',folder_props,image_props,gaze_idx);
     
+    max_mempotential_val=-Inf;
+    idx_max_mempotential_polarity=1;
+     
     %see if there are mats from other config that satisfy the pre-neurodynamical parameters, if so, create a soft link to such mats for each gaze and channel
     for c=1:C
         
@@ -71,16 +74,16 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
         if run_flags.load_iFactor_mats(gaze_idx)==1 %&& run_flags.load_xon_mats(gaze_idx)==1 && run_flags.load_xoff_mats(gaze_idx)==1 && run_flags.load_yon_mats(gaze_idx)==1 && run_flags.load_yoff_mats(gaze_idx)==1
             iFactor = load(get_mat_name('iFactor',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); iFactor = iFactor.matrix_in;
             %iFactor = iFactor(~cellfun('isempty',iFactor)); %clean void cells
-           
+            
+            last_xon = load(get_mat_name('xon',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); last_xon = last_xon.matrix_in;
+            last_xoff = load(get_mat_name('xoff',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); last_xoff = last_xoff.matrix_in;
+            last_yon = load(get_mat_name('yon',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); last_yon = last_yon.matrix_in;
+            last_yoff = load(get_mat_name('yoff',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); last_yoff = last_yoff.matrix_in;
         else
                 
-
-                [loaded_struct.gaze_params.max_mempotential_val,loaded_struct.gaze_params.idx_max_mempotential_polarity]=max([last_xon(loaded_struct.gaze_params.maxidx_y,loaded_struct.gaze_params.maxidx_x,loaded_struct.gaze_params.maxidx_s,loaded_struct.gaze_params.maxidx_o),last_xoff(loaded_struct.gaze_params.maxidx_y,loaded_struct.gaze_params.maxidx_x,loaded_struct.gaze_params.maxidx_s,loaded_struct.gaze_params.maxidx_o)]);
+                %send only specific channel c
+                loaded_struct.gaze_params.ior_matrix_multidim=loaded_struct.gaze_params.ior_matrix_multidim(:,:,:,:,:,c);
                 
-                if c~=loaded_struct.gaze_params.maxidx_c
-                    loaded_struct.gaze_params.ior_matrix=loaded_struct.gaze_params.ior_matrix.*0;
-                end
-                    
                 t_ini = tic;
                 switch loaded_struct.compute_params.model
                     case -1
@@ -116,7 +119,7 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
                         [~,~, last_xon, last_xoff, last_yon, last_yoff] =NCZLd_channel_ON_OFF_rest_cpp(loaded_struct,last_xon, last_xoff, last_yon, last_yoff);
                 end
                 toc(t_ini);
-
+                
 
                 %change its cell dimensions format
                 for ff=1:loaded_struct.zli_params.n_membr
@@ -125,7 +128,7 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
                          end
                 end
 
-
+                
                 % save computed iFactor
                 save_mat('iFactor',iFactor,folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c});
                 save_mat('xon',last_xon,folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c});
@@ -137,11 +140,8 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
         end
         
         
-        
-        
         iFactors{c} = iFactor;
-            
-            
+        
         if C < 2
             %case grayscale
             
@@ -164,9 +164,33 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
             
             save_mat('yoff',last_yoff,folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2});
             save_mat('yoff',last_yoff,folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3});
-
+            
         end
-    
+        
+        %get maximum wta values
+        
+        [max_mempotential_val_xon,~,~,~,~]=get_max_4dim( last_xon );
+        [max_mempotential_val_xoff,~,~,~,~]=get_max_4dim( last_xoff );
+        
+        if max_mempotential_val_xon >= max_mempotential_val_xoff
+            aux_idx_max_mempotential_polarity=1;
+            aux_max_mempotential_val=max_mempotential_val_xon;
+        else
+            aux_idx_max_mempotential_polarity=2;
+            aux_max_mempotential_val=max_mempotential_val_xoff;
+        end
+        
+        
+        
+        if aux_max_mempotential_val>=max_mempotential_val
+            max_mempotential_val=aux_max_mempotential_val;
+            idx_max_mempotential_polarity=aux_idx_max_mempotential_polarity;
+            maxidx_c=c;
+            [~,maxidx_y,maxidx_x,maxidx_s,maxidx_o]=get_max_4dim( last_xon+last_xoff );
+        end
     end
+    
+    
+    
 end
 

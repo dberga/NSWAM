@@ -612,7 +612,10 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
         %gaze_params.img_diag_angle = {degtorad(35.12),degtorad(44.12)};
         gaze_params.img_diag_angle = {degtorad(35.12)}; %used on magnification
         gaze_params.ior = {0};
-        gaze_params.ior_factor_ctt = {nthroot(0.001,1600)}; %samuel & kat 2003 %(Xms=Nsaccades*10tmem*10ms/tmem) 
+        gaze_params.ior_factor_ctt = {nthroot(0.001,1600)}; %samuel & kat 2003 
+            %f'=f*exp(prec*log(ctt)); -> ctt=(f'/f)^(1/prec) 
+            %f'/f = 1-threshold; prec=precision;time=nsac*10tmem*100iter*prec
+            %ctt=nthroot(threshold,time)
         gaze_params.ior_angle = {degtorad(4)}; %not used, using scale corresponding to output
         gaze_params.ior_matrix = {0}; %starting ior
         gaze_params.conserve_dynamics = {1};

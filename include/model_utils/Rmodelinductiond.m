@@ -532,7 +532,7 @@ for t_membr=1:n_membr  % membrane time
             I_norm=zeros(M,N,n_scales,K);	
             I_ior=zeros(M,N,n_scales,K);	
             if struct.gaze_params.ior == 1
-                I_ior(:,:,struct.gaze_params.maxidx_s,struct.gaze_params.maxidx_o)=struct.gaze_params.ior_matrix; 
+                I_ior=struct.gaze_params.ior_matrix_multidim;
             end
 
 			%%%%%%%%%%%%%% preparatory terms %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -727,7 +727,7 @@ for t_membr=1:n_membr  % membrane time
 
         
         %update inhibition
-        struct.gaze_params.ior_matrix = struct.gaze_params.ior_matrix.*exp(prec.*log(struct.gaze_params.ior_factor_ctt)); %same as I_ior = struct.gaze_params.ior_matrix.*struct.gaze_params.ior_factor_ctt.^(prec);
+        struct.gaze_params.ior_matrix_multidim=struct.gaze_params.ior_matrix_multidim.*exp(prec.*log(struct.gaze_params.ior_factor_ctt));
 
         %redistort
         if struct.gaze_params.foveate ~= 0 && struct.gaze_params.redistort_periter == 1

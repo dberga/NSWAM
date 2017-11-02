@@ -68,29 +68,20 @@ end
 aux_n_scales = struct.wave_params.n_scales;
 struct.wave_params.n_scales = struct.wave_params.fin_scale;
 
+aux_struct=struct;
 % choose the algorithm (separated, abs, quadratic) 
 switch(struct.zli_params.ON_OFF)
     case 0 % separated
-            aux_ior_matrix = struct.gaze_params.ior_matrix;
-            
-            if struct.gaze_params.idx_max_mempotential_polarity==1
-                struct.gaze_params.ior_matrix = struct.gaze_params.ior_matrix .* struct.gaze_params.max_mempotential_val;
-            else
-                struct.gaze_params.ior_matrix = struct.gaze_params.ior_matrix .* 0;
-            end
-            
+        
+            struct=aux_struct;
+            struct.gaze_params.ior_matrix_multidim=struct.gaze_params.ior_matrix_multidim(:,:,:,:,1);
             % positius +++++++++++++++++++++++++++++++++++++++++++++++++++
             %%% MAIN PROCESS %%%
             [xFactor_ON_t_fi,yFactor_ON_t_fi,xFactor_ON_t_i,yFactor_ON_t_i,x_ON, y_ON]=Rmodelinductiond(curv_ON, struct, 'ON',x_on,y_on); % note: iFactor is called "gx_final" at the core of the process
             %%% END MAIN PROCESS %%%
-            
-            struct.gaze_params.ior_matrix = aux_ior_matrix; %same for ON and OFF, the (OFF) will save the last ior_matrix
-            
-            if struct.gaze_params.idx_max_mempotential_polarity==2
-                struct.gaze_params.ior_matrix = struct.gaze_params.ior_matrix .* struct.gaze_params.max_mempotential_val;
-            else
-                struct.gaze_params.ior_matrix = struct.gaze_params.ior_matrix .* 0;
-            end
+
+            struct=aux_struct;
+            struct.gaze_params.ior_matrix_multidim=struct.gaze_params.ior_matrix_multidim(:,:,:,:,2);
             
             % negatius ----------------------------------------------------
             %%% MAIN PROCESS %%%

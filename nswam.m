@@ -45,21 +45,15 @@ if conf_struct.gaze_params.fov_x == 0 && conf_struct.gaze_params.fov_y == 0
 end
 
 %set inhibition of return at zeros
-conf_struct.gaze_params.ior_matrix = zeros(conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width);
+ior_matrix_unfoveated = zeros(conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width);
+ior_multidim_set=0;
 
- 
 %folders of mats separate or not? (to avoid overwriting)
 %if ~conf_struct.file_params.unique_mats_folder
     output_folder_mats = [output_folder_mats '/' conf_struct_path_name];
 %end
 
-if ~isfield(conf_struct.fusion_params,'gsp') conf_struct.fusion_params.gsp = 1; end;
-if ~isfield(conf_struct.fusion_params,'ior_smap') conf_struct.fusion_params.ior_smap = 1; end;
-if ~isfield(conf_struct.fusion_params,'inverse') conf_struct.fusion_params.inverse = 'multires_inv'; end;
-if ~isfield(conf_struct.compute_params,'posttune') conf_struct.compute_params.posttune=0; end
-
             
-
 %% INITIALIZE OUTPUT
 [M,N,C] = size(input_image);
 smap = zeros(M,N);
@@ -97,9 +91,7 @@ if run_flags.run_all==1
                     
             
             %% 2 & 3.foveate (or cortical mapping) and DWT [RGC->LGN->CORTEX]
-            
-            ior_matrix_unfoveated = conf_struct.gaze_params.ior_matrix;    
-            
+              
             switch conf_struct.gaze_params.foveate
                 case 1 %foveate before DWT
                     [input_image] = get_resize(input_image,conf_struct);
@@ -110,7 +102,8 @@ if run_flags.run_all==1
                     [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(input_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
                     [conf_struct.wave_params.n_orient] = calc_norient(input_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
                     [curvs,residuals] = get_DWT(run_flags,conf_struct,folder_props,image_props,C,k,input_image);
-                    conf_struct.gaze_params.ior_matrix = get_foveate(conf_struct.gaze_params.ior_matrix,conf_struct,1);
+                    ior_matrix_foveated = get_foveate(ior_matrix_unfoveated,conf_struct,1);
+                    
                     
                 case 3 %foveate after DWT
                     [input_image] = get_resize(input_image,conf_struct);
@@ -122,7 +115,7 @@ if run_flags.run_all==1
                     [conf_struct.wave_params.n_orient] = calc_norient(input_image_foveated,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
                     [curvs,residuals] = get_DWT(run_flags,conf_struct,folder_props,image_props,C,k,input_image);
                     [curvs,residuals]=get_foveate_multires(curvs,residuals,conf_struct);
-                    conf_struct.gaze_params.ior_matrix = get_foveate(conf_struct.gaze_params.ior_matrix,conf_struct,1);
+                    ior_matrix_foveated = get_foveate(ior_matrix_unfoveated,conf_struct,1);
                     
                 otherwise %do not foveate
                     [input_image] = get_resize(input_image,conf_struct);
@@ -132,8 +125,20 @@ if run_flags.run_all==1
                     [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(input_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
                     [conf_struct.wave_params.n_orient] = calc_norient(input_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
                     [curvs,residuals] = get_DWT(run_flags,conf_struct,folder_props,image_props,C,k,input_image);
-                    [conf_struct.gaze_params.ior_matrix] = get_resize(conf_struct.gaze_params.ior_matrix,conf_struct);
+                    ior_matrix_foveated=get_resize(ior_matrix_unfoveated,conf_struct);
             end
+            
+            %get ior from previous gaze and update according to time
+            conf_struct.gaze_params.ior_matrix=ior_matrix_foveated;
+            
+            if ior_multidim_set==1 && conf_struct.gaze_params.ior==1
+                 conf_struct.gaze_params.ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
+                conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,conf_struct.gaze_params.maxidx_o,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) = conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,conf_struct.gaze_params.maxidx_o,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) + (conf_struct.gaze_params.ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
+            else
+               conf_struct.gaze_params.ior_matrix_multidim=zeros(size(ior_matrix_foveated,1),size(ior_matrix_foveated,2),conf_struct.wave_params.n_scales-1,conf_struct.wave_params.n_orient,2,length(conf_struct.color_params.channels));
+                ior_multidim_set=1;
+            end
+            save_mat('ior_matrix_multidim',conf_struct.gaze_params.ior_matrix_multidim,folder_props,image_props,k);
             
             %get_fig_opp(input_image,'fov',folder_props,image_props,conf_struct);
             %get_fig_wav(curvs_aux{1},'wav_c1',folder_props,image_props,conf_struct);
@@ -144,7 +149,15 @@ if run_flags.run_all==1
             
              
             %% 4. CORE, COMPUTE DYNAMICS [CORTEX->CORTEX]
-            [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,k,curvs,residuals);
+            [iFactors,max_mempotential_val,maxidx_y,maxidx_x,maxidx_s,maxidx_o,idx_max_mempotential_polarity,maxidx_c] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,k,curvs,residuals);
+            conf_struct.gaze_params.max_mempotential_val=max_mempotential_val; %maximum excitatory membrane potential
+            conf_struct.gaze_params.idx_max_mempotential_polarity=idx_max_mempotential_polarity; %on/off
+            if maxidx_c>C, maxidx_c=C; end; 
+            conf_struct.gaze_params.maxidx_s=maxidx_s;
+            conf_struct.gaze_params.maxidx_o=maxidx_o;
+            conf_struct.gaze_params.maxidx_c=maxidx_c; 
+            conf_struct.gaze_params.maxidx_x=maxidx_x;
+            conf_struct.gaze_params.maxidx_y=maxidx_y;
                     %get_fig_ifactor(iFactors{1},'ifactor_c1',folder_props,image_props,conf_struct);
                     %get_fig_ifactor(iFactors{2},'ifactor_c2',folder_props,image_props,conf_struct);
                     %get_fig_ifactor(iFactors{3},'ifactor_c3',folder_props,image_props,conf_struct);
@@ -179,15 +192,10 @@ if run_flags.run_all==1
             if isnan(RF_s_o_c{1}{1}(1,1,1))
                 break;
             end
-            [smap,residualmax,maxidx_s, maxidx_o, maxidx_c, maxidx_x, maxidx_y ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
+            [smap,residualmax ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
             [maxval_d,maxidx_d]=max(smap(:));
             [maxval_r,maxidx_r]=max(residualmax(:));
-            if maxidx_c>C, maxidx_c=C; end; 
-            conf_struct.gaze_params.maxidx_s=maxidx_s;
-            conf_struct.gaze_params.maxidx_o=maxidx_o;
-            conf_struct.gaze_params.maxidx_c=maxidx_c; 
-            conf_struct.gaze_params.maxidx_x=maxidx_x;
-            conf_struct.gaze_params.maxidx_y=maxidx_y;
+            
             
             %undistort
             smap = get_undistort(loaded_struct,smap);
@@ -202,11 +210,9 @@ if run_flags.run_all==1
             
             
             %set inhibition of return on current gaze (update and add)
-            conf_struct.gaze_params.ior_matrix = get_ior_matrix_newgaze(ior_matrix_unfoveated, maxidx_s,conf_struct.wave_params.ini_scale,conf_struct.wave_params.fin_scale,conf_struct); 
-                %get_fig_single(normalize_minmax(conf_struct.gaze_params.ior_matrix,0,1),'ior',folder_props,image_props,conf_struct);
-            
-            %set ior smap (depending on a fusion factor)
-            gmap=get_ior_gaussian(conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y, 1, maxidx_s,conf_struct.wave_params.ini_scale,conf_struct.wave_params.fin_scale, conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.img_diag_angle);
+            ior_matrix_unfoveated = get_ior_gaussian(conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y, 1, conf_struct.gaze_params.maxidx_s,conf_struct.wave_params.ini_scale,conf_struct.wave_params.fin_scale, conf_struct.wave_params.mida_min, conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.img_diag_angle);
+            gmap=ior_matrix_unfoveated;
+              %get_fig_single(normalize_minmax(conf_struct.gaze_params.ior_matrix,0,1),'ior',folder_props,image_props,conf_struct);
             
             %normalize
             smap = get_normalize(loaded_struct,smap);
@@ -216,7 +222,8 @@ if run_flags.run_all==1
             
             %save
             imwrite(smap, image_props.output_image_paths{k});
-
+            %save_mat('struct',conf_struct,folder_props,image_props,gaze_idx);
+            
             %delete files
             run_delete_files(folder_props,image_props,loaded_struct,k);
             
