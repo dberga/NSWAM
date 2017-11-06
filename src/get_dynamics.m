@@ -1,49 +1,50 @@
-function [iFactors,max_mempotential_val,maxidx_y,maxidx_x,maxidx_s,maxidx_o,idx_max_mempotential_polarity,maxidx_c] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,gaze_idx,curvs,residuals)
+function [iFactors,max_mempotential_val,idx_max_mempotential_polarity] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,gaze_idx,curvs,residuals)
     
 
     iFactors = cell(1,C);
     loaded_struct_path=get_mat_name('struct',folder_props,image_props,gaze_idx);
     
-    max_mempotential_val=-Inf;
     idx_max_mempotential_polarity=1;
-     
+    max_mempotential_val = -Inf;
     %see if there are mats from other config that satisfy the pre-neurodynamical parameters, if so, create a soft link to such mats for each gaze and channel
-    for c=1:C
-        
-        [ loaded_struct_equivalent_path , mfolder, folder_equivalent,iname_equivalent,k_equivalent] = get_samemat( loaded_struct_path );
-        
-        if numel(loaded_struct_equivalent_path)>0 && run_flags.load_iFactor_mats(gaze_idx)==0
-            iFactor_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_iFactor_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
-            xon_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_xon_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
-            xoff_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_xoff_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
-            yon_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_yon_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
-            yoff_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_yoff_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
-            
-            if exist(iFactor_path_equivalent,'file') && ... %reuse other iFactor if struct parameters are equivalent
-                   exist(xon_path_equivalent,'file') && ...
-                   exist(xoff_path_equivalent,'file') && ...
-                   exist(yon_path_equivalent,'file') && ...
-                   exist(yoff_path_equivalent,'file') 
-                    
-                    
-                    iFactor_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_iFactor_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
-                        slink(strrep(strrep(iFactor_path_equivalent,'(','\('),')','\)') ,strrep(strrep(iFactor_path_current,'(','\('),')','\)'));
+    if run_flags.load_iFactor_mats(gaze_idx)==0
+        for c=1:C
 
-                    xon_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_xon_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
-                        slink(strrep(strrep(xon_path_equivalent,'(','\('),')','\)'),strrep(strrep(xon_path_current,'(','\('),')','\)'));
+            [ loaded_struct_equivalent_path , mfolder, folder_equivalent,iname_equivalent,k_equivalent] = get_samemat( loaded_struct_path );
 
-                    xoff_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_xoff_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
-                        slink(strrep(strrep(xoff_path_equivalent,'(','\('),')','\)'),strrep(strrep(xoff_path_current,'(','\('),')','\)'));
+            if numel(loaded_struct_equivalent_path)>0 && run_flags.load_iFactor_mats(gaze_idx)==0
+                iFactor_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_iFactor_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
+                xon_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_xon_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
+                xoff_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_xoff_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
+                yon_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_yon_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
+                yoff_path_equivalent=[mfolder '/' folder_equivalent '/' iname_equivalent '_yoff_channel(' loaded_struct.color_params.channels{c} ')_gaze' k_equivalent '.mat'];
 
-                    yon_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_yon_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
-                        slink(strrep(strrep(yon_path_equivalent,'(','\('),')','\)'),strrep(strrep(yon_path_current,'(','\('),')','\)'));
+                if exist(iFactor_path_equivalent,'file') && ... %reuse other iFactor if struct parameters are equivalent
+                       exist(xon_path_equivalent,'file') && ...
+                       exist(xoff_path_equivalent,'file') && ...
+                       exist(yon_path_equivalent,'file') && ...
+                       exist(yoff_path_equivalent,'file') 
 
-                    yoff_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_yoff_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
-                        slink(strrep(strrep(yoff_path_equivalent,'(','\('),')','\)'),strrep(strrep(yoff_path_current,'(','\('),')','\)'));
-                        
-                    if c==C %when last is softlinked, set flag to load file
-                        run_flags.load_iFactor_mats(gaze_idx)=1;
-                    end
+
+                        iFactor_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_iFactor_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
+                            slink(strrep(strrep(iFactor_path_equivalent,'(','\('),')','\)') ,strrep(strrep(iFactor_path_current,'(','\('),')','\)'));
+
+                        xon_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_xon_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
+                            slink(strrep(strrep(xon_path_equivalent,'(','\('),')','\)'),strrep(strrep(xon_path_current,'(','\('),')','\)'));
+
+                        xoff_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_xoff_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
+                            slink(strrep(strrep(xoff_path_equivalent,'(','\('),')','\)'),strrep(strrep(xoff_path_current,'(','\('),')','\)'));
+
+                        yon_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_yon_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
+                            slink(strrep(strrep(yon_path_equivalent,'(','\('),')','\)'),strrep(strrep(yon_path_current,'(','\('),')','\)'));
+
+                        yoff_path_current=[mfolder '/' folder_props.output_subfolder '/' iname_equivalent '_yoff_channel(' loaded_struct.color_params.channels{c} ')_gaze' num2str(gaze_idx) '.mat'];
+                            slink(strrep(strrep(yoff_path_equivalent,'(','\('),')','\)'),strrep(strrep(yoff_path_current,'(','\('),')','\)'));
+
+                        if c==C %when last is softlinked, set flag to load file
+                            run_flags.load_iFactor_mats(gaze_idx)=1;
+                        end
+                end
             end
         end
     end
@@ -185,8 +186,7 @@ function [iFactors,max_mempotential_val,maxidx_y,maxidx_x,maxidx_s,maxidx_o,idx_
         if aux_max_mempotential_val>=max_mempotential_val
             max_mempotential_val=aux_max_mempotential_val;
             idx_max_mempotential_polarity=aux_idx_max_mempotential_polarity;
-            maxidx_c=c;
-            [~,maxidx_y,maxidx_x,maxidx_s,maxidx_o]=get_max_4dim( last_xon+last_xoff );
+            
         end
     end
     

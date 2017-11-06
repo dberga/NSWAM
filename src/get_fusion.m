@@ -1,12 +1,12 @@
-function [smap,residualmax ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct)
+function [smap ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct)
 
     %get new format for IDWT
     RF_c_s_o = soc2cso(RF_s_o_c,3,loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
     residual_c_s = sc2cs(residual_s_c,3,loaded_struct.wave_params.n_scales); 
     
     %get pointwise in all RF)
-    [ RFmax, residualmax,~, ~, ~, ~, ~] = get_wavet_max_t( RF_s_o_c, residual_s_c, loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient, 3 );
-    [ RFwta, residualwta,~, ~, ~,~,~ ] = get_wavet_wta_t( RF_s_o_c, residual_s_c, loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient, 3 );
+    [ RFmax, ~,~, ~, ~, ~, ~] = get_wavet_max_t( RF_s_o_c, residual_s_c, loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient, 3 );
+    [ RFwta, ~,~, ~, ~,~,~ ] = get_wavet_wta_t( RF_s_o_c, residual_s_c, loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient, 3 );
     
     %get pointwise in all RF, separate channels
     [ RFmax_c, ~, ~, ~, ~ ,~,~] = get_wavec_max_t( RF_s_o_c,residual_s_c,loaded_struct.wave_params.n_scales, loaded_struct.wave_params.n_orient,3 );

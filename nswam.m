@@ -134,6 +134,18 @@ if run_flags.run_all==1
             if ior_multidim_set==1 && conf_struct.gaze_params.ior==1
                  conf_struct.gaze_params.ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
                 conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,conf_struct.gaze_params.maxidx_o,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) = conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,conf_struct.gaze_params.maxidx_o,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) + (conf_struct.gaze_params.ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
+            elseif ior_multidim_set==1 && conf_struct.gaze_params.ior==2
+                 conf_struct.gaze_params.ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
+                conf_struct.gaze_params.ior_matrix_multidim(:,:,:,conf_struct.gaze_params.maxidx_o,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) = conf_struct.gaze_params.ior_matrix_multidim(:,:,:,conf_struct.gaze_params.maxidx_o,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) + (conf_struct.gaze_params.ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
+            elseif ior_multidim_set==1 && conf_struct.gaze_params.ior==3
+                 conf_struct.gaze_params.ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
+                conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,:,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) = conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,:,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) + (conf_struct.gaze_params.ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
+            elseif ior_multidim_set==1 && conf_struct.gaze_params.ior==4
+                 conf_struct.gaze_params.ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
+                conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,:,:,conf_struct.gaze_params.maxidx_c) = conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,:,:,conf_struct.gaze_params.maxidx_c) + (conf_struct.gaze_params.ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
+            elseif ior_multidim_set==1 && conf_struct.gaze_params.ior==5
+                 conf_struct.gaze_params.ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
+                conf_struct.gaze_params.ior_matrix_multidim(:,:,:,:,:,conf_struct.gaze_params.maxidx_c) = conf_struct.gaze_params.ior_matrix_multidim(:,:,:,:,:,conf_struct.gaze_params.maxidx_c) + (conf_struct.gaze_params.ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
             else
                conf_struct.gaze_params.ior_matrix_multidim=zeros(size(ior_matrix_foveated,1),size(ior_matrix_foveated,2),conf_struct.wave_params.n_scales-1,conf_struct.wave_params.n_orient,2,length(conf_struct.color_params.channels));
                 ior_multidim_set=1;
@@ -149,15 +161,10 @@ if run_flags.run_all==1
             
              
             %% 4. CORE, COMPUTE DYNAMICS [CORTEX->CORTEX]
-            [iFactors,max_mempotential_val,maxidx_y,maxidx_x,maxidx_s,maxidx_o,idx_max_mempotential_polarity,maxidx_c] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,k,curvs,residuals);
-            conf_struct.gaze_params.max_mempotential_val=max_mempotential_val; %maximum excitatory membrane potential
-            conf_struct.gaze_params.idx_max_mempotential_polarity=idx_max_mempotential_polarity; %on/off
-            if maxidx_c>C, maxidx_c=C; end; 
-            conf_struct.gaze_params.maxidx_s=maxidx_s;
-            conf_struct.gaze_params.maxidx_o=maxidx_o;
-            conf_struct.gaze_params.maxidx_c=maxidx_c; 
-            conf_struct.gaze_params.maxidx_x=maxidx_x;
-            conf_struct.gaze_params.maxidx_y=maxidx_y;
+            [iFactors,last_max_mempotential_val,last_idx_max_mempotential_polarity] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,k,curvs,residuals);
+            conf_struct.gaze_params.idx_max_mempotential_polarity=last_idx_max_mempotential_polarity; %on/off
+            
+            
                     %get_fig_ifactor(iFactors{1},'ifactor_c1',folder_props,image_props,conf_struct);
                     %get_fig_ifactor(iFactors{2},'ifactor_c2',folder_props,image_props,conf_struct);
                     %get_fig_ifactor(iFactors{3},'ifactor_c3',folder_props,image_props,conf_struct);
@@ -188,13 +195,23 @@ if run_flags.run_all==1
             %eCSF  (depending on flag)
             [RF_s_o_c] = get_eCSF(loaded_struct,RF_s_o_c);
             
+            [ RFmax_unfov,RFmax,residualmax,max_mempotential_val,fov_y,fov_x,maxidx_y,maxidx_x,maxidx_s,maxidx_o,maxidx_c] = get_maxdims( RF_s_o_c , residual_s_c,loaded_struct);
+            conf_struct.gaze_params.maxidx_s=maxidx_s;
+            conf_struct.gaze_params.maxidx_o=maxidx_o;
+            conf_struct.gaze_params.maxidx_c=maxidx_c;  if maxidx_c>C, maxidx_c=C; end; 
+            conf_struct.gaze_params.maxidx_x=maxidx_x;
+            conf_struct.gaze_params.maxidx_y=maxidx_y;
+            conf_struct.gaze_params.fov_y = fov_y;
+            conf_struct.gaze_params.fov_x = fov_x;
+            conf_struct.gaze_params.max_mempotential_val = max_mempotential_val;
+            
             %fusion
             if isnan(RF_s_o_c{1}{1}(1,1,1))
                 break;
             end
-            [smap,residualmax ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
-            [maxval_d,maxidx_d]=max(smap(:));
-            [maxval_r,maxidx_r]=max(residualmax(:));
+            [smap ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
+            %[maxval_d,maxidx_d]=max(smap(:));
+            %[maxval_r,maxidx_r]=max(residualmax(:));
             
             
             %undistort
@@ -202,11 +219,16 @@ if run_flags.run_all==1
                 
             %deresize to original size
             smap = get_deresize(loaded_struct,smap);
-            [maxval,maxidx]=max(smap(:));
+            %[maxval,maxidx]=max(smap(:));
             
-            %update fov_x and fov_y
-            [conf_struct.gaze_params.fov_y, conf_struct.gaze_params.fov_x] = ind2sub([conf_struct.gaze_params.orig_height conf_struct.gaze_params.orig_width],maxidx);
-            [conf_struct.resize_params.fov_y, conf_struct.resize_params.fov_x] = ind2sub([conf_struct.resize_params.M conf_struct.resize_params.N],maxidx_d);
+            %old ->update fov_x and fov_y
+                %alt, translating coords
+            %[conf_struct.gaze_params.fov_y, conf_struct.gaze_params.fov_x]=get_XY2ij(conf_struct.gaze_params.maxidx_x,conf_struct.gaze_params.maxidx_y,conf_struct.cortex_params,conf_struct.gaze_params);
+            %conf_struct.gaze_params.fov_y=round(conf_struct.gaze_params.fov_y); 
+            %conf_struct.gaze_params.fov_x=round(conf_struct.gaze_params.fov_x);
+                %alt, from smap
+            %[conf_struct.gaze_params.fov_y, conf_struct.gaze_params.fov_x] = ind2sub([conf_struct.gaze_params.orig_height conf_struct.gaze_params.orig_width],maxidx);
+            %[conf_struct.resize_params.fov_y, conf_struct.resize_params.fov_x] = ind2sub([conf_struct.resize_params.M conf_struct.resize_params.N],maxidx_d);
             
             
             %set inhibition of return on current gaze (update and add)

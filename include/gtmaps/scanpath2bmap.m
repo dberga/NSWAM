@@ -8,5 +8,4 @@ for k=1:size(scanpath,1)
 end
 
 
-end
 
