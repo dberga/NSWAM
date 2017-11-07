@@ -18,7 +18,7 @@ Z = Z*angle2rad;
 i = imag(Z);
 j = real(Z);
 
-f_a = cortical_shear(j,i,a,eccWidth,isoPolarGrad); %mal
+f_a = ?; 
 i = i ./ f_a;
 
 i(neg_Y) = -i(neg_Y);

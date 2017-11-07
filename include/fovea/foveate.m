@@ -4,7 +4,6 @@
 function [im_out] = foveate(im_in, flag, struct )
 
     im_in = double(im_in);
-    
     if ~exist('flag','var')
         flag = 0;
     end
@@ -38,6 +37,9 @@ function [im_out] = foveate(im_in, flag, struct )
         cortex_params.a=1.05;
 %         cortex_params.b=degtorad(150);
         cortex_params.b=150;
+        cortex_params.alpha1=0.95;
+        cortex_params.alpha2=0.5;
+        cortex_params.alpha3=0.2;
         cortex_params.lambda=12;
         cortex_params.isoPolarGrad=0.1821;
         cortex_params.eccWidth=0.7609;
@@ -98,20 +100,11 @@ function [im_out] = foveate(im_in, flag, struct )
             %do nothing
             
     end
-    
-    
+    %figure,imagesc(normalize_minmax(im_out))
+    %figure,imagesc(normalize_minmax(cortex))
     
 end
 
 
-% Distance in cm: 61.00
-% Screen width resolution in px: 1024
-% Screen height resolution in px: 768
-% Screen width in cm: 38.61
-% Screen height in cm: 28.96
-% Width of screen subtends 35.12° visual angle
-% 1° of horizontal visual angle: 28.24 pixels
-% Height of screen subtends 26.71° visual angle
-% 1° of vertical visual angle: 28.24 pixels
 
 

@@ -4,9 +4,10 @@ function [X,Y] = schwartz_monopole(i,j,lambda,a)
 
 neg_j = find(j<0);
 neg_i = find(i<0);
+%zer_j = find(j==0);
+%zer_i = find(i==0);
 
-zer_j = find(j==0);
-zer_i = find(i==0);
+
 
 Z = complex(abs(j),abs(i));
 
@@ -21,4 +22,8 @@ Y = imag(W);
  X(neg_j) = -X(neg_j);
  Y(neg_i) = -Y(neg_i);
  
+
+%   X(zer_j) = 0;
+%   Y(zer_i) = 0;
+
 end

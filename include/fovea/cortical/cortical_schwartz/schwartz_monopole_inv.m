@@ -5,6 +5,9 @@ function [i,j] = schwartz_monopole_inv(X,Y,lambda,a)
 neg_X = find(X<0);
 neg_Y = find(Y<0);
 
+%zer_X = find(X==0);
+%zer_Y = find(Y==0);
+
 W = complex(abs(X),abs(Y));
 
 Z = exp(W/lambda)-a;
@@ -18,5 +21,7 @@ j = real(Z);
 i(neg_Y) = -i(neg_Y);
 j(neg_X) = -j(neg_X);
 
+%  j(zer_X) = 0;
+%  i(zer_Y) = 0;
 
 end
