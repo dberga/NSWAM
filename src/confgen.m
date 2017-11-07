@@ -412,25 +412,27 @@ function [fusion_params] = get_all_parameters_fusion_NCZLd()
     fusion_params.output_from_csf= {'iFactor'};
     
     %fusion_params.residual_wave= {0,1,2};
-    fusion_params.residual_wave= {0};
+    fusion_params.residual_wave= {0,1,2};
 
     %fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','wtamaxc','wtamax2','wta','wta2'}; %fusion method
-    fusion_params.smethod= {'sqmean'};
+    fusion_params.smethod= {'sqmean','pmax','pmaxc','pmax2','wtamaxc','wtamax2','wta','wta2'};
 
     %fusion_params.fusion= {1,2,3,4,5}; %normalization
-    fusion_params.fusion= {1};
+    fusion_params.fusion= {1,2,3,4,5};
 
-    %fusion_params.tmem_res = {'mean','max'}; %temporal mean of iFactor or temporal max?
-    fusion_params.tmem_res = {'mean'}; 
+    %fusion_params.tmem_res = {'mean','max','wmax'}; %temporal mean of iFactor or temporal max?
+    fusion_params.tmem_res = {'mean','wmax','max'}; 
     
     %fusion_params.inverse = {'multires_inv','max','wta'}; %multires_inv=default multires inverse
     fusion_params.inverse={'multires_inv'};
     
     %fusion_params.gsp={0,n} smoothing parameter
-    fusion_params.gsp={1};
+    fusion_params.gsp={0,1,2};
     
     %fusion_params.ior_smap={1,0}; %get gaussian map according to ior or fixed at 40 dva
-    fusion_params.ior_smap={0};
+    fusion_params.ior_smap={0,1};
+    
+    fusion_params.gaussian_option={4};
 end
 
 function [file_params] = get_all_parameters_file_NCZLd()
@@ -474,7 +476,7 @@ function [zli_params] = get_all_parameters_zli_NCZLd()
     zli_params.scale2size_epsilon = {1.3}; zli_params.nepsilon={num2str(zli_params.scale2size_epsilon{1})};
     
     %zli_params.bScaleDelta={0,1};
-    zli_params.bScaleDelta={1};
+    zli_params.bScaleDelta={0};
     
     %zli_params.reduccio_JW=num2cell(0:0.25:4);
     zli_params.reduccio_JW={1};
@@ -547,6 +549,7 @@ end
 function [compute_params] = get_all_parameters_compute_NCZLd()
 
     compute_params.model = {1}; %matlab
+    compute_params.posttune = {1}; 
     % Jobmanager
     compute_params.jobmanager={'xcerda-10'}; % 'penacchio'/'xotazu'/'xcerda'/'xcerda-10'
 
@@ -572,7 +575,7 @@ function [compute_params] = get_all_parameters_compute_NCZLd()
 
     compute_params.XOP_activacio_neurona={0}; % impose activity to a given unit
 
-
+    
 
 
 end
@@ -583,8 +586,10 @@ function [cortex_params] = get_all_parameters_cortex_NCZLd()
         %cortex_params.cm_method = {'schwartz_monopole','schwartz_dipole'};
         cortex_params.cm_method = {'schwartz_monopole'};
         cortex_params.cortex_width = {128};
-        cortex_params.a={degtorad(0.77)};
-        cortex_params.b={degtorad(150)};
+        %cortex_params.a={degtorad(0.77)};
+        cortex_params.a=1.05;
+        %cortex_params.b={degtorad(150)};
+        cortex_params.b=150;
         %cortex_params.lambda={12,18};
         cortex_params.lambda={12};
         cortex_params.isoPolarGrad={0.1821};
@@ -611,7 +616,7 @@ function [gaze_params] = get_all_parameters_gaze_NCZLd()
         gaze_params.fov_y = {0}; %auto
         %gaze_params.img_diag_angle = {degtorad(35.12),degtorad(44.12)};
         gaze_params.img_diag_angle = {degtorad(35.12)}; %used on magnification
-        gaze_params.ior = {0};
+        gaze_params.ior = {0}; %0,1,2,3,4,5
         gaze_params.ior_factor_ctt = {nthroot(0.001,1600)}; %samuel & kat 2003 
             %f'=f*exp(prec*log(ctt)); -> ctt=(f'/f)^(1/prec) 
             %f'/f = 1-threshold; prec=precision;time=nsac*10tmem*100iter*prec

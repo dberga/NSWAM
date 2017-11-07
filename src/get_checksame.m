@@ -20,6 +20,10 @@ function [ check ] = get_checksame( loaded_struct_path1,loaded_struct_path2 )
     struct1.matrix_in.gaze_params.fov_x=0; struct2.matrix_in.gaze_params.fov_x=0;
     struct1.matrix_in.gaze_params.fov_y=0; struct2.matrix_in.gaze_params.fov_y=0;
     
+    struct1.matrix_in.cortex_params.a=0; struct2.matrix_in.cortex_params.a=0;
+    struct1.matrix_in.cortex_params.b=0; struct2.matrix_in.cortex_params.b=0;
+    
+    
     if struct1.matrix_in.gaze_params.foveate == 0 && struct2.matrix_in.gaze_params.foveate == 0
         struct1.matrix_in.gaze_params=0;
         struct2.matrix_in.gaze_params=0;
