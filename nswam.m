@@ -131,21 +131,26 @@ if run_flags.run_all==1
             %get ior from previous gaze and update according to time
             conf_struct.gaze_params.ior_matrix=ior_matrix_foveated;
             
-            if ior_multidim_set==1 && conf_struct.gaze_params.ior==1
-                 conf_struct.gaze_params.ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
-                conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,conf_struct.gaze_params.maxidx_o,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) = conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,conf_struct.gaze_params.maxidx_o,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) + (conf_struct.gaze_params.ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
-            elseif ior_multidim_set==1 && conf_struct.gaze_params.ior==2
-                 conf_struct.gaze_params.ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
-                conf_struct.gaze_params.ior_matrix_multidim(:,:,:,conf_struct.gaze_params.maxidx_o,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) = conf_struct.gaze_params.ior_matrix_multidim(:,:,:,conf_struct.gaze_params.maxidx_o,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) + (conf_struct.gaze_params.ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
-            elseif ior_multidim_set==1 && conf_struct.gaze_params.ior==3
-                 conf_struct.gaze_params.ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
-                conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,:,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) = conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,:,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) + (conf_struct.gaze_params.ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
-            elseif ior_multidim_set==1 && conf_struct.gaze_params.ior==4
-                 conf_struct.gaze_params.ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
-                conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,:,:,conf_struct.gaze_params.maxidx_c) = conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,:,:,conf_struct.gaze_params.maxidx_c) + (conf_struct.gaze_params.ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
-            elseif ior_multidim_set==1 && conf_struct.gaze_params.ior==5
-                 conf_struct.gaze_params.ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
-                conf_struct.gaze_params.ior_matrix_multidim(:,:,:,:,:,conf_struct.gaze_params.maxidx_c) = conf_struct.gaze_params.ior_matrix_multidim(:,:,:,:,:,conf_struct.gaze_params.maxidx_c) + (conf_struct.gaze_params.ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
+            if ior_multidim_set==1 
+                switch conf_struct.gaze_params.ior
+                    case 1
+                     conf_struct.gaze_params.ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
+                     conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,conf_struct.gaze_params.maxidx_o,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) = conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,conf_struct.gaze_params.maxidx_o,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) + (conf_struct.gaze_params.ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
+                    case 2
+                     conf_struct.gaze_params.ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
+                     conf_struct.gaze_params.ior_matrix_multidim(:,:,:,conf_struct.gaze_params.maxidx_o,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) = conf_struct.gaze_params.ior_matrix_multidim(:,:,:,conf_struct.gaze_params.maxidx_o,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) + (conf_struct.gaze_params.ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
+                    case 3
+                     conf_struct.gaze_params.ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
+                     conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,:,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) = conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,:,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) + (conf_struct.gaze_params.ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
+                    case 4
+                     conf_struct.gaze_params.ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
+                     conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,:,:,conf_struct.gaze_params.maxidx_c) = conf_struct.gaze_params.ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,:,:,conf_struct.gaze_params.maxidx_c) + (conf_struct.gaze_params.ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
+                    case 5
+                     conf_struct.gaze_params.ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
+                     conf_struct.gaze_params.ior_matrix_multidim(:,:,:,:,:,conf_struct.gaze_params.maxidx_c) = conf_struct.gaze_params.ior_matrix_multidim(:,:,:,:,:,conf_struct.gaze_params.maxidx_c) + (conf_struct.gaze_params.ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
+                    otherwise
+                     conf_struct.gaze_params.ior_matrix_multidim=zeros(size(ior_matrix_foveated,1),size(ior_matrix_foveated,2),conf_struct.wave_params.n_scales-1,conf_struct.wave_params.n_orient,2,length(conf_struct.color_params.channels));
+                end
             else
                conf_struct.gaze_params.ior_matrix_multidim=zeros(size(ior_matrix_foveated,1),size(ior_matrix_foveated,2),conf_struct.wave_params.n_scales-1,conf_struct.wave_params.n_orient,2,length(conf_struct.color_params.channels));
                 ior_multidim_set=1;

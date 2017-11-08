@@ -476,7 +476,7 @@ function [zli_params] = get_all_parameters_zli_NCZLd()
     zli_params.scale2size_epsilon = {1.3}; zli_params.nepsilon={num2str(zli_params.scale2size_epsilon{1})};
     
     %zli_params.bScaleDelta={0,1};
-    zli_params.bScaleDelta={0};
+    zli_params.bScaleDelta={1};
     
     %zli_params.reduccio_JW=num2cell(0:0.25:4);
     zli_params.reduccio_JW={1};
@@ -587,9 +587,9 @@ function [cortex_params] = get_all_parameters_cortex_NCZLd()
         cortex_params.cm_method = {'schwartz_monopole'};
         cortex_params.cortex_width = {128};
         %cortex_params.a={degtorad(0.77)};
-        cortex_params.a=1.05;
+        cortex_params.a={degtorad(1.05)};
         %cortex_params.b={degtorad(150)};
-        cortex_params.b=150;
+        cortex_params.b={degtorad(150)};
         %cortex_params.lambda={12,18};
         cortex_params.lambda={12};
         cortex_params.isoPolarGrad={0.1821};
