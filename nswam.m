@@ -206,8 +206,6 @@ if run_flags.run_all==1
             conf_struct.gaze_params.maxidx_c=maxidx_c;  if maxidx_c>C, maxidx_c=C; end; 
             conf_struct.gaze_params.maxidx_x=maxidx_x;
             conf_struct.gaze_params.maxidx_y=maxidx_y;
-            conf_struct.gaze_params.fov_y = fov_y;
-            conf_struct.gaze_params.fov_x = fov_x;
             conf_struct.gaze_params.max_mempotential_val = max_mempotential_val;
             
             %fusion
@@ -224,6 +222,10 @@ if run_flags.run_all==1
             
             %undistort
             smap = get_undistort(loaded_struct,smap);
+            
+            %get new fov positions
+            conf_struct.gaze_params.fov_y = fov_y; 
+            conf_struct.gaze_params.fov_x = fov_x;
                 
             %deresize to original size
             smap = get_deresize(loaded_struct,smap);
