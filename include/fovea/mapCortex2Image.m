@@ -60,7 +60,8 @@ end
 cortex_cols = (coord_X_cortex*cortex_elong2pix_mm)+cortex_width_2;
 cortex_rows = (coord_Y_cortex*cortex_az2pix_mm)+cortex_height_2; 
 
-coord_cortex = [cortex_rows;cortex_cols];
+coord_cortex = [cortex_rows;cortex_cols]; 
+%coord_cortex=round(coord_cortex);
 
 coord_cortex_min_limit = repmat([1 1],[numel(img) 1]);
 coord_cortex_max_limit = repmat([cortex_params.cortex_height cortex_params.cortex_width],[numel(img) 1]);

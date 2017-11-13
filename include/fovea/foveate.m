@@ -96,6 +96,17 @@ function [im_out] = foveate(im_in, flag, struct )
                 otherwise
                    %nada
             end
+        case 3 %undistort, then distort
+            switch gaze_params.fov_type
+                case 'cortical'
+                    for c=1:size(im_in,3)
+                        im_aux(:,:,c) = mapCortex2Image(im_in(:,:,c),cortex_params,gaze_params);
+                        im_out(:,:,c) = mapImage2Cortex(im_in(:,:,c),cortex_params,gaze_params);
+                        
+                    end
+                otherwise
+                   %nada
+            end
         otherwise
             %do nothing
             

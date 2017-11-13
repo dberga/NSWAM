@@ -86,6 +86,12 @@ end
 % for s=1:wlev
 %    for o=1:size(w{s,1},3)
 %        figure,imagesc(w{s,1}(:,:,o));
+%         title(['s=' num2str(s) ',o=' num2str(o)]);
+% %         rf=w{s,1}(:,:,o);
+% %         [maxval,maxidx]=max(rf(:));
+% %         [fov_y,fov_x]=ind2sub(size(rf),maxidx);
+% %         figure, imagesc(get_ior_gaussian(fov_x, fov_y, 1, s,1,wlev, 8, size(w{s,1}(:,:,o),1), size(w{s,1}(:,:,o),2), rad2deg(36)));
+% %         title(['IOR: s=' num2str(s) ',o=' num2str(o)]);
 %    end
 % end
 end

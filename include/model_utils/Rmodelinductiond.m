@@ -733,8 +733,8 @@ for t_membr=1:n_membr  % membrane time
         if struct.gaze_params.foveate ~= 0 && struct.gaze_params.redistort_periter == 1
             for s=1:struct.wave_params.fin_scale
                 for o=1:struct.wave_params.n_orient
-                    x_und = foveate(x(:,:,s,o),1,struct);
-                    x(:,:,s,o) = foveate(x_und,0,struct);
+                    x_unfov=foveate(x(:,:,s,o),1,struct);
+                    x(:,:,s,o)=foveate(x_unfov,0,struct);
                 end
             end
         end
@@ -768,8 +768,8 @@ toc
         if struct.gaze_params.foveate ~= 0 && struct.gaze_params.redistort_pertmem == 1 && struct.gaze_params.redistort_periter==0
             for s=1:struct.wave_params.fin_scale
                 for o=1:struct.wave_params.n_orient
-                    x_und = foveate(x(:,:,s,o),1,struct);
-                    x(:,:,s,o) = foveate(x_und,0,struct);
+                    x_unfov=foveate(x(:,:,s,o),1,struct);
+                    x(:,:,s,o)=foveate(x_unfov,0,struct);
                 end
             end
         end

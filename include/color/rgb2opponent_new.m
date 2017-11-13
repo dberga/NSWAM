@@ -73,6 +73,8 @@ function n_img = denorm_img(img)
     
     if max(img(:)) > 1
         n_img = img/255;
+    else
+        n_img= img;
     end
 end
 

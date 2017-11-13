@@ -59,6 +59,7 @@ end
 img_cols = image_eccentricity*eye_elong2pix+gaze_params.fov_x;
 img_rows = image_azimuth*eye_az2pix+gaze_params.fov_y;
 coord_img = [img_rows;img_cols];
+%coord_img = round(coord_img);
 
 coord_img_min_limit = repmat([1 1],[numel(cortex) 1]);
 coord_img_max_limit = repmat([gaze_params.orig_height gaze_params.orig_width],[numel(cortex) 1]);

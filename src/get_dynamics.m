@@ -1,11 +1,11 @@
-function [iFactors,max_mempotential_val,idx_max_mempotential_polarity] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,gaze_idx,curvs,residuals)
+function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,gaze_idx,curvs,residuals)
     
 
     iFactors = cell(1,C);
     loaded_struct_path=get_mat_name('struct',folder_props,image_props,gaze_idx);
     
-    idx_max_mempotential_polarity=1;
-    max_mempotential_val = -Inf;
+%     idx_max_mempotential_polarity=1;
+%     max_mempotential_val = -Inf;
     %see if there are mats from other config that satisfy the pre-neurodynamical parameters, if so, create a soft link to such mats for each gaze and channel
     if run_flags.load_iFactor_mats(gaze_idx)==0
         for c=1:C
@@ -168,26 +168,26 @@ function [iFactors,max_mempotential_val,idx_max_mempotential_polarity] = get_dyn
             
         end
         
-        %get maximum wta values
-        
-        [max_mempotential_val_xon,~,~,~,~]=get_max_4dim( last_xon );
-        [max_mempotential_val_xoff,~,~,~,~]=get_max_4dim( last_xoff );
-        
-        if max_mempotential_val_xon >= max_mempotential_val_xoff
-            aux_idx_max_mempotential_polarity=1;
-            aux_max_mempotential_val=max_mempotential_val_xon;
-        else
-            aux_idx_max_mempotential_polarity=2;
-            aux_max_mempotential_val=max_mempotential_val_xoff;
-        end
-        
-        
-        
-        if aux_max_mempotential_val>=max_mempotential_val
-            max_mempotential_val=aux_max_mempotential_val;
-            idx_max_mempotential_polarity=aux_idx_max_mempotential_polarity;
-            
-        end
+%         %get maximum wta values
+%         
+%         [max_mempotential_val_xon,~,~,~,~]=get_max_4dim( last_xon );
+%         [max_mempotential_val_xoff,~,~,~,~]=get_max_4dim( last_xoff );
+%         
+%         if max_mempotential_val_xon >= max_mempotential_val_xoff
+%             aux_idx_max_mempotential_polarity=1;
+%             aux_max_mempotential_val=max_mempotential_val_xon;
+%         else
+%             aux_idx_max_mempotential_polarity=2;
+%             aux_max_mempotential_val=max_mempotential_val_xoff;
+%         end
+%         
+%         
+%         
+%         if aux_max_mempotential_val>=max_mempotential_val
+%             max_mempotential_val=aux_max_mempotential_val;
+%             idx_max_mempotential_polarity=aux_idx_max_mempotential_polarity;
+%             
+%         end
     end
     
     

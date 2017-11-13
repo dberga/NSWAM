@@ -10,8 +10,8 @@ function [map1] = map_coords(map1,coord_map1,idx_inside,idx_outside,map2,coord_m
     %coords_inside = sub2ind(size_map2,coords_i_inside,coords_j_inside);
 
     map3=interp2(map2,j,i);
-%     map1(coord_map1(idx_inside))=map2(coords_inside);
     map1=reshape(map3,size(map1));
+    %map1(coord_map1(idx_inside))=map2(coords_inside);
     
     %mirroring here
     if mirroring == 1
