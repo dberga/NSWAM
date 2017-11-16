@@ -421,10 +421,20 @@ y=zeros(M,N,n_scales,K);
 % W_conv_tmp=zeros(M+2*Delta(s),N+2*Delta(s),n_scales+2*radius_sc,K);
 
 if size(x_in,3)~=size(x,3)
-    x_in=repmat(x_in,1,1,size(x,3),1);
+    if size(x_in,3) > size(x,3)
+        scale_diff=size(x_in,3)-size(x,3);
+    else
+        scale_diff=size(x,3)-size(x_in,3);
+    end
+    x_in(:,:,size(x,3)+scale_diff,:)=[];
 end
 if size(y_in,3)~=size(y,3)
-    y_in=repmat(y_in,1,1,size(y,3),1);
+    if size(y_in,3) > size(y,3)
+        scale_diff=size(y_in,3)-size(y,3);
+    else
+        scale_diff=size(y,3)-size(y_in,3);
+    end
+    y_in(:,:,size(y,3)+scale_diff,:)=[];
 end
 
 x=x+x_in;

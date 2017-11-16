@@ -61,10 +61,10 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
         loaded_struct=aux_loaded_struct;
         
         if gaze_idx <=1 || loaded_struct.gaze_params.conserve_dynamics == 0 || loaded_struct.compute_params.model ~= 1
-                last_xon = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),size(curvs{c},2),size(curvs{c}{1},3)); %M,N,S,O
-                last_xoff = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),size(curvs{c},2),size(curvs{c}{1},3)); %M,N,S,O
-                last_yon = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),size(curvs{c},2),size(curvs{c}{1},3)); %M,N,S,O
-                last_yoff = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),size(curvs{c},2),size(curvs{c}{1},3)); %M,N,S,O
+                last_xon = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),loaded_struct.wave_params.n_scales-1,loaded_struct.wave_params.n_orient); %M,N,S,O
+                last_xoff = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),loaded_struct.wave_params.n_scales-1,loaded_struct.wave_params.n_orient); %M,N,S,O
+                last_yon = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),loaded_struct.wave_params.n_scales-1,loaded_struct.wave_params.n_orient); %M,N,S,O
+                last_yoff = zeros(size(curvs{c}{1},1),size(curvs{c}{1},2),loaded_struct.wave_params.n_scales-1,loaded_struct.wave_params.n_orient); %M,N,S,O
         else
                 last_xon = load(get_mat_name('xon',folder_props,image_props,gaze_idx-1,loaded_struct.color_params.channels{c})); last_xon = last_xon.matrix_in;
                 last_xoff = load(get_mat_name('xoff',folder_props,image_props,gaze_idx-1,loaded_struct.color_params.channels{c})); last_xoff = last_xoff.matrix_in;
