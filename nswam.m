@@ -94,22 +94,16 @@ if run_flags.run_all==1
               
             switch conf_struct.gaze_params.foveate
                 case 1 %foveate before DWT
-                    [opp_image] = get_resize(opp_image,conf_struct);
-                    [conf_struct.resize_params.M, conf_struct.resize_params.N, ~] = size(opp_image);
-                    [conf_struct.resize_params.fov_x,conf_struct.resize_params.fov_y] = movecoords( conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y , conf_struct.resize_params.M, conf_struct.resize_params.N); 
-                    
+
                     [opp_image_foveated] = get_foveate(opp_image,conf_struct);
                     [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(opp_image_foveated, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
                     [conf_struct.wave_params.n_orient] = calc_norient(opp_image_foveated,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
-                    [curvs,residuals] = get_DWT(run_flags,conf_struct,folder_props,image_props,C,k,input_image);
+                    [curvs,residuals] = get_DWT(run_flags,conf_struct,folder_props,image_props,C,k,opp_image);
                     ior_matrix_foveated = get_foveate(ior_matrix_unfoveated,conf_struct,1);
                     
                     
                 case 3 %foveate after DWT
-                    [opp_image] = get_resize(opp_image,conf_struct);
-                    [conf_struct.resize_params.M, conf_struct.resize_params.N, ~] = size(opp_image);
-                    [conf_struct.resize_params.fov_x,conf_struct.resize_params.fov_y] = movecoords( conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y , conf_struct.resize_params.M, conf_struct.resize_params.N); 
-                    
+ 
                     [opp_image_foveated] = get_foveate(opp_image,conf_struct);
                     [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(opp_image_foveated, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
                     [conf_struct.wave_params.n_orient] = calc_norient(opp_image_foveated,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
@@ -118,13 +112,18 @@ if run_flags.run_all==1
                     ior_matrix_foveated = get_foveate(ior_matrix_unfoveated,conf_struct,1);
                     
                 otherwise %do not foveate
-                    [opp_image] = get_resize(opp_image,conf_struct);
-                    [conf_struct.resize_params.M, conf_struct.resize_params.N, ~] = size(opp_image);
-                    [conf_struct.resize_params.fov_x,conf_struct.resize_params.fov_y] = movecoords( conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y , conf_struct.resize_params.M, conf_struct.resize_params.N); 
+                    
                     
                     [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(opp_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
                     [conf_struct.wave_params.n_orient] = calc_norient(opp_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
                     [curvs,residuals] = get_DWT(run_flags,conf_struct,folder_props,image_props,C,k,opp_image);
+                    
+                    %[opp_image] = get_resize(opp_image,conf_struct);
+                    [curvs,residuals]=get_resize_multires(curvs,residuals,conf_struct);
+                    [conf_struct.resize_params.M, conf_struct.resize_params.N, ~] = size(get_resize(opp_image,conf_struct));
+                    [conf_struct.resize_params.fov_x,conf_struct.resize_params.fov_y] = movecoords( conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y , conf_struct.resize_params.M, conf_struct.resize_params.N); 
+                    
+                    
                     ior_matrix_foveated=get_resize(ior_matrix_unfoveated,conf_struct);
             end
             
@@ -213,29 +212,10 @@ if run_flags.run_all==1
             %undistort
             smap = get_undistort(loaded_struct,smap_RF);
             
-             
-                
             %deresize to original size
             smap = get_deresize(loaded_struct,smap);
             %[maxval,maxidx]=max(smap(:));
             
-            
-            [ RFmax_unfov,RFmax,residualmax,max_mempotential_val,fov_y,fov_x,maxidx_y,maxidx_x,maxidx_s,maxidx_o,maxidx_c] = get_maxdims( RF_s_o_c , residual_s_c,loaded_struct);
-            conf_struct.gaze_params.maxidx_s=maxidx_s;
-            conf_struct.gaze_params.maxidx_o=maxidx_o;
-            conf_struct.gaze_params.maxidx_c=maxidx_c;  if maxidx_c>C, maxidx_c=C; end; 
-            conf_struct.gaze_params.maxidx_x=maxidx_x;
-            conf_struct.gaze_params.maxidx_y=maxidx_y;
-            conf_struct.gaze_params.max_mempotential_val = max_mempotential_val; %xon+xoff
-            conf_struct.gaze_params.idx_max_mempotential_polarity=1:2; %always ior put on on xon and xoff
-            conf_struct.gaze_params.fov_y = fov_y; 
-            conf_struct.gaze_params.fov_x = fov_x;
-            
-           
-            %set inhibition of return on current gaze (update and add)
-            ior_matrix_unfoveated = get_ior_gaussian(conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y, 1, conf_struct.gaze_params.maxidx_s,conf_struct.wave_params.ini_scale,conf_struct.wave_params.fin_scale, conf_struct.wave_params.mida_min, conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.img_diag_angle);
-            gmap=ior_matrix_unfoveated;
-              %get_fig_single(normalize_minmax(conf_struct.gaze_params.ior_matrix,0,1),'ior',folder_props,image_props,conf_struct);
             
             %normalize
             smap = get_normalize(loaded_struct,smap);
@@ -250,8 +230,26 @@ if run_flags.run_all==1
             %delete files
             run_delete_files(folder_props,image_props,loaded_struct,k);
             
+            %% GET NEW GAZE
+            %get maximum activity and location for new saccade
+            [ RFmax_unfov,RFmax,residualmax,max_mempotential_val,fov_y,fov_x,maxidx_y,maxidx_x,maxidx_s,maxidx_o,maxidx_c] = get_maxdims( RF_s_o_c , residual_s_c,loaded_struct);
+            conf_struct.gaze_params.maxidx_s=maxidx_s;
+            conf_struct.gaze_params.maxidx_o=maxidx_o;
+            conf_struct.gaze_params.maxidx_c=maxidx_c;  if maxidx_c>C, maxidx_c=C; end; 
+            conf_struct.gaze_params.maxidx_x=maxidx_x;
+            conf_struct.gaze_params.maxidx_y=maxidx_y;
+            conf_struct.gaze_params.max_mempotential_val = max_mempotential_val; %xon+xoff
+            conf_struct.gaze_params.idx_max_mempotential_polarity=1:2; %always ior put on on xon and xoff
+            conf_struct.gaze_params.fov_y = fov_y; 
+            conf_struct.gaze_params.fov_x = fov_x;
             
-            %iterate
+            %set inhibition of return on current gaze (update and add)
+            ior_matrix_unfoveated = get_ior_gaussian(conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y, 1, conf_struct.gaze_params.maxidx_s,conf_struct.wave_params.ini_scale,conf_struct.wave_params.fin_scale, conf_struct.wave_params.mida_min, conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.img_diag_angle);
+            gmap=ior_matrix_unfoveated;
+              %get_fig_single(normalize_minmax(conf_struct.gaze_params.ior_matrix,0,1),'ior',folder_props,image_props,conf_struct);
+            
+            
+            %iterate, save maps per gaze
             smaps(:,:,k) = smap;
             gmaps(:,:,k) = gmap;
         end
@@ -292,6 +290,8 @@ else
     end
     
 end
+
+%get_fig_scanpath( input_image, 'scanpath', folder_props,image_props, conf_struct );
 
 end
 

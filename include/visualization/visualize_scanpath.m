@@ -1,4 +1,4 @@
-function [  ] = visualize_scanpath( image, scanpath, scanpath_times )
+function [ fig ] = visualize_scanpath( image, scanpath, scanpath_times )
 
 tpf=300; %if scanpath does not provide time, set default as 300
 if nargin < 3 && size(scanpath,2) > 3
@@ -18,8 +18,8 @@ markersize= fixtime*(10/tpf)+10;
 
 
 
-figure,
-imagesc(image);
+figure;
+fig=imagesc(image);
 hold on
 %plot(y,x,'y.','MarkerSize',markersize);
 for g=1:size(scanpath,1)
