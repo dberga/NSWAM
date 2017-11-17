@@ -1,7 +1,7 @@
 function rec = Ia_trous4(w, c)
 
 wlev    = length(c);
-rec   = c{wlev,1};
+rec   = c{wlev};
 
 for s = wlev:-1:1
     

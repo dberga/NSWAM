@@ -17,6 +17,14 @@ function [img_out] = multires_inv_dispatcher(w,c,method,n_scales,n_orient)
     w=w(~cellfun('isempty',w));
     c=c(~cellfun('isempty',c));
     
+    %in case of reading residual with different dims (old conf)
+    for s=1:n_scales
+        if img_size(1) ~= size(c{s},1) || img_size(2) ~= size(c{s},2)
+                c{s}=imresize(c{s},img_size);
+        end
+    end
+
+    
     switch (method)
        case 'curv'
                 for s=1:n_scales
