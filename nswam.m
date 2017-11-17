@@ -176,6 +176,13 @@ if run_flags.run_all==1
             if isempty(iFactors)
                 return;
             end
+            %update nscales according to readed iFactor
+            if size(iFactors{1}{1}{1},1) ~= conf_struct.wave_params.fin_scale
+                conf_struct.wave_params.ini_scale=1;
+                conf_struct.wave_params.fin_scale=size(iFactors{1}{1}{1},1);
+                conf_struct.wave_params.n_scales=conf_struct.wave_params.fin_scale+conf_struct.wave_params.fin_scale_offset;
+                loaded_struct.wave_params=conf_struct.wave_params;
+            end
             
             %% 5. FUSION [CORTEX->SMAP]
 

@@ -10,6 +10,10 @@ function [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,
                 save_mat('struct',loaded_struct,folder_props,image_props,gaze_idx);
             end
             
+            conf_struct.wave_params=loaded_struct.wave_params;
+            conf_struct.zli_params=loaded_struct.zli_params;
+            conf_struct.cortex_params=loaded_struct.cortex_params;
+            
             %for old configs, put default stuff here
             if ~isfield(conf_struct.gaze_params,'conserve_dynamics') conf_struct.gaze_params.conserve_dynamics = 1; end
             if ~isfield(conf_struct.gaze_params,'conserve_dynamics_rest') conf_struct.gaze_params.conserve_dynamics_rest = 1; end

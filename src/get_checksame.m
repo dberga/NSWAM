@@ -27,6 +27,9 @@ function [ check ] = get_checksame( loaded_struct_path1,loaded_struct_path2 )
     if struct1.matrix_in.gaze_params.foveate == 0 && struct2.matrix_in.gaze_params.foveate == 0
         struct1.matrix_in.gaze_params=0;
         struct2.matrix_in.gaze_params=0;
+        struct1.matrix_in.cortex_params=0;
+        struct2.matrix_in.cortex_params=0;
+        
     else
         struct1.matrix_in.resize_params=0;
         struct2.matrix_in.resize_params=0;
@@ -37,7 +40,12 @@ function [ check ] = get_checksame( loaded_struct_path1,loaded_struct_path2 )
         struct2.matrix_in.gaze_params.ior_factor_ctt=0;
         struct1.matrix_in.gaze_params.ior_angle=0;
         struct2.matrix_in.gaze_params.ior_angle=0; 
-        
+        struct1.matrix_in.gaze_params.ior_diag_angle=0; 
+        struct2.matrix_in.gaze_params.ior_angle=0; 
+        struct1.matrix_in.gaze_params.ior_matrix=0;
+        struct2.matrix_in.gaze_params.ior_matrix=0;
+        struct1.matrix_in.gaze_params.ior_matrix_multidim=0;
+        struct2.matrix_in.gaze_params.ior_matrix_multidim=0;
    end
     
    
