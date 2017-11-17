@@ -275,11 +275,8 @@ if run_flags.run_all==1
     bmap = run_bmap(run_flags,image_props,conf_struct,scanpath);
     
     %smap from density of scanpath
-    if conf_struct.fusion_params.ior_smap
-        mean_gmap = run_gmean(run_flags,image_props,conf_struct,gmaps); %scale-dependent
-    else
-        mean_gmap = run_gaussian(run_flags,image_props,conf_struct,scanpath); %non scale-dependent
-    end
+    mean_gmap = run_gmean(run_flags,image_props,conf_struct,gmaps); %scale-dependent
+    
     
    
     
