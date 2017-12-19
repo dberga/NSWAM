@@ -11,13 +11,14 @@ function [] = save_mat(mat_name,matrix_in,folder_props,image_props,gaze_idx,chan
     try
         save(mat_path,'matrix_in');
     catch
+	    [mat_path_folder,~,~]=fileparts(mat_path);
+	    mkdir(mat_path_folder);
         try
             save([pwd '/' mat_path],'matrix_in');
         catch
             save(mat_path,'matrix_in','-v7.3');
         end
     end
-
 end
 
 
