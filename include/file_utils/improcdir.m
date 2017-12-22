@@ -20,6 +20,8 @@ files = dir(fullfile(directory, ['*.' format]));        %read files names
 addpath(directory);                                     %add folder dir path
 N_files = size(files,1);                                %readed number of files
 
+files=unsort_array(files);                              %unsort files to read
+
 %switch mode
     %case 1
     %    
@@ -35,7 +37,6 @@ N_files = size(files,1);                                %readed number of files
         for i=1:N_files
             disp(files(i).name); %files array with names
             img = imread(files(i).name);
-            
             try
                 feval(process,img,files(i).name,args{1},args{2},args{3},args{4});
             catch exc_process2
