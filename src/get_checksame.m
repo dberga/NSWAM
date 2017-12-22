@@ -4,7 +4,7 @@ function [ check ] = get_checksame( loaded_struct_path1,loaded_struct_path2 )
     
     
     %% do not compare these ones (not used or not relevant or overlapping)
-    struct1.matrix_in.gaze_params.gaze_idx=0;struct2.matrix_in.gaze_params.gaze_idx=0;
+    
     struct1.matrix_in.gaze_params.ngazes=0;struct2.matrix_in.gaze_params.ngazes=0;
     struct1.matrix_in.gaze_params.orig_width=0;struct2.matrix_in.gaze_params.orig_width=0;
     struct1.matrix_in.gaze_params.orig_height=0;struct2.matrix_in.gaze_params.orig_height=0;
@@ -19,6 +19,7 @@ function [ check ] = get_checksame( loaded_struct_path1,loaded_struct_path2 )
     struct1.matrix_in.gaze_params.ior_matrix_multidim=0;struct2.matrix_in.gaze_params.ior_matrix_multidim=0;
     %struct1.matrix_in.gaze_params.fov_x=0; struct2.matrix_in.gaze_params.fov_x=0;
     %struct1.matrix_in.gaze_params.fov_y=0; struct2.matrix_in.gaze_params.fov_y=0;
+    %struct1.matrix_in.gaze_params.gaze_idx=0;struct2.matrix_in.gaze_params.gaze_idx=0;
     
     %struct1.matrix_in.cortex_params.a=0; struct2.matrix_in.cortex_params.a=0;
     %struct1.matrix_in.cortex_params.b=0; struct2.matrix_in.cortex_params.b=0;
