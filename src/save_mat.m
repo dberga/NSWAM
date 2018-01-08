@@ -15,7 +15,19 @@ function [] = save_mat(mat_name,matrix_in,folder_props,image_props,gaze_idx,chan
         try
             save([pwd '/' mat_path],'matrix_in');
         catch
-            save(mat_path,'matrix_in','-v7.3');
+            try
+                save(mat_path,'matrix_in','-v7.3');
+            catch
+                try 
+                    save([pwd '/' mat_path],'matrix_in','-v7.3');
+                catch
+                    try
+                        save(['/home/media/dberga/DATA/repos/matlab' '/' mat_path],'matrix_in');
+                    catch
+                        save(['/home/davidb/neuro/matlab' '/' mat_path],'matrix_in');
+                    end
+                end
+            end
         end
     end
 end
