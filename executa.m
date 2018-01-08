@@ -47,7 +47,7 @@ for i=1:length(conf_mats) %parfor i=1:length(conf_mats)
             diary off;
             copyfile(log_name,done_name);
             
-            smail('dberga@cvc.uab.es',txt2string(done_name),done_name);
+            smail('dberga@cvc.uab.es','completed',done_name);
             
   		catch exc_process
               diary off;
