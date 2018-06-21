@@ -29,6 +29,8 @@ function [ check ] = get_checksame( loaded_struct_path1,loaded_struct_path2 )
         struct2.matrix_in.gaze_params=0;
         struct1.matrix_in.cortex_params=0;
         struct2.matrix_in.cortex_params=0;
+        struct1.matrix_in.wave_params.n_scales=struct2.matrix_in.wave_params.n_scales;
+        struct1.matrix_in.wave_params.fin_scale=struct2.matrix_in.wave_params.fin_scale;
         
     else
         struct1.matrix_in.resize_params=0;
