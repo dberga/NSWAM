@@ -67,7 +67,7 @@ function [smap ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct)
              residualmax_c_s = residual_c_s;
      end
      RF_c_s_o = RFmax_c_s_o;
-     residual_c_s = residualmax_c_s;
+     %residual_c_s = residualmax_c_s;
      
     
     switch loaded_struct.fusion_params.inverse
