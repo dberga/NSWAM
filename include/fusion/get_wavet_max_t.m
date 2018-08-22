@@ -4,7 +4,7 @@ function [ RFmax, residualmax,max_s, max_o, max_c, max_x, max_y ] = get_wavet_ma
     residualmax = (-Inf).*ones(size(residual_s_c{1}(:,:,1)));
     maxval=-Inf;
     
-	for s=1:n_scales-1
+	for s=1:length(RF_s_o_c)
         for o=1:n_orient
             for c=1:C
                 values = RF_s_o_c{s}{o}(:,:,c); 

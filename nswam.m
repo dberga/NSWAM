@@ -213,9 +213,22 @@ if run_flags.run_all==1
             if isnan(RF_s_o_c{1}{1}(1,1,1))
                 break;
             end
+            %number of scales of residual is not equal to RF?
+            sd=length(RF_s_o_c)-length(residual_s_c);
+            if sd > 0
+                for d=1:sd
+                    residual_s_c{length(residual_s_c)+1}=residual_s_c{length(residual_s_c)};
+                end
+            end
+            if sd < 0
+                for d=1:sd
+                    RF_s_o_c{length(RF_s_o_c)+1}=RF_s_o_c{length(RF_s_o_c)};
+                end
+            end
             %testing all fusion parameters:
                 %lstruct=loaded_struct; fusions = {1,2,3,4,5}; smethods={'sqmean','pmax','pmaxc','pmax2','wtamaxc','wtamax2','wta','wta2'}; inverses={'multires_inv','max','wta'}; for fu=1:length(fusions), for sm=1:length(smethods), for in=1:length(inverses), lstruct.fusion_params.fusion = fusions{fu}; lstruct.fusion_params.smethod = smethods{sm}; lstruct.fusion_params.inverse = inverses{in}; figure, imagesc(get_normalize(lstruct,get_undistort(lstruct,get_fusion(RF_s_o_c, residual_s_c,lstruct)))); title(['fusion=' num2str(fusions{fu}) ',smethod=' smethods{sm} ',inverse=' inverses{in}]); end, end, end
-            
+                
+                
             [smap_RF ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
             %[maxval_d,maxidx_d]=max(smap(:));
             %[maxval_r,maxidx_r]=max(residualmax(:));

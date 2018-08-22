@@ -15,7 +15,7 @@ function [ h ] = show_activity_plots( activity )
                     %plot(1:total_dyn,dynamic,'color',color);
                     
                     figure(count);
-                    plot(1:total_dyn,dynamic);
+                    plot(1:total_dyn,dynamic); ylim([min(activity(:)) max(activity(:))])
                     img = frame2im(getframe(figure(count)));
                     mosaic(:,:,1,count) = imresize(img(:,:,1),[128 128]);
                     

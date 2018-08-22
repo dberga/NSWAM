@@ -13,7 +13,9 @@ function [ RFmean , RFmeanmean, RFmax, RFmaxmax, RFsum,RFsumsum , RFsingle] = sh
             RFmaxmax = zeros(total_t*total_iter);
             RFsum = zeros(total_s,total_o,total_t*total_iter);
             RFsumsum = zeros(total_t*total_iter);
-            RFsingle = zeros(total_t*total_iter); X = round(size(matrix{tinit}{iterinit}(:,:,sinit,oinit),2)/2); Y = round(size(matrix{tinit}{iterinit}(:,:,sinit,oinit),1)/2);
+            RFsingle = zeros(total_t*total_iter); 
+            X = round(size(matrix{tinit}{iterinit}{sinit}{oinit}(:,:),2)/2); 
+            Y = round(size(matrix{tinit}{iterinit}{sinit}{oinit}(:,:),1)/2);
             for t=tinit:tfinal
                 for iter=iterinit:iterfinal
                     %set(gcf, 'Position', get(0,'Screensize'));
