@@ -9,7 +9,7 @@ function [ RFsum ] = sum_RF( matrix, t,iter,sinit,sfinal,oinit,ofinal )
             count = 1;
             for s=sinit:sfinal
                 for o=oinit:ofinal
-                    RFsum(count) = sum(sum(mat(:,:,s,o)));
+                    RFsum(count) = nansum(nansum(mat(:,:,s,o)));
                     count = count+1;
                 end
             end

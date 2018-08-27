@@ -9,7 +9,7 @@ function [ RFmean ] = mean_RF( matrix, t,iter,sinit,sfinal,oinit,ofinal )
             count = 1;
             for s=sinit:sfinal
                 for o=oinit:ofinal
-                    RFmean(count) = mean(mean(mat(:,:,s,o)));
+                    RFmean(count) = nanmean(nanmean(mat(:,:,s,o)));
                     count = count+1;
                 end
             end

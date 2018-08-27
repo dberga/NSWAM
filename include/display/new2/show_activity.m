@@ -25,11 +25,11 @@ function [ RFmean , RFmeanmean, RFmax, RFmaxmax, RFsum,RFsumsum , RFsingle] = sh
                     
 
                     RFmean(:,:,count) = mean_RF( matrix, t, iter, sinit, sfinal, oinit, ofinal );
-                    RFmeanmean(count) = mean(mean(RFmean(:,:,count)));
+                    RFmeanmean(count) = nanmean(nanmean(RFmean(:,:,count)));
                     RFmax(:,:,count) = max_RF( matrix, t, iter, sinit, sfinal, oinit, ofinal );
-                    RFmaxmax(count) = max(max(RFmax(:,:,count)));
+                    RFmaxmax(count) = nanmax(nanmax(RFmax(:,:,count)));
                     RFsum(:,:,count) = sum_RF( matrix, t, iter, sinit, sfinal, oinit, ofinal );
-                    RFsumsum(count) = sum(sum(RFsum(:,:,count)));
+                    RFsumsum(count) = nansum(nansum(RFsum(:,:,count)));
                     RFsingle(count) = matrix{t}{iter}{sinit}{oinit}(Y,X);
                     count = count+1;
                 end

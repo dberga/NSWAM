@@ -9,7 +9,7 @@ function [ RFmax ] = max_RF( matrix, t,iter,sinit,sfinal,oinit,ofinal )
             count = 1;
             for s=sinit:sfinal
                 for o=oinit:ofinal
-                    RFmax(count) = sum(sum(mat(:,:,s,o)));
+                    RFmax(count) = nansum(nansum(mat(:,:,s,o)));
                     count = count+1;
                 end
             end

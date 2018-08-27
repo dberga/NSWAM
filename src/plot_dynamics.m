@@ -76,7 +76,7 @@ for c=1:length(channels)
 end
 %to do: cut ifactor given mask
 mask=imread(mask_path);
-aoicoords=getaoicoords(mask,35,0);
+aoicoords=getaoicoords(mask,40,0);
 
 
 for c=1:length(channels)
