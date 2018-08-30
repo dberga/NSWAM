@@ -105,3 +105,15 @@ function [smap ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct)
 
 end
 
+%% drawing
+% for s=1:5
+%     for o=1:3
+%         image_3D(RF_c_s_o{1}{s}(:,:,o)); 
+%         set(gcf,'units','points','position',[10,10,200,200]);
+%         xticks([]);
+%         yticks([]);
+%         savefig(['o' num2str(1) 's' num2str(s) 'o' num2str(o) '.fig']);
+%         fig2png(['o' num2str(1) 's' num2str(s) 'o' num2str(o) '.fig'],['o' num2str(1) 's' num2str(s) 'o' num2str(o) '.png']);
+%         close all;
+%     end
+% end

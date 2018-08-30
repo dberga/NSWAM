@@ -59,15 +59,14 @@ model_name='no_cortical_config_b1_15';
 % Title = 'Color Contrast (T: Blue, B: Red)';
 % Legend={'\DeltaS = 0','\DeltaS = .12','\DeltaS = .25','\DeltaS = .37','\DeltaS = .53','\DeltaS = .73','\DeltaS = 1'};
 
-block=11;
-block_cond=1;
-channel=3;
-sfreq=3;
-orient=1;
-Title = 'Size Contrast';
-Legend={'1.25 deg','1.67 deg','2.08 deg','2.5 deg','3.34 deg','4.17 deg','5 deg'};
-%1.25	1.67	2.08	2.5	3.34	4.17	5 %deg
-%0.5	0.67	0.834	1	1.34	1.67	2 %factor
+% block=11;
+% block_cond=1;
+% channel=3;
+% sfreq=3;
+% orient=1;
+% Title = 'Size Contrast';
+%%Legend={'1.25 deg','1.67 deg','2.08 deg','2.5 deg','3.34 deg','4.17 deg','5 deg'};
+% Legend={'.5','.67','.83','1','1.34','1.67','2'};
 
 % block=12;
 % block_cond=1;
@@ -77,13 +76,13 @@ Legend={'1.25 deg','1.67 deg','2.08 deg','2.5 deg','3.34 deg','4.17 deg','5 deg'
 % Title = 'Angle Contrast';
 % Legend={'\Delta\Theta = 0º','\Delta\Theta = 10º','\Delta\Theta = 20 º','\Delta\Theta = 30 º','\Delta\Theta = 42 º','\Delta\Theta = 56 º','\Delta\Theta = 90 º'};
 % 
-% block=13;
-% block_cond=1;
-% channel=3;
-% sfreq=3;
-% orient=1;
-% Title = 'Angle Contrast';
-% Legend={'\Delta\Theta = 0º','\Delta\Theta = 10º','\Delta\Theta = 20 º','\Delta\Theta = 30 º','\Delta\Theta = 42 º','\Delta\Theta = 56 º','\Delta\Theta = 90 º'};
+block=13;
+block_cond=1;
+channel=3;
+sfreq=3;
+orient=1;
+Title = 'Angle Contrast';
+Legend={'\Delta\Theta = 0º','\Delta\Theta = 10º','\Delta\Theta = 20 º','\Delta\Theta = 30 º','\Delta\Theta = 42 º','\Delta\Theta = 56 º','\Delta\Theta = 90 º'};
 
 
 if nargin < 1, 

@@ -20,7 +20,7 @@ function [ h ] = show_activity_plots( activity )
                     %plot(1:total_dyn,dynamic,'color',color);
                     
                     %figure(count);
-                    plot(1:total_dyn,dynamic);
+                    plot(1:total_dyn,dynamic,'LineWidth',2.5);
                     %img = frame2im(getframe(figure(count)));
                     %mosaic(:,:,1,count) = imresize(img(:,:,1),[128 128]);
                     
@@ -32,7 +32,6 @@ function [ h ] = show_activity_plots( activity )
             %h = montage(mosaic/255, 'Size',[total_s total_o]);
             h = gcf;
             hold off
-            
         
 end
 
