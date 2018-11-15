@@ -4,7 +4,7 @@ function [ h ] = plot_raster2( activity )
 
 if nargin < 1, activity=rand(1,100)*2; end
 
-dt=1/1000;
+dt=1/100;
 duration=size(activity,2);
 nTrials=size(activity,1);
 tSim=1;
@@ -43,9 +43,10 @@ hold all;
 %     0.3010    0.7450    0.9330;
 %     0.6350    0.0780    0.1840];
 
+M2014colors=[0 0 0];
 % M2014colors=[1 0 0; 0 0 1; 0 0 0];
 % M2014colors=flipud([0 0 0; .2 .2 .2; .4 .4 .4; .6 .6 .6; .8 .8 .8]); 
-M2014colors=[1 0 0; 0 1 1; .5 1 0]; 
+% M2014colors=[1 0 0; 0 1 1; .5 1 0]; 
 
 for trialCount = 1:size(spikeMat,1)
     spikePos = tVec(spikeMat(trialCount, :));

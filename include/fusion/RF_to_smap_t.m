@@ -67,6 +67,12 @@ function [smap] = RF_to_smap_t(RF_s_o_c,residual_s_c,Ls_s_c,struct)
         	smap = RF_c(:,:,1); %maxim opp, los tres canales lo mismo
 		case 'sqmean'
         	smap = channelsqmean(RF_c);
+        case 'L'
+        	smap = RF_c(:,:,3);
+        case 'a'
+        	smap = RF_c(:,:,1);
+        case 'b'
+        	smap = RF_c(:,:,2);
         otherwise
             smap = channelsqmean(RF_c);
     end

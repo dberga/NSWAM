@@ -98,22 +98,35 @@ function [smap ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct)
         case 'wta2' 
             smap = channelwta2(RF_c); %guanya nomes canal amb mes energia
         case 'sqmean'
-            smap = channelsqmean(RF_c);
-        otherwise %pmax, pmaxc, pmax2
-            smap = channelmax(RF_c);
+            smap = channelsqmean(RF_c); %mitja cuadratica dels 3
+        case 'L'
+            smap = RF_c(:,:,3);
+        case 'a'
+            smap = RF_c(:,:,1);
+        case 'b'
+            smap = RF_c(:,:,2);
+        otherwise 
+            smap = channelmax(RF_c); %maxim: pmax, pmaxc, pmax2
     end
 
 end
 
 %% drawing
-% for s=1:5
-%     for o=1:3
-%         image_3D(RF_c_s_o{1}{s}(:,:,o)); 
-%         set(gcf,'units','points','position',[10,10,200,200]);
-%         xticks([]);
-%         yticks([]);
-%         savefig(['o' num2str(1) 's' num2str(s) 'o' num2str(o) '.fig']);
-%         fig2png(['o' num2str(1) 's' num2str(s) 'o' num2str(o) '.fig'],['o' num2str(1) 's' num2str(s) 'o' num2str(o) '.png']);
-%         close all;
+% %for c=1:3
+%     for s=1:5
+%         for o=1:3
+%             image_3D(RF_c_s_o{c}{s}(:,:,o)); 
+%             set(gcf,'units','points','position',[10,10,200,200]);
+%             xticks([]);
+%             yticks([]);
+%             zticks([0,1,2]); zlim([-2,2]);
+%             savefig(['o' num2str(c) 's' num2str(s) 'o' num2str(o) '.fig']);
+%             fig2png(['o' num2str(c) 's' num2str(s) 'o' num2str(o) '.fig'],['o' num2str(c) 's' num2str(s) 'o' num2str(o) '.png']);
+%             close all;
+%         end
 %     end
-% end
+%     %image_3D(RF_c(:,:,c));
+%     %close all;
+% %end
+% %image_3D(smap);
+% %close all;
