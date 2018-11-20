@@ -96,8 +96,10 @@
 %     tmem_res
 %     tmem_rw_res
 %     residual_wave
-%     smethod
-%     fusion
+%     smethod (combining channels)
+%     fusion (type of normalization)
+%     inverse (type of multires fusion/inverse of scale & orient)
+%     gsp (gaussian smoothing at 1 degree)
 % 
 % 
 % 
@@ -113,6 +115,7 @@
 %     inputstr
 %     dir
 %     delete_mats
+%     unique_mats_folder
 % 
 % compute_params
 %     model
@@ -166,4 +169,12 @@
 %     redistort_periter
 %     ngazes
 %     gaze_idx
+%     ior
+%     ior_factor_ctt
+%     ior_angle
+%     ior_matrix
+%     conserve_dynamics
+%     conserve_dynamics_rest
+
+
 

@@ -1,7 +1,7 @@
 function [ smap,scanpath,smaps] = saliency_nswam( input_image, input_path )
 
     
-    conf_struct_path = 'conf';
+    conf_struct_path = 'conf/single';
     output_folder = 'output';
     output_folder_mats = 'mats';
     output_extension='png';

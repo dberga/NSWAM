@@ -8,7 +8,7 @@ addpath(genpath('src_mex'));
 if ~exist('output_extension','var')    output_extension = 'png'; end
 if ~exist('output_folder','var')    output_folder = 'output'; end
 if ~exist('output_folder_mats','var')   output_folder_mats = 'mats'; end
-if ~exist('conf_struct_path','var')    conf_struct_path = 'conf'; end
+if ~exist('conf_struct_path','var')    conf_struct_path = 'conf/single'; end
 
 
 %non modified input_image
@@ -21,9 +21,9 @@ if strcmp(conf_struct_path,'')==0
     
     [conf_struct] = load(conf_struct_path); conf_struct = conf_struct.matrix_in;
 else
-    conf_struct_folder='conf';
+    conf_struct_folder='conf/single';
     confgen(conf_struct_folder);
-    conf_struct_path=[conf_struct_folder '/' 'config_1.mat'];
+    conf_struct_path=[conf_struct_folder '/' 'single_config_b1_15.mat'];
     [conf_struct] = load(conf_struct_path); conf_struct = conf_struct.matrix_in;
     
 end

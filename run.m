@@ -1,16 +1,17 @@
 
 
-function [] = executa(input_dir, conf_dir, output_dir, mats_dir, fileformat,output_extension, funcio,flag_overwrite_log,flag_maxproc)
+function [] = executa(input_dir, conf_dir, output_dir, mats_dir, fileformat,output_extension, funcio,flag_overwrite_log,flag_maxproc,email_logreport)
 
 if nargin < 1, input_dir = 'input';end
-if nargin < 2, conf_dir = 'conf'; end
+if nargin < 2, conf_dir = 'conf/single'; end
 if nargin < 3, output_dir = 'output'; end
 if nargin < 4, mats_dir = 'mats'; end
-if nargin < 5, fileformat = 'jpg'; end
+if nargin < 5, fileformat = 'png'; end
 if nargin < 6, output_extension = 'png'; end
 if nargin < 7, funcio = 'nswam'; end
-if nargin < 8, flag_overwrite_log=0; end
-if nargin < 9, flag_maxproc=0; end
+if nargin < 8, flag_overwrite_log=0; end %set to 1 if you do not want the program to check for logs
+if nargin < 9, flag_maxproc=0; end %set to 1 if you run several processes with same configuration
+if nargin < 10, email_logreport='dberga@cvc.uab.es'; end %mail after finish or crash
 
 %function dependencies
 addpath('include/file_utils');
@@ -47,7 +48,7 @@ for i=1:length(conf_mats) %parfor i=1:length(conf_mats)
             diary off;
             copyfile(log_name,done_name);
             
-            smail('dberga@cvc.uab.es','completed',done_name);
+            smail(email_logreport,'completed',done_name);
             
   		catch exc_process
               diary off;
@@ -55,7 +56,7 @@ for i=1:length(conf_mats) %parfor i=1:length(conf_mats)
               extendedreport=getReport(exc_process,'extended');
               append_text(error_name,extendedreport);
               disp(extendedreport);
-              smail('dberga@cvc.uab.es',extendedreport,error_name);
+              smail(email_logreport,extendedreport,error_name);
           end
         proc=proc+1;
         delete(log_name);
