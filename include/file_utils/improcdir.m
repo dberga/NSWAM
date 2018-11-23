@@ -35,10 +35,11 @@ files=unsort_array(files);                              %unsort files to read
     acum_error=[];
         result=0;
         for i=1:N_files
-            disp(files(i).name); %files array with names
+            image_fullpath=[input_path '/' files(i).name];
+            disp(image_fullpath); %files array with names
             img = imread(files(i).name);
             try
-                feval(process,img,files(i).name,args{1},args{2},args{3},args{4});
+                feval(process,img,image_fullpath,args{1},args{2},args{3},args{4});
             catch exc_process2
                 result=-1;
                 disp(getReport(exc_process2,'extended'));

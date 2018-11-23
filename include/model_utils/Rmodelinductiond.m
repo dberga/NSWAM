@@ -541,8 +541,12 @@ for t_membr=1:n_membr  % membrane time
 			y_ie=zeros(M,N,n_scales,K);
             I_norm=zeros(M,N,n_scales,K);	
             I_ior=zeros(M,N,n_scales,K);	
+            I_topdown=zeros(M,N,n_scales,K);	
             if struct.gaze_params.ior == 1
                 I_ior=struct.gaze_params.ior_matrix_multidim;
+            end
+            if struct.search_params.topdown == 1
+                I_topdown=struct.search_params.topdown_matrix_multidim;
             end
 
 			%%%%%%%%%%%%%% preparatory terms %%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -721,6 +725,7 @@ for t_membr=1:n_membr  % membrane time
 				+newgx(x)...
 				+y_ie...
                 +newgx(I_ior)...
+                +newgx(I_topdown)...
 				+1.0...     % spontaneous firing rate
                 +var_noise*(rand(M,N,n_scales,K))-0.5);  % neural noise (comment for speed
 
@@ -738,6 +743,7 @@ for t_membr=1:n_membr  % membrane time
         
         %update inhibition
         struct.gaze_params.ior_matrix_multidim=struct.gaze_params.ior_matrix_multidim.*exp(prec.*log(struct.gaze_params.ior_factor_ctt));
+        struct.search_params.topdown_matrix_multidim=struct.search_params.topdown_matrix_multidim.*exp(prec.*log(struct.search_params.topdown_factor_ctt));
 
         %redistort
         if struct.gaze_params.foveate ~= 0 && struct.gaze_params.redistort_periter == 1

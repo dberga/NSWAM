@@ -84,6 +84,7 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
                 
                 %send only specific channel c
                 loaded_struct.gaze_params.ior_matrix_multidim=loaded_struct.gaze_params.ior_matrix_multidim(:,:,:,:,:,c);
+                loaded_struct.search_params.topdown_matrix_multidim=loaded_struct.search_params.topdown_matrix_multidim(:,:,:,:,:,c);
                 
                 t_ini = tic;
                 switch loaded_struct.compute_params.model

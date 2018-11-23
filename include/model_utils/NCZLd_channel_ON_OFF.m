@@ -75,6 +75,7 @@ switch(struct.zli_params.ON_OFF)
         
             struct=aux_struct;
             struct.gaze_params.ior_matrix_multidim=struct.gaze_params.ior_matrix_multidim(:,:,:,:,1);
+            struct.search_params.topdown_matrix_multidim=struct.search_params.topdown_matrix_multidim(:,:,:,:,1);
             % positius +++++++++++++++++++++++++++++++++++++++++++++++++++
             %%% MAIN PROCESS %%%
             [xFactor_ON_t_fi,yFactor_ON_t_fi,xFactor_ON_t_i,yFactor_ON_t_i,x_ON, y_ON]=Rmodelinductiond(curv_ON, struct, 'ON',x_on,y_on); % note: iFactor is called "gx_final" at the core of the process
@@ -82,7 +83,7 @@ switch(struct.zli_params.ON_OFF)
 
             struct=aux_struct;
             struct.gaze_params.ior_matrix_multidim=struct.gaze_params.ior_matrix_multidim(:,:,:,:,2);
-            
+            struct.search_params.topdown_matrix_multidim=struct.search_params.topdown_matrix_multidim(:,:,:,:,2);
             % negatius ----------------------------------------------------
             %%% MAIN PROCESS %%%
             [xFactor_OFF_t_fi,yFactor_OFF_t_fi,xFactor_OFF_t_i,yFactor_OFF_t_i,x_OFF, y_OFF]=Rmodelinductiond(curv_OFF, struct,  'OFF', x_off, y_off); % note: iFactor is called "gx_final" at the core of the process

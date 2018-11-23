@@ -20,6 +20,9 @@ function [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,
             if ~isfield(conf_struct.gaze_params,'ior') conf_struct.gaze_params.ior = 0; end
             if ~isfield(conf_struct.gaze_params,'ior_matrix_multidim') conf_struct.gaze_params.ior_matrix_multidim = zeros(size(conf_struct.gaze_params.ior_matrix,1),size(conf_struct.gaze_params.ior_matrix,2),conf_struct.wave_params.n_scales-1,conf_struct.wave_params.n_orient,2,length(conf_struct.color_params.channels)); end
             if ~isfield(conf_struct.gaze_params,'ior_factor_ctt') conf_struct.gaze_params.ior_factor_ctt = 0; end
+            if ~isfield(conf_struct.search_params,'topdown') conf_struct.search_params.topdown = 0; end
+            if ~isfield(conf_struct.search_params,'topdown_matrix_multidim') conf_struct.search_params.topdown_matrix_multidim = zeros(size(conf_struct.search_params.topdown_matrix,1),size(conf_struct.search_params.topdown_matrix,2),conf_struct.wave_params.n_scales-1,conf_struct.wave_params.n_orient,2,length(conf_struct.color_params.channels)); end
+            if ~isfield(conf_struct.search_params,'topdown_factor_ctt') conf_struct.search_params.topdown_factor_ctt = 0; end
             if ~isfield(conf_struct.gaze_params,'redistort_pertmem') conf_struct.gaze_params.redistort_pertmem = 1; end
             if ~isfield(conf_struct.gaze_params,'redistort_periter')  conf_struct.gaze_params.redistort_periter = 0; end
             if ~isfield(conf_struct.gaze_params,'maxidx_s') conf_struct.gaze_params.maxidx_s = 1; end;
@@ -37,6 +40,7 @@ function [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,
             %loaded struct gazing ovewrites
             loaded_struct.resize_params=conf_struct.resize_params;
             loaded_struct.gaze_params=conf_struct.gaze_params;
+            loaded_struct.search_params=conf_struct.search_params;
             loaded_struct.compute_params=conf_struct.compute_params;
             loaded_struct.fusion_params = conf_struct.fusion_params;
             

@@ -13,7 +13,7 @@ if nargin < 8, flag_overwrite_log=1; end
 if nargin < 9, flag_maxproc=0; end
 if nargin < 10, email_logreport='dberga@cvc.uab.es'; end
 
-executa(input_dir, conf_dir, output_dir, mats_dir, fileformat,output_extension, funcio,flag_overwrite_log,flag_maxproc,email_logreport);
+run(input_dir, conf_dir, output_dir, mats_dir, fileformat,output_extension, funcio,flag_overwrite_log,flag_maxproc,email_logreport);
     
 
 end
