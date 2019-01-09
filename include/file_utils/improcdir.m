@@ -19,7 +19,7 @@ end
 files = dir(fullfile(directory, ['*.' format]));        %read files names
 addpath(directory);                                     %add folder dir path
 N_files = size(files,1);                                %readed number of files
-
+rng('shuffle');
 files=unsort_array(files);                              %unsort files to read
 
 %switch mode

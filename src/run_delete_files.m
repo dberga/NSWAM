@@ -5,12 +5,18 @@ function [] = run_delete_files(folder_props,image_props,loaded_struct,gaze_idx)
         delete(get_mat_name('iFactor',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{1}));
         delete(get_mat_name('iFactor',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2}));
         delete(get_mat_name('iFactor',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3}));
-        delete(get_mat_name('w',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{1}));
-        delete(get_mat_name('w',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2}));
-        delete(get_mat_name('w',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3}));
-        delete(get_mat_name('c',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{1}));
-        delete(get_mat_name('c',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2}));
-        delete(get_mat_name('c',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3}));
+        delete(get_mat_name('xon',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{1}));
+        delete(get_mat_name('xon',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2}));
+        delete(get_mat_name('xon',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3}));
+        delete(get_mat_name('xoff',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{1}));
+        delete(get_mat_name('xoff',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2}));
+        delete(get_mat_name('xoff',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3}));
+        delete(get_mat_name('yon',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{1}));
+        delete(get_mat_name('yon',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2}));
+        delete(get_mat_name('yon',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3}));
+        delete(get_mat_name('yoff',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{1}));
+        delete(get_mat_name('yoff',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{2}));
+        delete(get_mat_name('yoff',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{3}));
 
     end
 

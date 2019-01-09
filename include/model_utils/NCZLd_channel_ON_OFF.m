@@ -72,7 +72,7 @@ aux_struct=struct;
 % choose the algorithm (separated, abs, quadratic) 
 switch(struct.zli_params.ON_OFF)
     case 0 % separated
-        
+            disp(['Computing ON' ]);
             struct=aux_struct;
             struct.gaze_params.ior_matrix_multidim=struct.gaze_params.ior_matrix_multidim(:,:,:,:,1);
             struct.search_params.topdown_matrix_multidim=struct.search_params.topdown_matrix_multidim(:,:,:,:,1);
@@ -80,7 +80,7 @@ switch(struct.zli_params.ON_OFF)
             %%% MAIN PROCESS %%%
             [xFactor_ON_t_fi,yFactor_ON_t_fi,xFactor_ON_t_i,yFactor_ON_t_i,x_ON, y_ON]=Rmodelinductiond(curv_ON, struct, 'ON',x_on,y_on); % note: iFactor is called "gx_final" at the core of the process
             %%% END MAIN PROCESS %%%
-
+            disp(['Computing OFF' ]);
             struct=aux_struct;
             struct.gaze_params.ior_matrix_multidim=struct.gaze_params.ior_matrix_multidim(:,:,:,:,2);
             struct.search_params.topdown_matrix_multidim=struct.search_params.topdown_matrix_multidim(:,:,:,:,2);

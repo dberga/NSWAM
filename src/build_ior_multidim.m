@@ -17,12 +17,12 @@ if conf_struct.gaze_params.ior_multidim_set==1  %dimensions of ior_matrix_multid
                 case 6 %apply ior to all dimensions
                  ior_matrix_multidim(:,:,:,:,:,:) = ior_matrix_multidim(:,:,:,:,:,:) + (ior_matrix .*conf_struct.gaze_params.max_mempotential_val);
                 otherwise
-                 ior_matrix_multidim=zeros(size(ior_matrix_foveated,1),size(ior_matrix_foveated,2),conf_struct.wave_params.n_scales-1,conf_struct.wave_params.n_orient,2,length(conf_struct.color_params.channels));
+                 ior_matrix_multidim=zeros(size(ior_matrix,1),size(ior_matrix,2),conf_struct.wave_params.n_scales-1,conf_struct.wave_params.n_orient,2,length(conf_struct.color_params.channels));
             end
-    else
-       ior_matrix_multidim=zeros(size(ior_matrix,1),size(ior_matrix,2),conf_struct.wave_params.n_scales-1,conf_struct.wave_params.n_orient,2,length(conf_struct.color_params.channels));
-       ior_multidim_set=1;
+else
+   ior_matrix_multidim=zeros(size(ior_matrix,1),size(ior_matrix,2),conf_struct.wave_params.n_scales-1,conf_struct.wave_params.n_orient,2,length(conf_struct.color_params.channels));
 end
+ior_multidim_set=1;
 
 end
 

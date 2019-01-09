@@ -1,10 +1,10 @@
 
-function [  ] = plot_dynamics_spec( images_list, mats_path, gaze, masks_path)
+function [  ] = plot_dynamics_spec( model_name, images_list, mats_path, gaze, masks_path)
 
 addpath(genpath('include'));
 addpath(genpath('src'));
 
-model_name='no_cortical_config_b1_15_sqmean_fusion2_invdefault';
+if nargin<1, model_name='no_cortical_config_b1_15_sqmean_fusion2_invdefault'; end
 
 for analysis=1:9
 %% evaluation params
@@ -106,13 +106,13 @@ for analysis=1:9
             colors=[1 0 0; 1 0.5 0; 0 1 0; 0 1 0.5; 0 1 1; 0 0.5 1; 0 0 1];
     end
 
-    if nargin < 1, 
+    if nargin < 2, 
         %images_list = {'input_sid4vam/d1Bvs4BrTGwBB1.png','input_sid4vam/d1Bvs4BrTGwBB0p83333.png','input_sid4vam/d1Bvs4BrTGwBB0p66667.png','input_sid4vam/d2Bvs4BrTGwBB0p5.png','input_sid4vam/d2Bvs4BrTGwBB0p33333.png','input_sid4vam/d2Bvs4BrTGwBB0p16667.png','input_sid4vam/d2Bvs4BrTGwBB0.png'};
         images_list=block2imageslist(block,block_cond);
     end
-    if nargin < 2, mats_path=['mats_sid4vam/' model_name ]; end
-    if nargin < 3, gaze = 1; end
-    if nargin < 4, masks_path=['/home/dberga/repos/datasets/SID4VAM/sid4vam_rawdata/mmaps']; end
+    if nargin < 3, mats_path=['mats_sid4vam/' model_name ]; end
+    if nargin < 4, gaze = 1; end
+    if nargin < 5, masks_path=['/home/dberga/repos/datasets/SID4VAM/sid4vam_rawdata/mmaps']; end
 
     for i=1:length(images_list)
         [image_folder,image_name_noext,ext]=fileparts(images_list{i});

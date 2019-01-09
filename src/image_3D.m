@@ -1,9 +1,9 @@
 function [] = image_3D(I)
-    m = size(I',1);            % number of rows
-    n = size(I',2);            % number of columns
+    m = size(I,2);            % number of rows
+    n = size(I,1);            % number of columns
     I = double(I);            % convert the entries to double
-    minI = min(min(I));       % min of all the data
-    maxI = max(max(I));       % max of all the data
+    minI = min(I(:));       % min of all the data
+    maxI = max(I(:));       % max of all the data
 
     % we create a grid of the same size
     x = 1 : 1 : m; 
@@ -30,7 +30,7 @@ function [] = image_3D(I)
     s2=surf([1 m],[1 n],repmat(imgzposition, [2 2]),...
         colorimg,'facecolor','texture');
     set(s2.Parent,'YDir','reverse');
-    view(45,30);
+    view(30,42);
 %     xlabel('x');
 %     ylabel('y');
 %     zlabel('z');
@@ -44,5 +44,6 @@ function [] = image_3D(I)
 %     ylabel('y');
 %     title('the input grayscale image');
 %     truesize;
+    hold off;
 end
 

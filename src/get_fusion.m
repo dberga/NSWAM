@@ -1,4 +1,4 @@
-function [smap ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct)
+function [smap , RF_c] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct)
 
     if length(RF_s_o_c) < loaded_struct.wave_params.n_scales
        loaded_struct.wave_params.n_scales= length(RF_s_o_c)+1;
@@ -75,6 +75,19 @@ function [smap ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct)
             RF_c  = RFmax_c;
         case 'wta'
             RF_c  = RFwta_c;
+        case 'default_abs'
+            RF_c_s_o{1} = so2s_o(RF_c_s_o{1},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            RF_c_s_o{2} = so2s_o(RF_c_s_o{2},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            RF_c_s_o{3} = so2s_o(RF_c_s_o{3},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            
+            RF_c_s_o{1} = so2abs_so(RF_c_s_o{1},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            RF_c_s_o{2} = so2abs_so(RF_c_s_o{2},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            RF_c_s_o{3} = so2abs_so(RF_c_s_o{3},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
+            
+            RF_c(:,:,1) = multires_inv_dispatcher(RF_c_s_o{1},residual_c_s{1},loaded_struct.wave_params.multires,loaded_struct.wave_params.n_scales-1,loaded_struct.wave_params.n_orient);
+            RF_c(:,:,2) = multires_inv_dispatcher(RF_c_s_o{2},residual_c_s{2},loaded_struct.wave_params.multires,loaded_struct.wave_params.n_scales-1,loaded_struct.wave_params.n_orient);
+            RF_c(:,:,3) = multires_inv_dispatcher(RF_c_s_o{3},residual_c_s{3},loaded_struct.wave_params.multires,loaded_struct.wave_params.n_scales-1,loaded_struct.wave_params.n_orient);
+        
         otherwise
 
             RF_c_s_o{1} = so2s_o(RF_c_s_o{1},loaded_struct.wave_params.n_scales,loaded_struct.wave_params.n_orient);
@@ -111,22 +124,3 @@ function [smap ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct)
 
 end
 
-%% drawing
-% %for c=1:3
-%     for s=1:5
-%         for o=1:3
-%             image_3D(RF_c_s_o{c}{s}(:,:,o)); 
-%             set(gcf,'units','points','position',[10,10,200,200]);
-%             xticks([]);
-%             yticks([]);
-%             zticks([0,1,2]); zlim([-2,2]);
-%             savefig(['o' num2str(c) 's' num2str(s) 'o' num2str(o) '.fig']);
-%             fig2png(['o' num2str(c) 's' num2str(s) 'o' num2str(o) '.fig'],['o' num2str(c) 's' num2str(s) 'o' num2str(o) '.png']);
-%             close all;
-%         end
-%     end
-%     %image_3D(RF_c(:,:,c));
-%     %close all;
-% %end
-% %image_3D(smap);
-% %close all;

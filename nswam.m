@@ -84,19 +84,7 @@ residuals = cell(1,3);
 
 
 %% READ SEARCH PARAMETERS
-
-if conf_struct.search_params.topdown==1
-   search_params_path=[image_props.input_folder '/' 'target_features' '/' image_props.image_name_noext '.mat' ];
-   if exist(search_params_path,'file')%leer mat con parametros channel, scale, orient, polarity 
-        target_features=load(search_params_path);
-        conf_struct.search_params.channels=target_features.matrix_in.channels;
-        conf_struct.search_params.scales=target_features.matrix_in.scales;
-        conf_struct.search_params.orientations=target_features.matrix_in.orientations;
-        conf_struct.search_params.polarity=target_features.matrix_in.polarity;
-   else %si no existe, poner topdown a 0
-        conf_struct.search_params.topdown=0;
-   end
-end
+[ conf_struct ] = generate_topdown( input_image, image_props,conf_struct_path_name,conf_struct );
 
 
 %% %%%%%%%%%%%%%%%%%%GET RUN FLAGS (LOAD,NEURODYN,RECONS...)
@@ -124,7 +112,7 @@ if run_flags.run_all==1
               
             switch conf_struct.gaze_params.foveate
                 case 1 %foveate before DWT
-
+                    
                     [opp_image_foveated] = get_foveate(opp_image,conf_struct);
                     [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(opp_image_foveated, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
                     [conf_struct.wave_params.n_orient] = calc_norient(opp_image_foveated,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
@@ -185,7 +173,7 @@ if run_flags.run_all==1
              
             %% 5. CORE, COMPUTE DYNAMICS [CORTEX->CORTEX]
             [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,k,curvs,residuals);
-                    
+            
             if isempty(iFactors)
                 return;
             end
@@ -245,7 +233,7 @@ if run_flags.run_all==1
                 %lstruct=loaded_struct; fusions = {1,2,3,4,5}; smethods={'sqmean','pmax','pmaxc','pmax2','wtamaxc','wtamax2','wta','wta2'}; inverses={'multires_inv','max','wta'}; for fu=1:length(fusions), for sm=1:length(smethods), for in=1:length(inverses), lstruct.fusion_params.fusion = fusions{fu}; lstruct.fusion_params.smethod = smethods{sm}; lstruct.fusion_params.inverse = inverses{in}; figure, imagesc(get_normalize(lstruct,get_undistort(lstruct,get_fusion(RF_s_o_c, residual_s_c,lstruct)))); title(['fusion=' num2str(fusions{fu}) ',smethod=' smethods{sm} ',inverse=' inverses{in}]); end, end, end
                 
                 
-            [smap_RF ] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
+            [smap_RF , ~] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
             %[maxval_d,maxidx_d]=max(smap(:));
             %[maxval_r,maxidx_r]=max(residualmax(:));
             

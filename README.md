@@ -8,6 +8,9 @@ NSWAM is an open source implementation of a saliency model cited below:
 
 > Otherwise, to run an individual image you must run "saliency_nswam.m" (or "nswam.m" by specifying each parameter), by setting the input RGB file (directly from imread) and its path.
 
+> Plot paper figures with "src/plot_metrics_spec_several.m"
+> Plot other paper figures with "src/plot_dynamics.m", "src/plot_dynamics_several.m", "src/plot_scanpaths.m"
+
 ***Notes (input)***
 1. Input images are by default in "input/" and in ".png" format.
 2. Configuration parameter files are set by default to "conf/single". Configuration parameters are listed in README.txt and described in "src/confgen_all.m"

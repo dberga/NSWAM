@@ -463,7 +463,7 @@ for t_membr=1:n_membr  % membrane time
 	
 	disp(['t_membr: ' int2str(t_membr)]);
 
-		tic
+		%tic
 
 		for t_iter=1:n_iter  % from the differential equation (Euler!)
 
@@ -500,7 +500,7 @@ for t_membr=1:n_membr  % membrane time
 			kk_tmp2_y=zeros(size(toroidal_y{n_scales+radius_sc}));
 				
 
-			disp(['t_iter: ' int2str(t_iter)]);
+			%disp(['t_iter: ' int2str(t_iter)]);
 		
 			newgx_toroidal_x=cell(n_scales+2*radius_sc,1);
 			newgy_toroidal_y=cell(n_scales+2*radius_sc,1);
@@ -777,7 +777,7 @@ for t_membr=1:n_membr  % membrane time
         
 	end % end t_iter=1:n_iter	
 % 	ginput(1);
-toc
+%toc
 	%if t*prec==ceil(t*prec) % added 1/2/12
 	
         %redistort
