@@ -7,7 +7,8 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
 %     idx_max_mempotential_polarity=1;
 %     max_mempotential_val = -Inf;
     %see if there are mats from other config that satisfy the pre-neurodynamical parameters, if so, create a soft link to such mats for each gaze and channel
-    if run_flags.load_iFactor_mats(gaze_idx)==0
+    if run_flags.load_iFactor_mats(gaze_idx)==0  & loaded_struct.compute_params.model > 0
+        
         for c=1:C
 
             [ loaded_struct_equivalent_path , mfolder, folder_equivalent,iname_equivalent,k_equivalent] = get_samemat( loaded_struct_path );
@@ -57,6 +58,10 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
 
     aux_loaded_struct=loaded_struct;
     
+    %use parfor and specific threads (according to free memory)
+    %java.lang.Runtime.getRuntime.freeMemory
+    %delete(gcp('nocreate'));
+    %parpool('local',3);
     for c=1:C
         loaded_struct=aux_loaded_struct;
         
@@ -73,15 +78,20 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
         end
                 
         if run_flags.load_iFactor_mats(gaze_idx)==1 %&& run_flags.load_xon_mats(gaze_idx)==1 && run_flags.load_xoff_mats(gaze_idx)==1 && run_flags.load_yon_mats(gaze_idx)==1 && run_flags.load_yoff_mats(gaze_idx)==1
-            iFactor = load(get_mat_name('iFactor',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); iFactor = iFactor.matrix_in;
-            %iFactor = iFactor(~cellfun('isempty',iFactor)); %clean void cells
-            
-            last_xon = load(get_mat_name('xon',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); last_xon = last_xon.matrix_in;
-            last_xoff = load(get_mat_name('xoff',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); last_xoff = last_xoff.matrix_in;
-            last_yon = load(get_mat_name('yon',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); last_yon = last_yon.matrix_in;
-            last_yoff = load(get_mat_name('yoff',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); last_yoff = last_yoff.matrix_in;
-        else
-                
+            try
+                iFactor = load(get_mat_name('iFactor',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); iFactor = iFactor.matrix_in;
+                %iFactor = iFactor(~cellfun('isempty',iFactor)); %clean void cells
+
+                last_xon = load(get_mat_name('xon',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); last_xon = last_xon.matrix_in;
+                last_xoff = load(get_mat_name('xoff',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); last_xoff = last_xoff.matrix_in;
+                last_yon = load(get_mat_name('yon',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); last_yon = last_yon.matrix_in;
+                last_yoff = load(get_mat_name('yoff',folder_props,image_props,gaze_idx,loaded_struct.color_params.channels{c})); last_yoff = last_yoff.matrix_in;
+            catch
+                run_flags.load_iFactor_mats(gaze_idx)=0;
+            end
+        end
+        
+        if run_flags.load_iFactor_mats(gaze_idx)==0
                 %send only specific channel c
                 loaded_struct.gaze_params.ior_matrix_multidim=loaded_struct.gaze_params.ior_matrix_multidim(:,:,:,:,:,c);
                 loaded_struct.search_params.topdown_matrix_multidim=loaded_struct.search_params.topdown_matrix_multidim(:,:,:,:,:,c);
@@ -98,15 +108,20 @@ function [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_pr
                         %%%%% COPY (only curv from DWT, dynamic = tmem copies) %%%%%%%
                         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                         iFactor = multires_decomp2dyndecomp(curvs{c},residuals{c},loaded_struct.zli_params.n_membr,loaded_struct.zli_params.n_iter,loaded_struct.wave_params.n_scales);
-
-
+                        
+                        %also topdown for SWAM (apply multidim directly instead of dynamically with I_c )
+                        iFactor=topdownwaviFactor(iFactor,loaded_struct,loaded_struct.search_params.topdown_matrix_multidim); 
+                        iFactor=iorwaviFactor(iFactor,loaded_struct,loaded_struct.gaze_params.ior_matrix_multidim); 
+                        
                     case 1
                         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                         %%%%% NEURODYNAMIC IN MATLAB %%%%%%%
                         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+                        
+                        disp(['Computing ' loaded_struct.color_params.channels{c}]);
                         [~,iFactor, last_xon, last_xoff, last_yon, last_yoff] =NCZLd_channel_ON_OFF(curvs{c},loaded_struct,last_xon, last_xoff, last_yon, last_yoff);
-
+                        
+                        disp(['Computing ' loaded_struct.color_params.channels{c} ' saccade sequence rest interval']);
                         %let the dynamics rest for 3 tmem before next saccade
                         [~,~, last_xon, last_xoff, last_yon, last_yoff] =NCZLd_channel_ON_OFF_rest(loaded_struct,last_xon, last_xoff, last_yon, last_yoff);
 
