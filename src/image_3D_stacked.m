@@ -23,7 +23,7 @@ function [ s2 ] = image_3D_stacked( I )
 
         % convert the image to a true color image with the gray colormap.
         colorimg = scaledimg; %ind2rgb(scaledimg,gray(256));
-
+        
         % plot the image plane using surf.
         s2=surf([1 m],[1 n],repmat(imgzposition, [2 2]),...
             colorimg,'facecolor','texture');

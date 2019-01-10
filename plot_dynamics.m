@@ -1,5 +1,6 @@
 function [  ] = plot_dynamics( model_name, image_path, mat_path, gaze, mask_path )
 
+addpath(genpath('src'));
 addpath(genpath('include'));
 
 if nargin < 1, model_name='no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault'; end
@@ -20,7 +21,7 @@ channels={'chromatic','chromatic2','intensity'};
 %% feature extraction
 
 %% plot rgb
-plot_rgb(img,struct)
+% plot_rgb(img,struct)
 
 %% Plot Lab
 opp_image = get_rgb2opp(img,struct);
@@ -32,13 +33,13 @@ opp_image = get_rgb2opp(img,struct);
 %[struct.wave_params.n_orient] = calc_norient(opp_image,struct.wave_params.multires,struct.wave_params.n_scales,struct.zli_params.n_membr);            
 [curvs,residuals] = get_DWT(NaN,struct,NaN,NaN,3,1,opp_image);
 
-% plot_dwt(curvs,residuals,struct);
+plot_dwt(curvs,residuals,struct);
 
 if struct.gaze_params.foveate~=0
     [curvs,residuals]=get_foveate_multires(curvs,residuals,struct);
 end
 
-% plot_dwt(curvs,residuals,struct,'cortical');
+plot_dwt(curvs,residuals,struct,'cortical');
 
 %% saliency computation
 
@@ -102,23 +103,46 @@ end
 end
 
 function [] = plot_rgb(img,struct)
-    cmap_red=hsv2rgb([repmat(0/360,1,64)' (1/64:1/64:1)' repmat(1,1,64)']);
-    cmap_green=hsv2rgb([repmat(120/360,1,64)' (1/64:1/64:1)' repmat(1,1,64)']);
-    cmap_blue=hsv2rgb([repmat(240/360,1,64)' (1/64:1/64:1)' repmat(1,1,64)']);
-    % image_3D_stacked(img,{cmap_red,cmap_green,cmap_blue});
-    cmap_rgb=[cmap_red;cmap_green;cmap_blue];
-    imgmod=double(img)/255;
-    imgmod(:,:,1)=imgmod(:,:,1)*1/3+0;
+    
+    mkdir('figs/rgb/');
+    img=double(img)/255;
+
+    cmap_red=hsv2rgb([repmat(0/360,1,64)' repmat(1,1,64)' (1/64:1/64:1)' ]);
+    cmap_green=hsv2rgb([repmat(120/360,1,64)' repmat(1,1,64)' (1/64:1/64:1)' ]);
+    cmap_blue=hsv2rgb([repmat(240/360,1,64)' repmat(1,1,64)' (1/64:1/64:1)' ]);
+    cmap_rgb=[cmap_red; cmap_green; cmap_blue];
+    imgmod=img;
+    imgmod(:,:,1)=imgmod(:,:,1)*1/3;
     imgmod(:,:,2)=imgmod(:,:,2)*1/3+1/3;
-    imgmod(:,:,3)=imgmod(:,:,2)*1/3+2/3;
+    imgmod(:,:,3)=imgmod(:,:,3)*1/3+2/3;
     image_3D_stacked(imgmod); 
-    colormap(cmap_rgb); set(gca,'ztick',[]);
-    saveas(gcf,['figs/'  struct.file_params.name '_rgb' '.png']);
+    colormap(cmap_rgb); set(gca,'ztick',[]); view(35,44);
+    saveas(gcf,['figs/rgb/'  struct.file_params.name '_rgb_sep' '.png']);
+    close all;
+    colormap(cmap_red); cb=colorbar; set(cb,'position',[.50 .50 .05 .2]); caxis([0 255]);
+    colormap(cmap_green); cb=colorbar; set(cb,'position',[.50 .50 .05 .2]);  caxis([0 255]);
+    colormap(cmap_blue); cb=colorbar; set(cb,'position',[.50 .50 .05 .2]);  caxis([0 255]);
+    close all;
+    
+    
+    image_3D(img(:,:,1),false); colormap(cmap_red); set(gca,'ztick',[]);
+    saveas(gcf,['figs/rgb/'  struct.file_params.name '_rgb_sep_red' '.png']);
+    image_3D(img(:,:,2),false); colormap(cmap_green); set(gca,'ztick',[]);
+    saveas(gcf,['figs/rgb/'  struct.file_params.name '_rgb_sep_green' '.png']);
+    image_3D(img(:,:,3),false); colormap(cmap_blue); set(gca,'ztick',[]);
+    saveas(gcf,['figs/rgb/'  struct.file_params.name '_rgb_sep_blue' '.png']);
+    
+    image_3D(img,false);
+    set(gca,'ztick',[]);
+    saveas(gcf,['figs/rgb/'  struct.file_params.name '_rgb' '.png']);
+    close all;
+    
+    
 end
 
 function [] = plot_lab(opp_image,struct)
 
-
+mkdir('figs/lab/');
 % mosaic = zeros(size(opp_image,1),size(opp_image,2),1,size(opp_image,3)); 
 % mosaic(:,:,1,:) = opp_image(:,:,:);
 % figure; [fig] = montage(mosaic, 'Size',[1 3]);
@@ -130,28 +154,26 @@ function [] = plot_lab(opp_image,struct)
 %     figure; [fig] = montage(mosaic, 'Size',[1 3]);
 %     close all;
 % end
-
 image_3D(opp_image(:,:,1))
-colormap(redgreencmap) %a
-cb=colorbar; caxis([-1 1]); set(gca,'ztick',[]); set(cb,'position',[.10 .75 .05 .2]);
-% savefig(['figs/' struct.file_params.name '_'  'a' '.fig']);
-% fig2png(['figs/'  struct.file_params.name '_' 'a' '.fig'],['figs/' struct.file_params.name '_'  'a' '.png']);
-saveas(gcf,['figs/' struct.file_params.name '_'  'a' '.png']);
+colormap_opp(1) %a
+cb=colorbar; set(gca,'ztick',[]); set(cb,'position',[.10 .75 .05 .2]); caxis([-1 1]); 
+% savefig(['figs/lab/' struct.file_params.name '_'  'a' '.fig']);
+% fig2png(['figs/lab/'  struct.file_params.name '_' 'a' '.fig'],['figs/' struct.file_params.name '_'  'a' '.png']);
+saveas(gcf,['figs/lab/' struct.file_params.name '_'  'a' '.png']);
 close all;
 image_3D(opp_image(:,:,2))
-colormap(parula) %b 
-cb=colorbar; caxis([-2 1]); set(gca,'ztick',[]); set(cb,'position',[.10 .75 .05 .2]);
-% savefig(['figs/' struct.file_params.name '_'  'b' '.fig']);
-% fig2png(['figs/' struct.file_params.name '_'  'b' '.fig'],['figs/'  struct.file_params.name '_' 'b' '.png']);
-saveas(gcf,['figs/' struct.file_params.name '_'  'b' '.png']);
+colormap_opp(2) %b
+cb=colorbar;  set(gca,'ztick',[]); set(cb,'position',[.10 .75 .05 .2]); caxis([-2 1]); 
+% savefig(['figs/lab/' struct.file_params.name '_'  'b' '.fig']);
+% fig2png(['figs/lab/' struct.file_params.name '_'  'b' '.fig'],['figs/'  struct.file_params.name '_' 'b' '.png']);
+saveas(gcf,['figs/lab/' struct.file_params.name '_'  'b' '.png']);
 close all; 
-
 image_3D(opp_image(:,:,3))
-colormap(gray) %L
-cb=colorbar; caxis([0 3]);  set(gca,'ztick',[]); set(cb,'position',[.10 .75 .05 .2]);
-% savefig(['figs/' struct.file_params.name '_'  'L' '.fig']);
-% fig2png(['figs/' struct.file_params.name '_'  'L' '.fig'],['figs/'  struct.file_params.name '_' 'L' '.png']);
-saveas(gcf,['figs/' struct.file_params.name '_'  'L' '.png']);
+colormap_opp(3) %L
+cb=colorbar; set(gca,'ztick',[]); set(cb,'position',[.10 .75 .05 .2]); caxis([0 3]); 
+% savefig(['figs/lab/' struct.file_params.name '_'  'L' '.fig']);
+% fig2png(['figs/lab/' struct.file_params.name '_'  'L' '.fig'],['figs/'  struct.file_params.name '_' 'L' '.png']);
+saveas(gcf,['figs/lab/' struct.file_params.name '_'  'L' '.png']);
 close all;
 
 end
@@ -159,6 +181,7 @@ end
 
 function [] = plot_dwt(curvs,residuals,struct,suffix)
 
+mkdir('figs/dwt/');
 if nargin<4, suffix=''; end
 
 % for c=1:length(channels)
@@ -170,8 +193,8 @@ for c=1:length(struct.color_params.channels)
     lgn=so2mat(curvs{c});
     for o=1:size(lgn,4)
         figure, image_3D_stacked(lgn(:,:,:,o));
-        colormap_opp(c); set(gca,'xtick',[]); set(gca,'ytick',[]); set(gca,'ztick',[]);
-        saveas(gcf,['figs/' struct.file_params.name '_' 'dwt' '_' suffix '_' 'c' int2str(c) '_' 'o' int2str(o) '.png']);
+        colormap_opp(c); set(gca,'xtick',[]); set(gca,'ytick',[]); set(gca,'ztick',[]); axis off %cb=colorbar; set(cb,'position',[.10 .75 .05 .2]);
+        saveas(gcf,['figs/dwt/' struct.file_params.name '_' 'dwt' '_' suffix '_' 'c' int2str(c) '_' 'o' int2str(o) '.png']);
     end
     close all;
 end

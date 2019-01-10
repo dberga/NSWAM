@@ -1,35 +1,47 @@
-function [] = image_3D(I)
+function [] = image_3D(I,surf_plane)
+    if nargin<2, surf_plane=true; end
+    
     m = size(I,2);            % number of rows
     n = size(I,1);            % number of columns
     I = double(I);            % convert the entries to double
     minI = min(I(:));       % min of all the data
     maxI = max(I(:));       % max of all the data
+    if surf_plane==true
+        % we create a grid of the same size
+        x = 1 : 1 : m; 
+        y = 1 : 1 : n; 
+        [X,Y] = meshgrid(x',y');
 
-    % we create a grid of the same size
-    x = 1 : 1 : m; 
-    y = 1 : 1 : n; 
-    [X,Y] = meshgrid(x',y');
+        %figure;
+        %s2 = subplot(1,2,2);
+    %     set(s2,'Units','normalized');
+        hold on;
+        surf(X,Y,I,'LineStyle','none'); % the 3D view of the grayscale image
+        colormap(jet);                  % you can change the colormap
+        caxis([minI,maxI]);             % to use the complete range of colormap
+    %     colorbar;                       % add a colorbar
+        imgzposition = 2*minI-maxI;     % position of the 2D view under the 3D view
 
-    %figure;
-    %s2 = subplot(1,2,2);
-%     set(s2,'Units','normalized');
-    hold on;
-    surf(X,Y,I,'LineStyle','none'); % the 3D view of the grayscale image
-    colormap(jet);                  % you can change the colormap
-    caxis([minI,maxI]);             % to use the complete range of colormap
-%     colorbar;                       % add a colorbar
-    imgzposition = 2*minI-maxI;     % position of the 2D view under the 3D view
+        % scale the between [0, 255] in order to use a custom color map for it.
+        scaledimg = (floor(((I - minI)./(maxI - minI))*255)); % perform scaling
 
-    % scale the between [0, 255] in order to use a custom color map for it.
-    scaledimg = (floor(((I - minI)./(maxI - minI))*255)); % perform scaling
+        % convert the image to a true color image with the gray colormap.
+        colorimg = ind2rgb(scaledimg,gray(256));
 
-    % convert the image to a true color image with the gray colormap.
-    colorimg = ind2rgb(scaledimg,gray(256));
-
-    % plot the image plane using surf.
-    s2=surf([1 m],[1 n],repmat(imgzposition, [2 2]),...
-        colorimg,'facecolor','texture');
-    set(s2.Parent,'YDir','reverse');
+        % plot the image plane using surf.
+        s2=surf([1 m],[1 n],repmat(imgzposition, [2 2]),...
+            colorimg,'facecolor','texture');
+        set(s2.Parent,'YDir','reverse');
+    else
+        hold on;
+        X=[1 m];
+        Y=[1 n];
+        Z=[0 0; 0 0];
+        s2=surf(X,Y,Z,'CData',I,'FaceColor','texture');
+        set(s2.Parent,'YDir','reverse');
+        xlim([0 n]);
+        hold off;
+    end
     view(30,42);
 %     xlabel('x');
 %     ylabel('y');
