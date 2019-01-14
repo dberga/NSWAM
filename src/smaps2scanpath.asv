@@ -1,0 +1,15 @@
+function [ scanpath ] = smaps2scanpath( img_path, smaps_folder )
+    gazes_dirs=listpath_dir(smaps_folder);
+    [imgfolder,imgname,imgext]=fileparts(img_path);
+    img=double(imread(img_path))./255;
+    init_x
+    scanpath=[];
+    for g=1:length(gazes_dirs)
+        smap=double(imread([smaps_folder '/' gazes_dirs{g} '/' imgname '.png']))./255;
+        [maxval,maxidx]=max(smap(:));
+        [y,x]=ind2sub(size(smap,1:2),maxidx);
+        scanpath
+    end
+
+end
+

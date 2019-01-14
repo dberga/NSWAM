@@ -12,7 +12,7 @@ for f=1:length(files)
     img=im2double(imread([input_dataset '/' files{f}]));
     load([output_folder '/' model_name '/' 'scanpath' '/' imgname '.mat']);
     superpos_sp=superpos_scanpath( img,scanpath,10,40 );
-    imwrite(superpos_p,['figs' '/' 'scanpath_' imgname '.png']);
+    imwrite(superpos_sp,['figs' '/' 'scanpath_' imgname '.png']);
     end
 end
 
