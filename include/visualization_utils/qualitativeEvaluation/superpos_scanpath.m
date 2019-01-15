@@ -1,4 +1,5 @@
-function [ map ] = superpos_scanpath( img,scanpath,vislimit,pxva,marker_color )
+function [ map ] = superpos_scanpath( img,scanpath,vislimit,pxva,marker_color,printtext )
+        if nargin<6,printtext=true; end
         if nargin<5,marker_color=[1 0 0;1 0 0; 1 0 0; 1 0 0; 0 0 0 ];  end
         if nargin<4, pxva=40; end
         if nargin<3, vislimit=size(scanpath,1); end
@@ -14,9 +15,9 @@ function [ map ] = superpos_scanpath( img,scanpath,vislimit,pxva,marker_color )
             scanpath_times(:,2)=tpf.*f;
         end
         if size(scanpath,1)>vislimit
-            map=visualize_scanpath3(img,scanpath(1:vislimit,:),scanpath_times,marker_color,true);
+            map=visualize_scanpath3(img,scanpath(1:vislimit,:),scanpath_times,marker_color,printtext);
         else
-            map=visualize_scanpath3(img,scanpath(:,:),scanpath_times,marker_color,true);
+            map=visualize_scanpath3(img,scanpath(:,:),scanpath_times,marker_color,printtext);
         end
 
 end
