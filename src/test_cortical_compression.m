@@ -34,8 +34,8 @@ function [ score_sims,score_psnr ] = test_cortical_compression( image_path )
         [img_cortex,img_reconstructed]=plot_cm(image_path,struct);
         imwrite(img_reconstructed,['figs' '/' 'cortical' '/' 'recons_' 'width_' num2str(cortex_widths(w)) '_'  imgname '.png']);
         imwrite(img_cortex,['figs' '/' 'cortical' '/' 'cortex_' 'width_' num2str(cortex_widths(w)) '_'  imgname '.png']);
-%         score_sims(w)=ssim(img,img_reconstructed);
-%         score_psnr(w)=psnr(img,img_reconstructed);
+        score_sims(w)=ssim(img,img_reconstructed);
+        score_psnr(w)=psnr(img,img_reconstructed);
     end
     
     plot(cortex_widths,score_sims,'-o');
