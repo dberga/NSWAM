@@ -1,10 +1,11 @@
 function [ scanpath ] = staticsaliency2scanpath( smap , gazesnum)
 
 if nargin<2, gazesnum=10; end
-pxva=40;
+pxva=40; %pxva=rad2deg(0.6130);
 ior_decay=0.9;
 ior_peak=1; %normalize to 1
-ior_std_angle=pxva*3;
+%ior_std_angle=6*(size(smap,1)./pxva); %itti
+ior_std_angle=pxva*3; 
 ior_matrix=zeros(size(smap,1),size(smap,2));
 smap_tmp=smap;
 smaps=smap_tmp;
@@ -23,8 +24,10 @@ end
 mean_smap = get_smaps_mean(smaps);
 
 figure,imagesc(ior_matrix)
-figure,imagesc(smap)
 figure,imagesc(mean_smap)
+
+%plotear cada saliency map
+figure,imagesc(smaps(:,:,gazesnum))
 
 end
 
