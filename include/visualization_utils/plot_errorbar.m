@@ -1,8 +1,8 @@
 function [ outfig ] = plot_errorbar( x,y,err,xLabel,yLabel,Legend,Title)
     if nargin < 7, Title={}; end
     if nargin < 6, Legend={}; end
-    if nargin < 5, xLabel={}; end
-    if nargin < 4, yLabel={}; end
+    if nargin < 5, yLabel={}; end
+    if nargin < 4, xLabel={}; end
     
         
     close all;
@@ -20,12 +20,12 @@ function [ outfig ] = plot_errorbar( x,y,err,xLabel,yLabel,Legend,Title)
         outfig=errorbar(x,y,'LineWidth', 2);
     end
     
-    
+    try
     
 
     ylabel(yLabel);
     
-    xlabel(xLabel{1});
+    if length(xLabel)>0,xlabel(xLabel{1});end
     mindiff=min(abs(x(1,1)-x(2,1)),abs(x(end,1)-x(end-1,1)));
     if x(1,1)>x(end,1)
         outfig(1).Parent.XAxis.TickValues=flipud(x(:,1));
@@ -41,6 +41,6 @@ function [ outfig ] = plot_errorbar( x,y,err,xLabel,yLabel,Legend,Title)
     %ylim([min(y) max(y)]);
     title(Title);
     
-    
+    end
 end
 

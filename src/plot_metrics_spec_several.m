@@ -1,5 +1,5 @@
 
-function [  ] = plot_metrics_spec( result_csv_path , model_name, list_path)
+function [  ] = plot_metrics_spec( result_csv_path , model_names, list_path)
 
 if nargin < 1, result_csv_path='/home/dberga/repos/metrics_saliency/output/sid4vam_results_all_sAUC_trials.csv'; end %sid4vam_results_all_SIndex
 if nargin < 2, model_names={'IttiKochNiebur','AIM','abs_no_cortical_config_b1_15_sqmean_fusion2_invdefault','SWAM','no_cortical_config_b1_15_sqmean_fusion2_invdefault'}; end
