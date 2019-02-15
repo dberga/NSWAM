@@ -6,13 +6,14 @@ if nargin<3, model_name='no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault
 
 files=listpath(input_dataset);
 
+mkdir('figs/scanpaths');
 for f=1:length(files)
-    try 
     [imgfolder,imgname,imgext]=fileparts([input_dataset '/' files{f}]);
+    if ~exist(['figs' '/' 'scanpaths'  '/' model_name '_' imgname '.png'],'file')
     img=im2double(imread([input_dataset '/' files{f}]));
     load([output_folder '/' model_name '/' 'scanpath' '/' imgname '.mat']);
-    superpos_sp=superpos_scanpath( img,scanpath,10,40 );
-    imwrite(superpos_sp,['figs' '/' 'scanpath_' imgname '.png']);
+    superpos_sp=superpos_scanpath( img,scanpath,10,40 ,[ 0 1 0;1 0 0; 1 0 0; 0 0 0]);
+    imwrite2(superpos_sp,['figs' '/' 'scanpaths'  '/' model_name '_' imgname '.png']);
     end
 end
 

@@ -1,5 +1,15 @@
-function [ gaussian ] = get_ior_gaussian( fov_x, fov_y, ior_factor, max_scale,ini_scale,fin_scale, mida_min,M, N, img_diag_angle)
+function [ gaussian ] = get_ior_gaussian( fov_x, fov_y, conf_struct)
+ior_factor=1;
+max_scale=conf_struct.gaze_params.maxidx_s;
+ini_scale=conf_struct.wave_params.ini_scale;
+fin_scale=conf_struct.wave_params.fin_scale;
+mida_min=conf_struct.wave_params.mida_min;
+M=conf_struct.gaze_params.orig_height;
+N=conf_struct.gaze_params.orig_width;
+img_diag_angle=conf_struct.gaze_params.img_diag_angle;
+ior_angle = conf_struct.gaze_params.ior_angle;
 
+bmap = scanpath2bmap([fov_x fov_y],[M N]);
 
 
 %method1
@@ -42,13 +52,23 @@ function [ gaussian ] = get_ior_gaussian( fov_x, fov_y, ior_factor, max_scale,in
 %  ior_angle_pixels=(pyramid(end)-pyramid(1))*normalize_minmax(nnn+rad2deg(img_diag_angle),pyramid(1),pyramid(end)*2);
 %  gaussian = ior_factor .* normalize_minmax(zhong2012(bmap,ior_angle_pixels));
  
-%method 6 (midamin determina la mida minima i despres anar multiplicant)
- bmap = scanpath2bmap([fov_x fov_y],[M N]);
- for s=ini_scale:fin_scale
+%% method 6 scale adaptive
+if conf_struct.gaze_params.ior_angle == 0.069813170079773 %token set by default, in conf this should be changed -1
+
+
+    for s=ini_scale:fin_scale
     pyramid(s)=mida_min*2^(s-1);
- end
- ior_angle_pixels=pyramid(max_scale);
- gaussian = ior_factor .* normalize_minmax(zhong2012(bmap,ior_angle_pixels));
+    end
+    ior_angle_pixels=pyramid(max_scale);
+    gaussian = ior_factor .* normalize_minmax(zhong2012(bmap,ior_angle_pixels));
+else
+    
+    
+    %% method 7 scale specific
+    ior_angle_pixels=rad2deg(ior_angle)*rad2deg(img_diag_angle);
+    gaussian = ior_factor .* normalize_minmax(zhong2012(bmap,ior_angle_pixels));
+
+end
 
 end
 

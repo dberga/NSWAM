@@ -28,18 +28,20 @@ opp_image = get_rgb2opp(img,struct);
 %opp_image=normalize_channels(opp_image,-1,1);
 % plot_lab(opp_image,struct);
 
+
+
 %% Plot DWT
 %[struct.wave_params.n_scales, struct.wave_params.ini_scale, struct.wave_params.fin_scale]= calc_scales(opp_image, struct.wave_params.ini_scale, struct.wave_params.fin_scale_offset, struct.wave_params.mida_min, struct.wave_params.multires); % calculate number of scales (n_scales) automatically
 %[struct.wave_params.n_orient] = calc_norient(opp_image,struct.wave_params.multires,struct.wave_params.n_scales,struct.zli_params.n_membr);            
 [curvs,residuals] = get_DWT(NaN,struct,NaN,NaN,3,1,opp_image);
 
-plot_dwt(curvs,residuals,struct);
+% plot_dwt(curvs,residuals,struct);
 
 if struct.gaze_params.foveate~=0
     [curvs,residuals]=get_foveate_multires(curvs,residuals,struct);
 end
 
-plot_dwt(curvs,residuals,struct,'cortical');
+%plot_dwt(curvs,residuals,struct,'cortical');
 
 %% saliency computation
 
@@ -65,6 +67,7 @@ smap = get_deresize(struct,smap);
 smap = get_normalize(struct,smap);
 smap=get_smooth(smap,struct);
 
+plot_peaks(smap,struct);
 % plot_RF(RF_s_o_c,RF_c,struct);
 
 %% plot dynamics
@@ -141,7 +144,9 @@ function [] = plot_rgb(img,struct)
 end
 
 function [] = plot_lab(opp_image,struct)
-
+    if nargin<2,
+        struct.file_params.name='image';
+    end
 mkdir('figs/lab/');
 % mosaic = zeros(size(opp_image,1),size(opp_image,2),1,size(opp_image,3)); 
 % mosaic(:,:,1,:) = opp_image(:,:,:);
@@ -176,11 +181,15 @@ cb=colorbar; set(gca,'ztick',[]); set(cb,'position',[.10 .75 .05 .2]); caxis([0 
 saveas(gcf,['figs/lab/' struct.file_params.name '_'  'L' '.png']);
 close all;
 
+
 end
 
 
 function [] = plot_dwt(curvs,residuals,struct,suffix)
-
+if nargin<3,
+    struct.color_params.channels={'chromatic1','chromatic2','intensity'};
+    struct.file_params.name='image';
+end
 mkdir('figs/dwt/');
 if nargin<4, suffix=''; end
 
@@ -364,4 +373,27 @@ for c=1:length(struct.color_params.channels)
 end
 
 
+
+end
+
+
+
+function [] = plot_peaks(smap,struct)
+        if nargin<2,
+            struct.file_params.name='image';
+        end
+       [peaks,locs]=findpeaks(smap(:));
+       [peakX,peakY]=ind2sub(size(smap),locs); 
+       %hold on
+       %h1=surf(fliplr(smap),'edgecolor','none');
+       %view(-170,37)
+       h2=image_3D(smap,2,jet,jet); view(14,40);
+       cb=colorbar;
+       set(cb,'position',[.10 .75 .05 .2]); caxis([0 1]); 
+       axis off;
+       %hold off
+       %dcm_obj = datacursormode();
+       %createDatatip(dcm_obj, h2, [peakX(2), peakY(2),peaks(2)]);
+       mkdir('figs/smap');
+       saveas(gcf,['figs/smap/' struct.file_params.name '_' 'smap' '.png']);
 end

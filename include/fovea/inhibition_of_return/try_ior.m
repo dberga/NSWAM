@@ -8,8 +8,10 @@ for ctt=0.9900:0.0001:1
     for count=2:1000
         factor(1,count) = get_ior_factor(factor(1,count-1),ctt);%get_ior_update( ior_matrix, struct )
     end
-    plot(1:1000,factor,'color',color); 
+    plot(1:1000,factor,'color',color);
 end
+legend(num2str((0.9900:0.0001:1)'));
+
 
 
 struct.gaze_params.orig_width = 300;

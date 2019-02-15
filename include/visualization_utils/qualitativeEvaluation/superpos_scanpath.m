@@ -4,7 +4,7 @@ function [ map ] = superpos_scanpath( img,scanpath,vislimit,pxva,marker_color,pr
         if nargin<4, pxva=40; end
         if nargin<3, vislimit=size(scanpath,1); end
         
-        scanpath=erase_minamplitude(scanpath,1*pxva);
+        %scanpath=erase_minamplitude(scanpath,1*pxva);
         
         if size(scanpath,2) > 3
             scanpath_times=scanpath(:,3:4);

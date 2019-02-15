@@ -6,7 +6,7 @@ switch c
         cmap_green=hsv2rgb([repmat(120/360,1,32)' repmat(1,1,32)' (1/32:1/32:1)']);
         cmap_rg=[flipud(cmap_green);cmap_red];
         colormap(cmap_rg);
-%         colormap(redgreencmap);
+        colormap(redgreencmap);
 %         colormap(rgcmap(0,64));
     case 2 %b
         cmap_blue=hsv2rgb([repmat(240/360,1,32)' repmat(1,1,32)' (1/32:1/32:1)']);

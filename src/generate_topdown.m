@@ -38,18 +38,17 @@ end
 
 
 
-
 if conf_struct.search_params.topdown==1
    search_params_folder=[image_props.input_folder '/' 'target_features' '/' conf_struct_path_name];
    search_params_path=[search_params_folder '/' image_props.image_name_noext '.mat' ];
-   if exist(search_params_path,'file')%leer mat con parametros channel, scale, orient, polarity 
+   if exist(search_params_path,'file')%load mat with parameters channel, scale, orient, polarity (HF/PHC -> DLPFC)
         target_features=load(search_params_path);
         conf_struct.search_params.channels=target_features.matrix_in.channels;
         conf_struct.search_params.scales=target_features.matrix_in.scales;
         conf_struct.search_params.orientations=target_features.matrix_in.orientations;
         conf_struct.search_params.polarity=target_features.matrix_in.polarity;
         conf_struct.search_params.coefficients=target_features.matrix_in.coefficients;
-   else %si no existe, generar coeficientes
+   else %coefficients do not exist, train (V1 -> HF/PHC)
        mask_path=[image_props.input_folder '/' 'masks' '/' image_props.image_name_noext '.png' ];
        if exist(mask_path,'file')
             target_features=template2params( input_image, imread(mask_path),conf_struct );

@@ -83,7 +83,7 @@ residuals = cell(1,3);
 [mat_props] = get_mat_properties(folder_props,image_props,conf_struct);
 
 
-%% READ SEARCH PARAMETERS
+%% READ SEARCH PARAMETERS (DLPFC)
 [ conf_struct ] = generate_topdown( input_image, image_props,conf_struct_path_name,conf_struct );
 
 
@@ -273,7 +273,7 @@ if run_flags.run_all==1
             conf_struct.gaze_params.fov_x = fov_x;
             
             %set inhibition of return on current gaze (update and add)
-            ior_matrix_unfoveated = get_ior_gaussian(conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y, 1, conf_struct.gaze_params.maxidx_s,conf_struct.wave_params.ini_scale,conf_struct.wave_params.fin_scale, conf_struct.wave_params.mida_min, conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.img_diag_angle);
+            ior_matrix_unfoveated = get_ior_gaussian(conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y,conf_struct);
             gmap=ior_matrix_unfoveated;
               %get_fig_single(normalize_minmax(conf_struct.gaze_params.ior_matrix,0,1),'ior',folder_props,image_props,conf_struct);
             
