@@ -26,17 +26,19 @@ metric_name=strrep(metric_name,'-Borji','');
 mkdir(['figs/' 'quantitative' '/']);
 
 %% bar plot for metric result
-h=bar(results);
-%title([]);
-xticklabels(model_names_alt);
-xtickangle(45);
-%xlabel(blocks_labels{b}{1});
-%ylabel(metric_name);
-%if max(results(:))>0.2, ylim([0.2 1]); else, ylim([min(ylims), max(ylims)]); end
-ylim([min(results(:))-0.02 max(results(:))+0.02]);
-%h(1).FaceColor=[0 0 0];
-%set(gcf,'units','points','position',[10,10,500,175]);
-close all;
+% h=bar(results);
+% %title([]);
+% xticklabels(model_names_alt);
+% xtickangle(45);
+% %xlabel(blocks_labels{b}{1});
+% %ylabel(metric_name);
+% %if max(results(:))>0.2, ylim([0.2 1]); else, ylim([min(ylims), max(ylims)]); end
+% ylim([min(results(:))-0.02 max(results(:))+0.02]);
+% %h(1).FaceColor=[0 0 0];
+% %set(gcf,'units','points','position',[10,10,500,175]);
+% close all;w_csv();
+cell_results=[model_names_alt;num2cell(results')]';
+w_csv(cell_results,['figs/quantitative/' dataset_name '_' metric_name '.csv']);
 
 %% plot for metric result per gaze
 G=10; %fixation num max
@@ -55,7 +57,9 @@ model_names_alt(:,1)=[];
 
 h=plot(1:G,results_gazewise);
 xlim([1,G]);
-ylim([min(results_gazewise(:))-0.02 max(results_gazewise(:))+0.02]);
+if nansum(results_gazewise(:))
+    ylim([min(results_gazewise(:))-0.02 max(results_gazewise(:))+0.02]);
+end
 for hi=1:length(h)
 h(hi).LineWidth=3;
 h(hi).Color=colors(hi,:);

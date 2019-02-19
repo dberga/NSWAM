@@ -4,19 +4,22 @@ function [ outfig ] = plot_errorbar( x,y,err,xLabel,yLabel,Legend,Title)
     if nargin < 5, yLabel={}; end
     if nargin < 4, xLabel={}; end
     
+    if size(x,1)<size(y,1)
+        x=repmat(x,size(y,1),1);
+    end
         
     close all;
     if length(Legend)>0
         hold on;
         for l=1:length(Legend)
             outfig(l)=errorbar(x(:,1),y(:,l),err(:,l),'-o','LineWidth', 2);
-            
         end
         hold off;
         if length(Legend) > 1
             legend(Legend);
         end
     else
+        
         outfig=errorbar(x,y,'LineWidth', 2);
     end
     
