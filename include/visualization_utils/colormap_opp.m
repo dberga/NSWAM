@@ -8,6 +8,7 @@ switch c
         colormap(cmap_rg);
         colormap(redgreencmap);
 %         colormap(rgcmap(0,64));
+        %colormap(colorGradient([1 0 0],[ 0 1 0],64))
     case 2 %b
         cmap_blue=hsv2rgb([repmat(240/360,1,32)' repmat(1,1,32)' (1/32:1/32:1)']);
         cmap_yellow=hsv2rgb([repmat(60/360,1,32)' repmat(1,1,32)' (1/32:1/32:1)']);
@@ -15,9 +16,11 @@ switch c
         colormap(cmap_by);
 %         colormap(parula);
 %         colormap(bycmap(0,64)); 
+        %colormap(colorGradient([1 0 0],[ 0 1 0],64))
         
     case 3 %L
         colormap(gray);
+        %colormap(colorGradient([1 0 0],[ 0 1 0],64))
         
 end
     

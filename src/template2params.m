@@ -34,40 +34,44 @@ if conf_struct.search_params.topdown==1
     C=size(opp_image,3);
     
     %image to LGN/V1
-    switch conf_struct.gaze_params.foveate
-        case 1 %foveate before DWT
-
-            [opp_image_foveated] = get_foveate(opp_image,conf_struct);
-            [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(opp_image_foveated, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
-            [conf_struct.wave_params.n_orient] = calc_norient(opp_image_foveated,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
-            [curvs,residuals] = get_DWT([],conf_struct,[],[],C,1,opp_image_foveated);
-
-            [mask] = get_foveate(mask,conf_struct);
-            
-        case 3 %foveate after DWT
-
-            [opp_image_foveated] = get_foveate(opp_image,conf_struct);
-            [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(opp_image_foveated, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
-            [conf_struct.wave_params.n_orient] = calc_norient(opp_image_foveated,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
-            [curvs,residuals] = get_DWT([],conf_struct,[],[],C,1,opp_image);
-            [curvs,residuals]=get_foveate_multires(curvs,residuals,conf_struct);
-            
-            [mask] = get_foveate(mask,conf_struct);
-        otherwise %do not foveate
-
-            [opp_image] = get_resize(opp_image,conf_struct);
-            %[curvs,residuals]=get_resize_multires(curvs,residuals,conf_struct);
-            [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(opp_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
-            [conf_struct.wave_params.n_orient] = calc_norient(opp_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
-            [curvs,residuals] = get_DWT([],conf_struct,[],[],C,1,opp_image);
-
-            [conf_struct.resize_params.M, conf_struct.resize_params.N, ~] = size(get_resize(opp_image,conf_struct));
-            [conf_struct.resize_params.fov_x,conf_struct.resize_params.fov_y] = movecoords( conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y , conf_struct.resize_params.M, conf_struct.resize_params.N); 
-            
-            [mask] = get_resize(mask,conf_struct);
-    end
+%     switch conf_struct.gaze_params.foveate
+%         case 1 %foveate before DWT
+% 
+%             [opp_image_foveated] = get_foveate(opp_image,conf_struct);
+%             [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(opp_image_foveated, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
+%             [conf_struct.wave_params.n_orient] = calc_norient(opp_image_foveated,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
+%             [curvs,residuals] = get_DWT([],conf_struct,[],[],C,1,opp_image_foveated);
+% 
+%             [mask] = get_foveate(mask,conf_struct,1);
+%             
+%         case 3 %foveate after DWT
+% 
+%             [opp_image_foveated] = get_foveate(opp_image,conf_struct);
+%             [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(opp_image_foveated, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
+%             [conf_struct.wave_params.n_orient] = calc_norient(opp_image_foveated,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
+%             [curvs,residuals] = get_DWT([],conf_struct,[],[],C,1,opp_image);
+%             [curvs,residuals]=get_foveate_multires(curvs,residuals,conf_struct);
+%             
+%             [mask] = get_foveate(mask,conf_struct,1);
+%         otherwise %do not foveate
+% 
+%             [opp_image] = get_resize(opp_image,conf_struct);
+%             %[curvs,residuals]=get_resize_multires(curvs,residuals,conf_struct);
+%             [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(opp_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
+%             [conf_struct.wave_params.n_orient] = calc_norient(opp_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
+%             [curvs,residuals] = get_DWT([],conf_struct,[],[],C,1,opp_image);
+% 
+%             [conf_struct.resize_params.M, conf_struct.resize_params.N, ~] = size(get_resize(opp_image,conf_struct));
+%             [conf_struct.resize_params.fov_x,conf_struct.resize_params.fov_y] = movecoords( conf_struct.gaze_params.orig_height, conf_struct.gaze_params.orig_width, conf_struct.gaze_params.fov_x, conf_struct.gaze_params.fov_y , conf_struct.resize_params.M, conf_struct.resize_params.N); 
+%             
+%             [mask] = get_resize(mask,conf_struct);
+%     end
     
-    
+    %get curvs (wavelet coefficients) from image
+    [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(opp_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
+    [conf_struct.wave_params.n_orient] = calc_norient(opp_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
+    [curvs,residuals] = get_DWT([],conf_struct,[],[],C,1,opp_image);
+%     [mask] = get_resize(mask,conf_struct);
 
     %normalize wavelet coefficients by normalized white noise std coefficients
     if isfield(conf_struct.search_params,'normalize')

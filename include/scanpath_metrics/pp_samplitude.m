@@ -1,10 +1,9 @@
-function [ mean_amplitude, std_amplitude, amplitudes ] = pp_samplitude( scanpath )
-    
+function [ mean_amplitude, std_amplitude, amplitudes ] = pp_samplitude( scanpath, ff_flag )
+    if nargin<2, firstfixation_flag_default; end
     
     if iscell(scanpath)
         for p=1:length(scanpath)
-            [all_mean_amplitude{p},all_std_amplitude{p},all_amplitudes{p}]=samplitude(scanpath{p});
-            
+            [all_mean_amplitude{p},all_std_amplitude{p},all_amplitudes{p}]=samplitude(scanpath{p},ff_flag);
         end
         for p=1:length(scanpath)
            if ~exist('amplitudes') 
@@ -19,12 +18,14 @@ function [ mean_amplitude, std_amplitude, amplitudes ] = pp_samplitude( scanpath
            end 
             
         end
-        
-        mean_amplitude=mean(cell2mat(all_mean_amplitude));
-        std_amplitude=mean(cell2mat(all_std_amplitude));
-        amplitudes=mean(cell2mat(amplitudes));
+        for g=1:length(amplitudes)
+            amplitudes_alt(g)=nanmean(amplitudes{g});
+        end
+        mean_amplitude=nanmean(cell2mat(all_mean_amplitude));
+        std_amplitude=nanmean(cell2mat(all_std_amplitude));
+        amplitudes=amplitudes_alt;
     else
-        [mean_amplitude,std_amplitude,amplitudes]=samplitude(scanpath);
+        [mean_amplitude,std_amplitude,amplitudes]=samplitude(scanpath,ff_flag);
         
     end
     

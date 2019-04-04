@@ -1,8 +1,9 @@
-function [  mean_amplitude, std_amplitude, amplitudes ] = gbg_samplitude( scanpath , gaze )
+function [  mean_amplitude, std_amplitude, amplitudes ] = gbg_samplitude( scanpath , gaze, ff_flag)
+    if nargin<3, firstfixation_flag_default; end
     
     if iscell(scanpath)
         for p=1:length(scanpath)
-            [all_mean_amplitude{p},all_std_amplitude{p},all_amplitudes{p}]=samplitude(scanpath{p}(gaze,:));
+            [all_mean_amplitude{p},all_std_amplitude{p},all_amplitudes{p}]=samplitude(scanpath{p}(gaze,:), ff_flag);
             
         end
         for p=1:length(scanpath)
@@ -14,11 +15,11 @@ function [  mean_amplitude, std_amplitude, amplitudes ] = gbg_samplitude( scanpa
 %             end 
         end
         
-        mean_amplitude=mean(cell2mat(all_mean_amplitude));
-        std_amplitude=mean(cell2mat(all_std_amplitude));
-        amplitudes=mean(cell2mat(amplitudes));
+        mean_amplitude=nanmean(cell2mat(all_mean_amplitude));
+        std_amplitude=nanmean(cell2mat(all_std_amplitude));
+        amplitudes=nanmean(cell2mat(amplitudes));
     else
-        [mean_amplitude,std_amplitude,amplitudes]=samplitude(scanpath(gaze,:));
+        [mean_amplitude,std_amplitude,amplitudes]=samplitude(scanpath(gaze,:), ff_flag);
     end
 
 end

@@ -2,13 +2,19 @@
 function [  ] = plot_metrics_spec( result_csv_path , model_names, list_path)
 
 if nargin < 1, result_csv_path='/home/dberga/repos/metrics_saliency/output/sid4vam_results_all_sAUC_trials.csv'; end %sid4vam_results_all_SIndex
-if nargin < 2, model_names={'IttiKochNiebur','AIM','abs_no_cortical_config_b1_15_sqmean_fusion2_invdefault','SWAM','no_cortical_config_b1_15_sqmean_fusion2_invdefault'}; end
+% if nargin < 2, model_names={'IttiKochNiebur','AIM','abs_no_cortical_config_b1_15_sqmean_fusion2_invdefault','SWAM','no_cortical_config_b1_15_sqmean_fusion2_invdefault'}; end
+if nargin < 2, model_names={'no_cortical_config_b1_15_sqmean_fusion2_invdefault','topdown_single_config_b1_15_fusion2'}; end %no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault
 if nargin < 3, list_path='/home/dberga/repos/datasets/SID4VAM/sid4vam_rawdata/list.csv'; end
-Legend={'GT','IKN','AIM','SWAM','SIM','NSWAM'};
+% Legend={'GT','IKN','AIM','SWAM','SIM','NSWAM'};
+Legend={'GT','NSWAM','NSWAM+VS_C'}; %,'NSWAM-CM'
 addpath(genpath('include'));
+% figs_path='figs/';
+figs_path='figs/psi/';
+
+colors=[0 0 0; 0 1 0; 0 .27 .13];
 
 N=230;
-metric_name='Saliency Index'; mkdir(['figs/' metric_name '/']);
+metric_name='sAUC'; mkdir([figs_path metric_name '/']);
 result_cell=r_csv(result_csv_path,repmat('%s',1,N+1));
 
 
@@ -46,7 +52,8 @@ blocks_names={'Corner Salience','Visual Segmentation - Angle','Visual Segmentati
 blocks_cond{7}{1}='circle+bar vs circle';
 blocks_cond{7}{2}='circle vs circle+bar';
 
-blocks_wanted=[7,9,10,11,12]; for b=1:length(blocks_wanted), b=blocks_wanted(b); %for b=1:length(blocks)
+blocks_wanted=6:15;%[7,9,10,11,12]; 
+for b=1:length(blocks_wanted), b=blocks_wanted(b); %for b=1:length(blocks)
     disp(blocks{b});
     for bc=1:max(block_cond_list(block_list==b))
         %if ~exist(['figs/results_several_' 'b' num2str(b) '_bc' num2str(bc) '.fig'],'file')
@@ -76,9 +83,9 @@ blocks_wanted=[7,9,10,11,12]; for b=1:length(blocks_wanted), b=blocks_wanted(b);
             if ismember(b,[12,13,14,15]), x=round(x); end
             y(isnan(y))=0;
             ylims=[min(results(:))-0.0005,max(results(:))+0.0005];
-            %[rho,pval] =corr(y(:,1),y(:,5)) %gt vs nswam
+            %[rho,pval] =corr(y(:,1),y(:,length(model_names))) %gt vs nswam
             %[rho,pval] =corr(x',y(:,1)) %x vs gt
-            [rho,pval] =corr(x',y(:,5)) %x vs nswam
+            [rho,pval] =corr(x',y(:,length(model_names))) %x vs nswam
             %%h=plot(x,y);
             slopes=x'\y;
             regression=x'*slopes;
@@ -100,12 +107,11 @@ blocks_wanted=[7,9,10,11,12]; for b=1:length(blocks_wanted), b=blocks_wanted(b);
             xlabel(blocks_labels{b}{1});
             ylabel(metric_name);
             if max(results(:))>0.2, ylim([0.2 1]); else, ylim([min(ylims), max(ylims)]); end
-            legend(Legend); 
+            lgd=legend(Legend); lgd.Position=[0.8031    0.7468    0.1814    0.2400];
             h(1).FaceColor=[0 0 0];
             set(gcf,'units','points','position',[10,10,500,175]);
             
-             savefig(['figs/' metric_name '/' 'results_several_' 'b' num2str(b) '_bc' num2str(bc) '.fig']);
-             fig2png(['figs/' metric_name '/' 'results_several_' 'b' num2str(b) '_bc' num2str(bc) '.fig'],['figs/' metric_name '/' 'results_several_' 'b' num2str(b) '_bc' num2str(bc) '.jpg']);
+             saveas(gcf,[figs_path metric_name '/' 'results_several_' 'b' num2str(b) '_bc' num2str(bc) '.png']);
 
         %end
     end

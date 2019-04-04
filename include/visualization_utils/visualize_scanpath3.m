@@ -23,7 +23,8 @@ init_markercolor=marker_color(3,:);
 markercolor=marker_color(1,:);
 markerlinecolor=marker_color(2,:);
 markertextcolor=marker_color(4,:);
-linwidth=2;
+linwidth=4;
+linstyle='-';
 
 close all;
 fig=imagesc(image);
@@ -33,20 +34,19 @@ if size(scanpath,1)>0
     y=scanpath(:,1);
     x=scanpath(:,2);
     hold on
-    plot(y(1),x(1),'Marker','o','MarkerSize',markersize(1),'LineStyle','--','LineWidth',linwidth,'MarkerFaceColor',init_markercolor,'MarkerEdgeColor',markerlinecolor,'Color',markerlinecolor);
+    plot(y(1),x(1),'Marker','o','MarkerSize',markersize(1),'LineStyle',linstyle,'LineWidth',linwidth,'MarkerFaceColor',init_markercolor,'MarkerEdgeColor',markerlinecolor,'Color',markerlinecolor);
     if printtext
         text(y(1)-round(markersize(1)*0.5), x(1), num2str(1),'Color',markertextcolor,'FontSize',markersize(1)*0.5);
     end
     for g=2:size(scanpath,1)
-        plot([y(g-1),y(g)],[x(g-1),x(g)],'MarkerSize',1,'LineStyle','--','LineWidth',linwidth,'MarkerFaceColor',markercolor,'MarkerEdgeColor',markerlinecolor,'Color',markerlinecolor);
-        plot(y(g),x(g),'Marker','o','MarkerSize',markersize(g),'LineStyle','--','LineWidth',linwidth,'MarkerFaceColor',markercolor,'MarkerEdgeColor',markerlinecolor,'Color',markerlinecolor);
+        plot([y(g-1),y(g)],[x(g-1),x(g)],'MarkerSize',1,'LineStyle',linstyle,'LineWidth',linwidth,'MarkerFaceColor',markercolor,'MarkerEdgeColor',markerlinecolor,'Color',markerlinecolor);
+        plot(y(g),x(g),'Marker','o','MarkerSize',markersize(g),'LineStyle',linstyle,'LineWidth',linwidth,'MarkerFaceColor',markercolor,'MarkerEdgeColor',markerlinecolor,'Color',markerlinecolor);
         if printtext
             drawnow
             text(y(g)-round(markersize(g)*0.5), x(g), num2str(g),'Color',markertextcolor,'FontSize',markersize(g)*0.5);
         end
     end
     
-    hold off
 end
 [map,~]= frame2im(getframe);        
 

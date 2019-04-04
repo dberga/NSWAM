@@ -11,16 +11,35 @@ img = imread(image_path);
 
 G=10;
 for g=1:G
+    g
     struct_path=[mat_path '/' name '_struct_gaze' num2str(g) '.mat'];
     load(struct_path);
+    mkdir('figs/ior');
     
     %imagesc(cummax_reduc(matrix_in.gaze_params.ior_matrix_multidim));
-    imagesc(matrix_in.gaze_params.ior_matrix);
-    colormap(jet);
+    %imagesc(matrix_in.gaze_params.ior_matrix);
+    %colormap(jet);
+    matrix_in.gaze_params.fov_x=447;
+    matrix_in.gaze_params.fov_y=192;
     
-    ior_matrix_unfoveated = get_ior_gaussian(matrix_in.gaze_params.fov_x,matrix_in.gaze_params.fov_y, matrix_in);
-    imagesc(ior_matrix_unfoveated);
+    ior_matrix_unfoveated = get_ior_gaussian(matrix_in.gaze_params.fov_x, matrix_in.gaze_params.fov_y,matrix_in);
+    ior_matrix_foveated = foveate(ior_matrix_unfoveated,0,matrix_in);
+    
+    close all
+    image_3D(ior_matrix_unfoveated)
+    %plot_peaks(ior_matrix_unfoveated,matrix_in)
+    axis off
+    view(35,29);
     colormap(jet);
+    saveas(gcf,['figs/ior/' name '.png']);
+    
+    close all
+    image_3D_stacked(ior_matrix_foveated)
+    %plot_peaks(ior_matrix_unfoveated,matrix_in)
+    axis off
+    view(31,38);
+    colormap(jet);
+    saveas(gcf,['figs/ior/cortical_' name '.png']);
 end
 
 

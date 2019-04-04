@@ -4,10 +4,10 @@ addpath(genpath('src'));
 addpath(genpath('include'));
 
 if nargin < 1, model_name='no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault'; end
-if nargin < 2, image_path=['input_tsotsos/' '111' '.jpg' ]; end %['input_tsotsos/' '111.jpg' ]
+if nargin < 2, image_path=['input/' '111' '.png' ]; end %['input_tsotsos/' '111.jpg' ]
 if nargin < 3, mat_path=['mats_tsotsos/' model_name ]; end %['mats_tsotsos/' model_name ]
 if nargin < 4, gaze = 1; end
-if nargin < 5, mask_path=['/home/dberga/repos/metrics_saliency/input/mmaps/tsotsos' '/' '111.png']; end %['/home/dberga/repos/metrics_saliency/input/mmaps/tsotsos' '/' '111.png']
+if nargin < 5, mask_path=['input/masks' '/' '111.png']; end %['/home/dberga/repos/metrics_saliency/input/mmaps/tsotsos' '/' '111.png']
 
 img = imread(image_path);
 [filepath,name,ext] = fileparts(image_path);
@@ -67,7 +67,7 @@ smap = get_deresize(struct,smap);
 smap = get_normalize(struct,smap);
 smap=get_smooth(smap,struct);
 
-plot_peaks(smap,struct);
+% plot_peaks(smap,struct);
 % plot_RF(RF_s_o_c,RF_c,struct);
 
 %% plot dynamics
@@ -80,12 +80,13 @@ for c=1:length(channels)
     activity_mean_all{c}=activity_mean;
 end
 
-% plot_activity1(activity_mean,activity_mean_mean,activity_max,activity_max_max, activity_sum,activity_sum_sum, activity_single,struct);
+% % plot_activity1(activity_mean_c,activity_mean_s,activity_mean_o,activity_mean_all,iFactors,struct);
+plot_activity2(activity_mean_c,activity_mean_s,activity_mean_o,activity_mean_all,iFactors,struct);
 
 % cut ifactor given mask
-
 try 
     mask=imread(mask_path);
+    struct.file_params.name=[struct.file_params.name,'_','mask','_'];
     aoicoords=getaoicoords(mask,35,0);
 
 
@@ -97,8 +98,7 @@ try
     activity_mean_c(1,c,:)=nanmean(mean(activity_mean,2),1);
     activity_mean_all{c}=activity_mean;
     end
-
-    % plot_activity2(activity_mean,activity_mean_mean,activity_max,activity_max_max, activity_sum,activity_sum_sum, activity_single,struct);
+     plot_activity2(activity_mean_c,activity_mean_s,activity_mean_o,activity_mean_all,croppedmatrix,struct);
 catch
     disp('No mask');
 end
@@ -247,20 +247,20 @@ end
 %close all;
 end
 
-function [] = plot_activity1(activity_mean,activity_mean_mean,activity_max,activity_max_max, activity_sum,activity_sum_sum, activity_single,struct)
+function [] = plot_activity1(activity_mean_c,activity_mean_s,activity_mean_o,activity_mean_all,iFactors,struct)
 
 %% COD (channel opponency dynamics)
 [fig] = show_activity_plots(activity_mean_c);
 [fig]= show_activity_plots_mult(activity_mean_c);
-[fig]= show_phase_plots(activity_mean_c);
-[fig]= show_phase_plots_mult(activity_mean_c);
+% [fig]= show_phase_plots(activity_mean_c);
+% [fig]= show_phase_plots_mult(activity_mean_c);
 close all;
     
 for c=1:length(struct.color_params.channels)
     
     %% SFD (spatial frequency dynamics)
     [fig] = show_activity_plots_mult(activity_mean_s{c});
-    [fig]= show_phase_plots(activity_mean_s{c});
+%     [fig]= show_phase_plots(activity_mean_s{c});
     close all;
     
     
@@ -280,7 +280,51 @@ end
 
 end
 
-function [] = plot_activity2(activity_mean,activity_mean_mean,activity_max,activity_max_max, activity_sum,activity_sum_sum, activity_single,struct)
+function [] = plot_activity2(activity_mean_c,activity_mean_s,activity_mean_o,activity_mean_all,iFactors,struct)
+
+mkdir('figs/dynamics');
+%% SFD2 spatial frequency dynamics2
+C=length(activity_mean_all);
+total_dyn=size(activity_mean_all{1},3);
+for c=1:C
+    S=size(activity_mean_all{c},1);
+    O=size(activity_mean_all{c},2);
+    colors_c{1}=colorGradient([1 0 0],[ 0 0 0],S);
+    colors_c{2}=colorGradient([0 0 1],[ 0 0 0],S);
+    colors_c{3}=colorGradient([ .8 .8 .8],[0 0 0],S);
+    for o=1:O
+        [fig] = plot(1:total_dyn,squeeze(activity_mean_all{c}(:,o,:))','LineWidth',2);
+%         xlabel('# iter (ms)');
+%         ylabel('Firing Rate (spikes/s)');
+        max_activity=max(max((squeeze(activity_mean_all{c}(:,o,:))')));
+        if max_activity <= 2.5
+            ylim([0 2.5]);
+        else
+            ylim([0 max_activity]);
+        end
+%         lgd=legend([repmat('s_',S,1),num2str([1:S]')]);
+%         lgd.FontSize = 6;
+        for s=1:S
+            fig(s).Color=colors_c{c}(s,:);
+        end
+        set(gcf,'units','points','position',[10,10,100,50]);
+        set(gcf,'units','points','position',[10,10,100,50]);
+        set(gcf,'units','points','position',[10,10,100,50]);
+%         lgd.Position=[0.625 .54 .15 .45]; %lgd.Position=[0.825 .54 .15 .45];
+        saveas2(gcf,['figs/dynamics/' struct.file_params.name '_c_' num2str(c) '_o_' num2str(o) '_SFD2' '.png']);
+    end
+    
+%     for s=1:S
+%         fig=plot(1:total_dyn,squeeze(activity_mean_all{c}(s,:,:))','LineWidth',2.5);
+%         xlabel('# iter (ms)');
+%         ylabel('Firing Rate (spikes/s)');
+%         legend({'\theta_h','\theta_v','\theta_d'});
+%         for o=1:O
+%             fig(o).Color=colors_c{c}(s,:);
+%         end
+%     end
+end
+
 %% COD (channel opponency dynamics)
 
 % [fig] = show_activity_plots(activity_mean_c);
@@ -291,54 +335,57 @@ fig.Children.Children(1).Color=[0 0 0];
 legend({'a* [r/g]','b* [b/y]','L* (I)'});
 xlabel('# iter (ms)');
 ylabel('Firing Rate (spikes/s)');
+ylim([0 1.5]);
 % [fig]= show_phase_plots(activity_mean_c);
 %[fig]= show_phase_plots_mult(activity_mean_c);
-set(gcf,'units','points','position',[10,10,300,250])
-savefig(['figs/' struct.file_params.name '_' 'COD'  '.fig']);
-fig2png(['figs/' struct.file_params.name '_' 'COD'  '.fig'],['figs/' struct.file_params.name '_' 'COD'  '.png']);
+set(gcf,'units','points','position',[10,10,350,225])
+saveas(gcf,['figs/dynamics/' struct.file_params.name '_'  'COD'  '.png']);
 close all;
 
 [fig]=plot_raster2(squeeze(activity_mean_c));
 xlabel('# iter (ms)');
 ylabel('');
 yticklabels({'a*','b*','L*'});
-set(gcf,'units','points','position',[10,10,400,250])
-savefig(['figs/' struct.file_params.name '_'  'COD_st'  '.fig']);
-fig2png(['figs/'  struct.file_params.name '_' 'COD_st'  '.fig'],['figs/'  struct.file_params.name '_' 'COD_st'  '.png']);
+set(gcf,'units','points','position',[10,10,350,225])
+%     saveas(gcf,['figs/dynamics/' struct.file_params.name '_'  'COD_st'  '.png']);
 close all;
     
 for c=1:length(struct.color_params.channels)
     
     %% SFD (spatial frequency dynamics)
     [fig] = show_activity_plots_mult(activity_mean_s{c});
-    fig.Children.Children(5).Color=[0.8 0.8 0.8];
-    fig.Children.Children(4).Color=[0.6 0.6 0.6];
-    fig.Children.Children(3).Color=[0.4 0.4 0.4];
-    fig.Children.Children(2).Color=[0.2 0.2 0.2];
-    fig.Children.Children(1).Color=[0 0 0];
-    fig.Children.Children(5).LineStyle=':';
-    fig.Children.Children(4).LineStyle=':';
-    fig.Children.Children(3).LineStyle='-.';
-    fig.Children.Children(2).LineStyle='--';
+    S=size(activity_mean_s{c},1);
+    %colors_SFD=repmat(1/(S-1):1/(S-1):1,3,1)';
+    colors_SFD=repmat(0:1/S:1-1/S,3,1)';
+    for s=1:S
+        fig.Children.Children(s).Color=colors_SFD(s,:);
+    end
+    fig.Children.Children(8).LineStyle=':';
+    fig.Children.Children(7).LineStyle=':';
+    fig.Children.Children(6).LineStyle='-.';
+    fig.Children.Children(5).LineStyle='-.';
+    fig.Children.Children(4).LineStyle='--';
+    fig.Children.Children(3).LineStyle='--';
+    fig.Children.Children(2).LineStyle='-';
     fig.Children.Children(1).LineStyle='-';
-    legend({'\oslash(\Psi_{s1})=.23 deg','\oslash(\Psi_{s2})=.46 deg','\oslash(\Psi_{s3})=.91 deg','\oslash(\Psi_{s4})=1.83 deg','\oslash(\Psi_{s5})=3.66 deg'});
+    lgd=legend({'\oslash(\Psi_{s1})=.23 deg','\oslash(\Psi_{s2})=.46 deg','\oslash(\Psi_{s3})=.91 deg','\oslash(\Psi_{s4})=1.8 deg','\oslash(\Psi_{s5})=3.6 deg','\oslash(\Psi_{s6})=7.2 deg','\oslash(\Psi_{s7})=14 deg','\oslash(\Psi_{s8})=28 deg'});
+    lgd.FontSize=6;
+    lgd.Position=[.77 .60 .22 .39];
     xlabel('# iter (ms)');
     ylabel('Firing Rate (spikes/s)');
+    ylim([0 1.5]);
     %8,16,32,64,128,256
     %[fig]= show_phase_plots(activity_mean_s{c});
-    set(gcf,'units','points','position',[10,10,300,250])
-    savefig(['figs/' struct.file_params.name '_'  'SFD'  '.fig']);
-    fig2png(['figs/' struct.file_params.name '_'  'SFD'  '.fig'],['figs/' struct.file_params.name '_'  'SFD'  '.png']);
+    set(gcf,'units','points','position',[10,10,350,225]);
+    saveas(gcf,['figs/dynamics/' struct.file_params.name '_'  'SFD'  '.png']);
     close all;
-    
     
     [fig]=plot_raster2(squeeze(activity_mean_s{c}));
     xlabel('# iter (ms)');
     ylabel('');
     yticklabels({'\Psi_{s1}','\Psi_{s2}','\Psi_{s3}','\Psi_{s4}','\Psi_{s5}'});
     set(gcf,'units','points','position',[10,10,400,250])
-    savefig(['figs/' struct.file_params.name '_'  'SFD_st'  '.fig']);
-    fig2png(['figs/'  struct.file_params.name '_' 'SFD_st'  '.fig'],['figs/' struct.file_params.name '_'  'SFD_st'  '.png']);
+%     saveas(gcf,['figs/' struct.file_params.name '_'  'SFD_st'  '.png']);
     close all;
 
     %% OSD (orientation sensitivity dynamics)
@@ -349,18 +396,18 @@ for c=1:length(struct.color_params.channels)
     legend({'\theta=h','\theta=v','\theta=d'});
     xlabel('# iter (ms)');
     ylabel('Firing Rate (spikes/s)');
-    set(gcf,'units','points','position',[10,10,300,250])
-    savefig(['figs/' struct.file_params.name '_'  'OSD'  '.fig']);
-    fig2png(['figs/'  struct.file_params.name '_' 'OSD'  '.fig'],['figs/' struct.file_params.name '_'  'OSD'  '.png']);
+    ylim([0 1.5]);
+    set(gcf,'units','points','position',[10,10,350,225])
+    saveas(gcf,['figs/dynamics/' struct.file_params.name '_'  'OSD'  '.png']);
     close all;
     
     [fig]=plot_raster2(squeeze(activity_mean_o{c}));
     xlabel('# iter (ms)');
     ylabel('');
     yticklabels({'\theta=h','\theta=v','\theta=d'});
+    ylim([0 1.5]);
     set(gcf,'units','points','position',[10,10,400,250])
-    savefig(['figs/' struct.file_params.name '_'  'OSD_st'  '.fig']);
-    fig2png(['figs/'  struct.file_params.name '_' 'OSD_st'  '.fig'],['figs/' struct.file_params.name '_'  'OSD_st'  '.png']);
+%     saveas(gcf,['figs/dynamics/' struct.file_params.name '_'  'OSD_st'  '.png']);
     close all;
     
     %% RF figures
@@ -378,22 +425,3 @@ end
 
 
 
-function [] = plot_peaks(smap,struct)
-        if nargin<2,
-            struct.file_params.name='image';
-        end
-       [peaks,locs]=findpeaks(smap(:));
-       [peakX,peakY]=ind2sub(size(smap),locs); 
-       %hold on
-       %h1=surf(fliplr(smap),'edgecolor','none');
-       %view(-170,37)
-       h2=image_3D(smap,2,jet,jet); view(14,40);
-       cb=colorbar;
-       set(cb,'position',[.10 .75 .05 .2]); caxis([0 1]); 
-       axis off;
-       %hold off
-       %dcm_obj = datacursormode();
-       %createDatatip(dcm_obj, h2, [peakX(2), peakY(2),peaks(2)]);
-       mkdir('figs/smap');
-       saveas(gcf,['figs/smap/' struct.file_params.name '_' 'smap' '.png']);
-end

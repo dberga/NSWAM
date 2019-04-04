@@ -22,7 +22,11 @@ for g=1:gazesnum
     [maxval,maxidx]=max(smap(:));
     [fov_y,fov_x]=ind2sub([size(smap,1) size(smap,2)],maxidx);
     bmap = scanpath2bmap([fov_x fov_y],[size(smap,1) size(smap,2)]);
-    gaussian = ior_peak .* normalize_minmax(zhong2012(bmap,ior_std_angle));
+    if ior_std_angle>0
+        gaussian = ior_peak .* normalize_minmax(zhong2012(bmap,ior_std_angle));
+    else
+       gaussian =  zeros(size(bmap));
+    end
     ior_matrix=get_ior_update( ior_matrix, struct ); %get_ior_factor(previous_inhibition,ior_factor_ctt)
     ior_matrix=ior_matrix+gaussian;
     %figure,imagesc(ior_matrix)
