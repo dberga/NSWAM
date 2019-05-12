@@ -2,7 +2,7 @@ Neurodynamical Saliency WAvelet Model
 ---
 NSWAM is an open source implementation of a saliency and scanpath models cited below:
 > Berga, D. & Otazu, X. (2018). A Neurodynamical model of Saliency prediction in V1. [arXiv preprint](https://arxiv.org/abs/1811.06308) arXiv:1811.06308.
-> Berga, D. & Otazu, X. (2019). Modeling Bottom-Up and Top-Down Attention with a Neurodynamic Model of V1. [bioRxiv](http://dx.doi.org/10.1101/590174)
+> Berga, D. & Otazu, X. (2019). Modeling Bottom-Up and Top-Down Attention with a Neurodynamic Model of V1. [bioRxiv](http://dx.doi.org/10.1101/590174) doi:10.1101/590174
 
 #### RUN
 > Run "run.m" to run the model to read several images from "input/" folder with "conf/single" parameters.
