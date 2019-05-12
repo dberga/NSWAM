@@ -13,7 +13,7 @@ NSWAM is an open source implementation of a saliency model cited below:
 
 ***Notes (input)***
 1. Input images are by default in "input/" and in ".png" format.
-2. Configuration parameter files are set by default to "conf/single". Configuration parameters are listed in README.txt and described in "src/confgen_all.m"
+2. Configuration parameter files are set by default to "conf/single" (NSWAM) or "conf/scanpath" (NSWAM-CM). Configuration parameters are listed in README.txt and described in "src/confgen_all.m"
 
 ***Notes (output)***
 1. Output files will be in "output/" with images by default in ".png" and scanpaths in a specific folder. Other folders such as "gazes", "mean" ... describe the gaze-wise and accumulative gaze-wise saliency maps.
@@ -21,7 +21,7 @@ NSWAM is an open source implementation of a saliency model cited below:
 
 
 
-#### Citing NSWAM:
+#### Citing NSWAM and NSWAM-CM:
 
 ````
 @misc{Berga2018b,
@@ -29,5 +29,14 @@ Author = {David Berga and Xavier Otazu},
 Title = {A Neurodynamical model of Saliency prediction in V1},
 Year = {2018},
 Eprint = {arXiv:1811.06308},
+}
+@article{Berga2019,
+  doi = {10.1101/590174},
+  url = {https://doi.org/10.1101/590174},
+  year = {2019},
+  month = apr,
+  publisher = {Cold Spring Harbor Laboratory},
+  author = {David Berga and Xavier Otazu},
+  title = {Modeling Bottom-Up and Top-Down Attention with a Neurodynamic Model of V1}
 }
 ````
