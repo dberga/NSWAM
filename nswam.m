@@ -70,6 +70,7 @@ end
 [M,N,C] = size(input_image);
 smap = zeros(M,N);
 smaps = zeros(M,N,conf_struct.gaze_params.ngazes);
+smaps_modSA = zeros(M,N,conf_struct.gaze_params.ngazes);
 gmaps = zeros(M,N,conf_struct.gaze_params.ngazes);
 scanpath = zeros(conf_struct.gaze_params.ngazes+1,2);
 
@@ -91,8 +92,8 @@ residuals = cell(1,3);
 [run_flags] = get_run_flags(image_props,mat_props,conf_struct);
 
 %debug
-%run_flags.run_all=1;
-%run_flags.run_smaps=1;
+run_flags.run_all=1;
+run_flags.run_smaps=1;
 
 %% NSWAM ALGORITHM
 if run_flags.run_all==1
@@ -172,7 +173,7 @@ if run_flags.run_all==1
             %save struct gaze config before computing dynamics            
             [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,image_props,mat_props,conf_struct,k);
             
-             
+            
             %% 5. CORE, COMPUTE DYNAMICS [CORTEX->CORTEX]
             [iFactors] = get_dynamics(run_flags,loaded_struct,folder_props,image_props,C,k,curvs,residuals);
             
@@ -235,35 +236,12 @@ if run_flags.run_all==1
                 %lstruct=loaded_struct; fusions = {1,2,3,4,5}; smethods={'sqmean','pmax','pmaxc','pmax2','wtamaxc','wtamax2','wta','wta2'}; inverses={'multires_inv','max','wta'}; for fu=1:length(fusions), for sm=1:length(smethods), for in=1:length(inverses), lstruct.fusion_params.fusion = fusions{fu}; lstruct.fusion_params.smethod = smethods{sm}; lstruct.fusion_params.inverse = inverses{in}; figure, imagesc(get_normalize(lstruct,get_undistort(lstruct,get_fusion(RF_s_o_c, residual_s_c,lstruct)))); title(['fusion=' num2str(fusions{fu}) ',smethod=' smethods{sm} ',inverse=' inverses{in}]); end, end, end
                 
                 
-            [smap_RF , ~] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
-            %[maxval_d,maxidx_d]=max(smap(:));
-            %[maxval_r,maxidx_r]=max(residualmax(:));
             
             
-            %undistort
-            smap = get_undistort(loaded_struct,smap_RF);
-            
-            %deresize to original size
-            smap = get_deresize(loaded_struct,smap);
-            %[maxval,maxidx]=max(smap(:));
-            
-            
-            %normalize
-            smap = get_normalize(loaded_struct,smap);
-            
-            %set smooth smap (depending on a fusion factor)
-            smap=get_smooth(smap,conf_struct);
-            
-            %save
-            imwrite(smap, image_props.output_image_paths{k});
-            %save_mat('struct',conf_struct,folder_props,image_props,gaze_idx);
-            
-            %delete files
-            run_delete_files(folder_props,image_props,loaded_struct,k);
             
             %% GET NEW GAZE
             %get maximum activity and location for new saccade
-            [ RFmax_unfov,RFmax,residualmax,max_mempotential_val,fov_y,fov_x,maxidx_y,maxidx_x,maxidx_s,maxidx_o,maxidx_c] = get_maxdims( RF_s_o_c , residual_s_c,loaded_struct);
+            [ RFmax_unfov,RFmax,residualmax,max_mempotential_val,fov_y,fov_x,maxidx_y,maxidx_x,maxidx_s,maxidx_o,maxidx_c, PSA] = get_maxdims( RF_s_o_c , residual_s_c,loaded_struct);
             conf_struct.gaze_params.maxidx_s=maxidx_s;
             conf_struct.gaze_params.maxidx_o=maxidx_o;
             conf_struct.gaze_params.maxidx_c=maxidx_c;  if maxidx_c>C, maxidx_c=C; end; 
@@ -279,10 +257,49 @@ if run_flags.run_all==1
             gmap=ior_matrix_unfoveated;
               %get_fig_single(normalize_minmax(conf_struct.gaze_params.ior_matrix,0,1),'ior',folder_props,image_props,conf_struct);
             
+              
+            %% get smap
+            [smap_RF , ~] = get_fusion(RF_s_o_c, residual_s_c,loaded_struct);
+            %[maxval_d,maxidx_d]=max(smap(:));
+            %[maxval_r,maxidx_r]=max(residualmax(:));
+            
+            
+            %undistort
+            smap_unfov = get_undistort(loaded_struct,smap_RF);
+            
+            %deresize to original size
+            smap_unfov = get_deresize(loaded_struct,smap_unfov);
+            %[maxval,maxidx]=max(smap(:));
+            
+            
+            %normalize
+            smap = get_normalize(loaded_struct,smap_unfov);
+            
+            %set smooth smap (depending on a fusion factor)
+            smap=get_smooth(smap,conf_struct);
+              
+            %% (optional, modulate also saliency map by SA probability)
+            if loaded_struct.gaze_params.modulateSA_smap==1
+                smap = smap_unfov.*PSA;
+
+                %normalize
+                smap = get_normalize(loaded_struct,smap);
+
+                %set smooth smap (depending on a fusion factor)
+                smap=get_smooth(smap,conf_struct);
+                
+            end
+            
+            %save
+            imwrite(smap, image_props.output_image_paths{k});
+            %save_mat('struct',conf_struct,folder_props,image_props,gaze_idx);
             
             %iterate, save maps per gaze
             smaps(:,:,k) = smap;
             gmaps(:,:,k) = gmap;
+            
+            %delete files
+            run_delete_files(folder_props,image_props,loaded_struct,k);
         end
     end
     
@@ -301,8 +318,7 @@ if run_flags.run_all==1
     %smap from density of scanpath
     mean_gmap = run_gmean(run_flags,image_props,conf_struct,gmaps); %scale-dependent
     
-    
-   
+                
     
     
 else

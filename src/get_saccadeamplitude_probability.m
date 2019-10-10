@@ -8,7 +8,7 @@ function [ PSA ] = get_saccadeamplitude_function( SA ) %, task
     %% interpolate to augment probability vector
     init_func=0;
     end_func=20;
-    precision=0.25;
+    precision=0.10;
     PSA_fv=interp1(init_func:2:end_func,PSA_fv,init_func:precision:end_func);
     
     %% find P manually
