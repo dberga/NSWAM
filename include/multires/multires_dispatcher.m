@@ -17,7 +17,7 @@ function [w, c] = multires_dispatcher(img, method,n_scales,n_orient)
                 end
             end
        case 'a_trous'
-              [w, c] = a_trous(img(:,:), n_scales-1);
+              [w, c] = a_trous(img(:,:), n_scales-1); %n_scales-2
               
        case 'a_trous4'
               [w, c] = a_trous4(img(:,:), n_scales-1);

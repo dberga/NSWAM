@@ -36,7 +36,8 @@ function [loaded_struct,conf_struct] = get_loaded_struct(run_flags,folder_props,
             if ~isfield(conf_struct.fusion_params,'ior_smap') conf_struct.fusion_params.ior_smap = 1; end;
             if ~isfield(conf_struct.fusion_params,'inverse') conf_struct.fusion_params.inverse = 'multires_inv'; end;
             if ~isfield(conf_struct.compute_params,'posttune') conf_struct.compute_params.posttune=0; end
-
+            if ~isfield(conf_struct.gaze_params,'modulateSA') conf_struct.gaze_params.modulateSA = 0; end;
+            
             %loaded struct gazing ovewrites
             loaded_struct.resize_params=conf_struct.resize_params;
             loaded_struct.gaze_params=conf_struct.gaze_params;

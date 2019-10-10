@@ -1,10 +1,10 @@
-function [  ] = plot_scanpaths( input_dataset, output_folder, model_name )
+function [  ] = plot_scanpaths( input_dataset, output_folder, model_names )
 
 if nargin<1, input_dataset='input_tsotsos'; end
 % if nargin<2, output_folder='output_tsotsos'; end
 if nargin<2, output_folder='/home/dberga/repos/metrics_saliency/input/smaps/tsotsos_original_reserva'; end
 % if nargin<3, model_names={'dmaps','no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault','ior_decay99_sa_config_15_b1_m12_after_sqmean_fusion2_invdefault'}; end
-if nargin<3, model_names={'CLE','LeMeur','LeMeur_faces','LeMeur_landscapes','no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault'}; end
+if nargin<3, model_names={'CLE','LeMeur','LeMeur_faces','LeMeur_landscapes','STAR-FC','no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault'}; end
 
 files=listpath(input_dataset);
 

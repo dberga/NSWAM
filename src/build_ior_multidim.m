@@ -3,6 +3,8 @@ function [ ior_matrix_multidim, ior_multidim_set ] = build_ior_multidim( conf_st
             
 if conf_struct.gaze_params.ior_multidim_set==1  %dimensions of ior_matrix_multidim = (M,N,Scale,Orient,Pol,Channel)
             ior_matrix_multidim= get_ior_update(conf_struct.gaze_params.ior_matrix_multidim,conf_struct);
+            size(ior_matrix_multidim)
+            size((ior_matrix .*conf_struct.gaze_params.max_mempotential_val))
             switch conf_struct.gaze_params.ior 
                 case 1 %apply ior to specific scale, channel, orientation and polarity (on/off)
                  ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,conf_struct.gaze_params.maxidx_o,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) = ior_matrix_multidim(:,:,conf_struct.gaze_params.maxidx_s,conf_struct.gaze_params.maxidx_o,conf_struct.gaze_params.idx_max_mempotential_polarity,conf_struct.gaze_params.maxidx_c) + (ior_matrix .*conf_struct.gaze_params.max_mempotential_val);

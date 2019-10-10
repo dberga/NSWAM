@@ -3,11 +3,20 @@ function [ map ] = superpos_scanpath( img,scanpaths,vislimit,pxva,marker_colors 
 %             for s=1:length(scanpaths) 
 %                 marker_colors{s}=[1 0 0;1 0 0; 1 0 0; 1 0 0; 0 0 0 ];
 %             end
-            marker_colors{1}=[0 0 0;0 0 0; 0 0 0; 0 0 0; 0 0 0 ];
-            marker_colors{2}=[1 0 0;1 0 0; 1 0 0; 1 0 0; 0 0 0 ];
-            marker_colors{3}=[1 0 1;1 0 1; 1 0 1; 1 0 1; 0 0 0 ];
-            marker_colors{4}=[1 0 1;1 1 0; 1 0 1; 1 0 1; 0 0 0 ];
-            marker_colors{5}=[1 0 1;0 1 1; 1 0 1; 1 0 1; 0 0 0 ];
+
+
+    marker_colors{1}=[0 0 0;0 0 0; 0 0 0; 0 0 0; 1 1 1];
+    marker_colors{2}=[ .31 .59 .80;.31 .59 .80;.31 .59 .80; .31 .59 .80; 0 0 0 ];
+    marker_colors{3}=[1 0 1;1 0 1; 1 0 1; 1 0 1; 0 0 0 ];
+    marker_colors{4}=[.58 0 .83;.58 0 .83; .58 0 .83; .58 0 .83; 0 0 0 ];
+    marker_colors{5}=[.83 0 .83;.83 0 .83;.83 0 .83; .83 0 .83; 0 0 0 ];
+    marker_colors{6}=[0 1 1;0 1 1;0 1 1; 0 1 1; 0 0 0 ];
+    marker_colors{7}=[1 0 0;1 0 0; 1 0 0; 1 0 0; 0 0 0 ];
+%             marker_colors{1}=[0 0 0;0 0 0; 0 0 0; 0 0 0; 0 0 0 ];
+%             marker_colors{2}=[1 0 0;1 0 0; 1 0 0; 1 0 0; 0 0 0 ];
+%             marker_colors{3}=[1 0 1;1 0 1; 1 0 1; 1 0 1; 0 0 0 ];
+%             marker_colors{4}=[1 0 1;1 1 0; 1 0 1; 1 0 1; 0 0 0 ];
+%             marker_colors{5}=[1 0 1;0 1 1; 1 0 1; 1 0 1; 0 0 0 ];
         end
         if nargin<4, pxva=40; end
         if nargin<3, 

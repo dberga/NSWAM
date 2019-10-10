@@ -3,18 +3,21 @@ function [ ] = plot_metrics_generic( dataset_name, metric_eval, metrics_output_p
 if nargin<4, 
     %model_names={'dmaps','IttiKochNiebur','AIM','no_cortical_config_b1_15_sqmean_fusion2_invdefault','no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault'};  %abs_no_cortical_config_b1_15_sqmean_fusion2_invdefault
     %model_names_alt={'GT','IKN','AIM','NSWAM','NSWAM-CM'}; else, model_names_alt=model_names; end %SWAM
-    model_names={'dmaps','CLE','LeMeur','LeMeur_faces','LeMeur_landscapes','STAR-FC','no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault'};
-%     model_names={'no_cortical_config_b1_15_sqmean_fusion2_invdefault','max_s5_topdown_single_config_b1_15_fusion2','topdown_single_config_b1_15_fusion2'}; %max_topdown_single_config_b1_15_fusion2
-end %SWAM
-model_names_alt={'GT','CLE','LeMeur_N','LeMeur_F','LeMeur_L','STAR-FC','NSWAM-CM'};
-% model_names_alt={'NSWAM','NSWAM+VS_M','NSWAM+VS_C'};
+    %model_names={'dmaps','CLE','LeMeur','LeMeur_faces','LeMeur_landscapes','STAR-FC','no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault'};
+    %model_names={'s5_single_config_b1_15_fusion2','max_s5_topdown_single_config_b1_15_fusion2','avg_s5_topdown_single_config_b1_15_fusion2'};     %no_cortical_config_b1_15_sqmean_fusion2_invdefault,max_topdown_single_config_b1_15_fusion2,topdown_single_config_b1_15_fusion2
+    %model_names={'no_cortical_config_b1_15_sqmean_fusion2_invdefault','max_s8_topdown_single_config_b1_15_fusion2','topdown_single_config_b1_15_fusion2'};
+    model_names={'no_cortical_config_b1_15_sqmean_fusion2_invdefault','max_s8_topdown_single_config_b1_15_fusion2','topdown_single_config_b1_15_fusion2','no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault','max_topdown_scanpath_config_15_b1_m12_after','topdown_scanpath_config_15_b1_m12_after'};
+end 
+%model_names_alt={'GT','CLE','LeMeur_N','LeMeur_F','LeMeur_L','STAR-FC','NSWAM-CM'};
+%model_names_alt={'NSWAM','NSWAM+VS_M','NSWAM+VS_C'};
+model_names_alt={'NSWAM','NSWAM(VS_M)','NSWAM(VS_C)','NSWAM-CM','NSWAM-CM(VS_M)','NSWAM-CM(VS_C)'};
 if nargin<3, metrics_output_path='/media/dberga/DATA/repos/metrics_saliency/output'; end
-if nargin<2, metric_eval=17; end %10=sAUC,11=InfoGain,9=PFI,12=SIndex
-if nargin<1, dataset_name='tsotsos'; end %dataset_name='tmp/cat2000_nopad';
+if nargin<2, metric_eval=12; end %10=sAUC,11=InfoGain,9=PFI,12=SIndex,13=SL,14=SA,17=DeltaSA
+if nargin<1, dataset_name='sid4vam'; end %dataset_name='tmp/cat2000_nopad';
 
 % colors=[0 0 0;  0 0 1; 1 .75 0; 0 1 0; 1 0 0];
-colors=[0 0 0;  .31 .59 .80; 1 0 1; .83 0 .83; .58 0 .83; 0 1 1; 1 0 0];
-% colors=[0 1 0; 0 .7 0; 0 .5 0];
+%colors=[0 0 0;  .31 .59 .80; 1 0 1; .83 0 .83; .58 0 .83; 0 1 1; 1 0 0];
+colors=[0 1 0; 1 0 0.5; 0.5 0 0.5;0 1 0; 1 0 0.5; 0.5 0 0.5];
 
 for c=1:size(colors,1)
    colors_cell{c}=[colors(c,:)]; 
@@ -71,11 +74,13 @@ h=coloredbar(results,model_names_alt,colors_cell);
 % for hi=1:length(h)
 % h(hi).FaceColor=colors(hi,:);
 % end
-xlim([0,4])
+xlim([0,length(results)+1])
 xticklabels(model_names_alt);
 xtickangle(45);
-set(gca,'XTick',[]);
-lgd=legend(model_names_alt); lgd.FontSize = 5; lgd.FontWeight='bold'; lgd.Position=[.73 .77 .26 .22];
+if ~ismember(metric_eval,[13 14 17])
+    set(gca,'XTick',[]);
+    lgd=legend(model_names_alt); lgd.FontSize = 5; lgd.FontWeight='bold'; lgd.Position=[.73 .77 .26 .22];
+end
 ylabel(metric_name);
 %xlabel(blocks_labels{b}{1});
 %ylabel(metric_name);
@@ -100,8 +105,13 @@ for m=1:length(model_names)
         try
             results_gazewise(m,1:G2)=results_struct.metrics_gazewise{metric_eval}.score(1:G2);
         catch
-            G2=20;
-            results_gazewise(m,1:G)=NaN.*ones(1,G);
+            try
+                G2=length(results_struct.metrics{metric_eval}.score_submetric);
+                results_gazewise(m,1:G2)=results_struct.metrics{metric_eval}.score_submetric;
+            catch
+                G2=20;
+                results_gazewise(m,1:G)=NaN.*ones(1,G);
+            end
         end
     end
 end
@@ -153,14 +163,18 @@ switch metric_eval
 end
 set(gcf,'units','points','position',[10,10,350,150]);
 set(gcf,'units','points','position',[10,10,256,120]);
+set(gcf,'units','points','position',[10,10,256,120]);
+set(gcf,'units','points','position',[10,10,256,120]);
+
 xticks(1:G);
 if metric_eval==13 && strcmp(dataset_name,'tsotsos')
 lgd=legend(model_names_alt); lgd.FontSize = 5; lgd.FontWeight='bold'; 
-lgd.Position=[0.7979    0.5274    0.1916    0.2609];
+%lgd.Position=[0.7979    0.5274    0.1916    0.2609];
 % lgd.Position=[.80 .82 .20 .18];
+lgd.Position=[0.7289    0.6171    0.2500    0.3658];
 end
 
-saveas2(gcf,['figs/' 'quantitative' '/' dataset_name '_' metric_name_old '.png']);
+saveas(gcf,['figs/' 'quantitative' '/' dataset_name '_' metric_name_old '.png']);
 
 
 %% correlation
@@ -177,6 +191,7 @@ if metric_eval==14
     h=coloredbar(corrs,model_names_alt(:,2:end),colors_cell(:,2:end));
     ylabel(['\rho(SA)']);
     % ylim([-.2 .2]);
+    xlim([0,length(corrs)+1])
     set(gcf,'units','points','position',[10,10,256,120]);
     saveas(gcf,['figs/' 'quantitative' '/' dataset_name '_' metric_name_old '_corr' '.png']);
     corr_cell_results=[model_names_alt(:,2:end);num2cell(corrs);num2cell(pvals)]';
@@ -184,11 +199,6 @@ if metric_eval==14
 end
 
 end
-
-
-
-
-
 
 
 

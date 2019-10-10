@@ -13,8 +13,15 @@ function [n_scales, ini_scale, fin_scale, fin_scale_offset] = calc_scales(img, i
                 n_scales=8;
                 fin_scale=n_scales;
     		case('a_trous')
-    			n_scales=6;
+    			%n_scales=floor(log(max(size(img(:,:,1))-1)/mida_min)/log(2)) + extra;
+                n_scales=6;
                 fin_scale= n_scales - fin_scale_offset;
+                
+                if fin_scale_offset <0
+                    n_scales=8;
+                    fin_scale=7;
+                    fin_scale_offset=1;
+                end
             otherwise
                 n_scales=floor(log(max(size(img(:,:,1))-1)/mida_min)/log(2)) + extra;
     %			n_scales=floor(log2(	min(size(img(:,:,1)))-1) )-n_scale_max;

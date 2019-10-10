@@ -71,7 +71,7 @@ if conf_struct.search_params.topdown==1
     [conf_struct.wave_params.n_scales, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale]= calc_scales(opp_image, conf_struct.wave_params.ini_scale, conf_struct.wave_params.fin_scale_offset, conf_struct.wave_params.mida_min, conf_struct.wave_params.multires); % calculate number of scales (n_scales) automatically
     [conf_struct.wave_params.n_orient] = calc_norient(opp_image,conf_struct.wave_params.multires,conf_struct.wave_params.n_scales,conf_struct.zli_params.n_membr);            
     [curvs,residuals] = get_DWT([],conf_struct,[],[],C,1,opp_image);
-%     [mask] = get_resize(mask,conf_struct);
+     [mask] = get_resize(mask,conf_struct);
 
     %normalize wavelet coefficients by normalized white noise std coefficients
     if isfield(conf_struct.search_params,'normalize')

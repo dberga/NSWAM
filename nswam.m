@@ -90,7 +90,9 @@ residuals = cell(1,3);
 %% %%%%%%%%%%%%%%%%%%GET RUN FLAGS (LOAD,NEURODYN,RECONS...)
 [run_flags] = get_run_flags(image_props,mat_props,conf_struct);
 
-
+%debug
+%run_flags.run_all=1;
+%run_flags.run_smaps=1;
 
 %% NSWAM ALGORITHM
 if run_flags.run_all==1

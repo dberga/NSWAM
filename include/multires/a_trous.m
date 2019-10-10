@@ -72,7 +72,7 @@ for s = 1:wlev
 %	image=HHF;
 	
 	% Upsample filter
-	h = [0 upsample(h,2)];
+	h = [0 upsample(h,2)]; 
 % 	h = upsample(upsample(h,2)',2)';
    
     

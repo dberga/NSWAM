@@ -1,7 +1,7 @@
 function [  ] = plot_qualitative( dataset_name , model_names)
 if nargin<1, dataset_name='sid4vam'; end
 if nargin<2, 
-    model_names={'max_topdown_single_config_b1_15_fusion2'};
+    model_names={'max_s8_topdown_single_config_b1_15_fusion2'};
 %     model_names={'no_cortical_config_b1_15_sqmean_fusion2_invdefault','max_topdown_single_config_b1_15_fusion2','max_s5_topdown_single_config_b1_15_fusion2','topdown_single_config_b1_15_fusion2'}; %no_cortical_config_b1_15_sqmean_fusion2_invdefault %max_topdown_single_config_b1_15_fusion2 %max_s5_topdown_single_config_b1_15_fusion2 %topdown_single_config_b1_15_fusion2
 %model_names={'dmaps','IttiKochNiebur','AIM','abs_no_cortical_config_b1_15_sqmean_fusion2_invdefault','SWAM','no_cortical_config_b1_15_sqmean_fusion2_invdefault','no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault_cm1','no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault_cm2','no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault_cm5','no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault'};
 end

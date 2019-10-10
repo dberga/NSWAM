@@ -10,13 +10,18 @@ if nargin<6,ior_decay=[1]; end
 % if nargin<6,ior_decay=[1 0.999 0.99 .95 0.9 0.75 0.5 0.25 0]; end
 %  if nargin<6,ior_decay=[0 .25 .5 .75 nthroot(0.001,(1:8)*100)]; end
 if nargin<7, ior_peak=1; end
-visualize=2;
+visualize=0;
 
 [imgfolder,imgname,imgext]=fileparts(img_path);
 img=double(imread(img_path))./255;
 smap_path=[dataset_out_path '/' model_name '/' imgname '.png'];
+
+try
 smap=double(imread(smap_path))./255;
 
+catch
+    disp('err');
+end
 pxva=32; %pxva=rad2deg(0.6130); pxva=35.12;
 if nargin<8, 
 %     ior_std_angle=6*(size(smap,1)./pxva); %itti
@@ -73,7 +78,7 @@ if length(ior_std_angle)>1 && length(ior_decay)<2
     mkdir(['figs' '/' 'ior/test' '/' 'decay' num2str(ior_decay)]);
     for sd=1:length(ior_std_angle)
         [scanpath,smaps,mean_smap]=staticsaliency2scanpath(smap,gazesnum,ior_decay,ior_peak,ior_std_angle(sd));
-        scanpath(2,:)=[453 192];
+%         scanpath(2,:)=[453 192];
         [ mean_amplitude_angle(sd)] = samplitude( scanpath );
         [ mean_amplitude_diff_angle(sd), std_amplitude_diff_angle(sd), amplitudes_diff_angle(sd,:)  ] = pp_samplitude_diff( GT_scanpaths_pp,scanpath );
         [ mean_distance_angle(sd), std_distance_angle(sd), distances_angle(sd,:) ] = pp_slanding( GT_scanpaths_pp, scanpath );
@@ -99,6 +104,7 @@ if length(ior_std_angle)>1 && length(ior_decay)<2
     end
 end
 
+if visualize==1
 mkdir(['figs' '/' 'ior/qualitative']);
 % if length(ior_std_angle)>1 && length(ior_decay)>1
     for sd=1:length(ior_std_angle)
@@ -110,6 +116,6 @@ mkdir(['figs' '/' 'ior/qualitative']);
         end
     end
 % end
-
+end
 
 end

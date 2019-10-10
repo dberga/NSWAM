@@ -2,23 +2,25 @@ function [ ] = plot_metrics_generic( dataset_name, metric_eval, metrics_output_p
 
 if nargin<5, list_path='/home/dberga/repos/datasets/SID4VAM/sid4vam_rawdata/list.csv'; end
 if nargin<4, 
-%     model_names={'dmaps','IttiKochNiebur','AIM','no_cortical_config_b1_15_sqmean_fusion2_invdefault','no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault'}; %'max_topdown_single_config_b1_15_fusion2',topdown_single_config_b1_15_fusion2
-%     model_names_alt={'GT','IKN','AIM','NSWAM','NSWAM-CM'}; %else, model_names_alt=model_names; end %'NSWAM-VS_M','NSWAM-VS_C'
-    model_names={'no_cortical_config_b1_15_sqmean_fusion2_invdefault','max_s5_topdown_single_config_b1_15_fusion2','topdown_single_config_b1_15_fusion2'};
-    model_names_alt={'NSWAM','NSWAM+VS_M','NSWAM+VS_C'};
+    model_names={'dmaps','IttiKochNiebur','AIM','no_cortical_config_b1_15_sqmean_fusion2_invdefault','no_ior_config_15_b1_m12_after_sqmean_fusion2_invdefault'}; %'max_topdown_single_config_b1_15_fusion2',topdown_single_config_b1_15_fusion2
+    model_names_alt={'GT','IKN','AIM','NSWAM','NSWAM-CM'}; %else, model_names_alt=model_names; end %'NSWAM-VS_M','NSWAM-VS_C'
+%     model_names={'no_cortical_config_b1_15_sqmean_fusion2_invdefault','max_s8_topdown_single_config_b1_15_fusion2','topdown_single_config_b1_15_fusion2'};
+%     model_names_alt={'NSWAM','NSWAM+VS_M','NSWAM+VS_C'};
 else, 
     model_names_alt=model_names; 
 end
 if nargin<3, metrics_output_path='/media/dberga/DATA/repos/metrics_saliency/output'; end
-if nargin<2, metric_eval=11; end %10=sAUC
+if nargin<2, metric_eval=10; end %10, 12 ...
 if nargin<1, dataset_name='sid4vam'; end %dataset_name='tmp/cat2000_nopad';
 
 N=230;
 PSI=7; 
-blocks_selected=[7]; %select blocks to plot (1:15 for all), %7,9,10,11,12,14
+blocks_selected=[7,9,10,11,12,14]; %select blocks to plot (1:15 for all), %7,9,10,11,12,14
 
-% colors=[0 0 0;  0 0 1; 1 .75 0; 0 1 0; 1 0 0; .31 .86 .39; .5 .73 0];
-colors=[0 1 0; 0 .7 0; 0 .5 0];
+colors=[0 0 0;  0 0 1; 1 .75 0; 0 1 0; 1 0 0; .31 .86 .39; .5 .73 0];
+%colors=[0 1 0; 0 .7 0; 0 .5 0];
+% colors=[0 1 0; 1 0 0.5; 0.5 0 0.5];
+
 for c=1:size(colors,1)
    colors_cell{c}=[colors(c,:)]; 
 end
@@ -157,6 +159,15 @@ switch metric_eval
 end
     
 saveas2(gcf,['figs/' 'quantitative' '/' 'psi_all_' dataset_name '_' metric_name '.png']);
+
+
+%% correlations
+% [rho,pval]=corr(results_psi(1,:)',results_psi(2,:)')
+% [rho,pval]=corr(results_psi(1,:)',results_psi(3,:)')
+% [rho,pval]=corr(results_psi(1,:)',results_psi(4,:)')
+% [rho,pval]=corr(results_psi(1,:)',results_psi(5,:)')
+
+
 
 %% bar plot metric per block
 
