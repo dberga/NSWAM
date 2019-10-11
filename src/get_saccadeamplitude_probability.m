@@ -3,7 +3,7 @@ function [ PSA ] = get_saccadeamplitude_function( SA ) %, task
 
     %% curve from (fig 1): Tatler, Baddeley, Vincent, 2005
     %SA_instances=[0-2, 2-4, 4-6, 6-8, 8-10, 10-12, 12-14, 14-16, 16-18, 18-20, 20+];
-    PSA_fv=[.15, .20, .17, .15, .12, .08, .06, .04, .03, .02, .03];
+    PSA_fv=[0, .15, .20, .17, .15, .12, .08, .06, .04, .03, .02]; %.03
     
     %% interpolate to augment probability vector
     init_func=0;
