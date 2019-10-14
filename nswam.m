@@ -271,6 +271,10 @@ if run_flags.run_all==1
             smap_unfov = get_deresize(loaded_struct,smap_unfov);
             %[maxval,maxidx]=max(smap(:));
             
+	    %% (optional, modulate also saliency map by SA probability)
+            if loaded_struct.gaze_params.modulateSA_smap==1
+                smap = smap_unfov.*PSA;
+            end
             
             %normalize
             smap = get_normalize(loaded_struct,smap_unfov);
@@ -278,17 +282,7 @@ if run_flags.run_all==1
             %set smooth smap (depending on a fusion factor)
             smap=get_smooth(smap,conf_struct);
               
-            %% (optional, modulate also saliency map by SA probability)
-            if loaded_struct.gaze_params.modulateSA_smap==1
-                smap = smap_unfov.*PSA;
-
-                %normalize
-                smap = get_normalize(loaded_struct,smap);
-
-                %set smooth smap (depending on a fusion factor)
-                smap=get_smooth(smap,conf_struct);
-                
-            end
+            
             
             %save
             imwrite(smap, image_props.output_image_paths{k});
