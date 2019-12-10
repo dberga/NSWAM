@@ -273,7 +273,7 @@ if run_flags.run_all==1
             
 	    %% (optional, modulate also saliency map by SA probability)
             if loaded_struct.gaze_params.modulateSA_smap==1
-                smap = smap_unfov.*PSA;
+                smap_unfov = smap_unfov.*PSA;
             end
             
             %normalize
