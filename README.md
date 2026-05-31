@@ -23,7 +23,7 @@ NSWAM is an open source implementation of a saliency and scanpath models cited b
 
 #### BENCHMARK
 
-Check my [saliency benchmark code](https://github.com/dberga/saliency) for running the experiments, or download the saliency maps from [my owncloud](https://owncloud.cvc.uab.es/owncloud/index.php/s/IJLBgMtcBvzH4vU).
+Check my [saliency benchmark code](https://github.com/dberga/saliency) for running the experiments and/or download the saliency maps and datasets' ground truth.
 
 #### Citing NSWAM and NSWAM-CM:
 
